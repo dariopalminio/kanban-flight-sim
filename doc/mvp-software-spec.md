@@ -6,9 +6,20 @@
 2. [Objetivos](#2-objetivos)
 3. [Modelo de Dominio](#3-modelo-de-dominio)
 4. [Workflows](#4-workflows)
+   - [4.1 Simulación "Simplified"](#41-simulación-simplified)
+   - [4.2 Simulación "SDF workflows"](#42-simulación-sdf-workflows)
+   - [4.3 Propiedades de cada estado](#43-propiedades-de-cada-estado-status)
 5. [Reglas de Negocio](#5-reglas-de-negocio)
+   - [5.1 Paso 1 — L0 autónomo](#51-paso-1--l0-avanza-de-forma-autónoma)
+   - [5.2 Paso 2 — L1 activado por L0](#52-paso-2--l1-se-activa-cuando-l0-comienza-a-trabajar)
+   - [5.3 Paso 3 — L1 con reglas](#53-paso-3--l1-avanza-con-reglas-jerárquicas)
+   - [5.4 Paso 4 — L2 activado por L1](#54-paso-4--l2-se-activa-cuando-l1-comienza-a-trabajar)
+   - [5.5 Paso 5 — L2 con reglas](#55-paso-5--l2-avanza-con-reglas-jerárquicas)
+   - [5.6 Reglas Globales](#56-reglas-globales)
 6. [Modelo de Simulación](#6-modelo-de-simulación)
 7. [Interfaz de Usuario](#7-interfaz-de-usuario)
+   - [7.1 Selector de Simulación](#71-selector-de-simulación)
+   - [7.2 Layout General](#72-layout-general)
 8. [Requerimientos Funcionales](#8-requerimientos-funcionales)
 9. [Requerimientos No Funcionales](#9-requerimientos-no-funcionales)
 10. [Posibles Extensiones](#10-posibles-extensiones)
@@ -44,7 +55,7 @@ Es una herramienta educativa y de análisis para entender la dinámica de sistem
 
 ### Configurabilidad
 
-Si bien el sistema tiene una configuración inicial por defecto, es altamente configurable: permite definir diferentes workflows, nombres de niveles, reglas de negocio y parámetros de simulación para explorar distintos escenarios.
+El sistema soporta **múltiples simulaciones** definidas en un archivo JSON (`defaultConfig.json`). Cada simulación tiene su propio conjunto de workflows, parámetros y nombres de estados. El usuario puede seleccionar la simulación activa desde la interfaz. Las reglas del motor de simulación son genéricas y funcionan con cualquier configuración de simulación válida.
 
 ---
 
@@ -98,135 +109,140 @@ La configuración inicial y por defecto es la siguiente:
 
 ## 🔄 4. Workflows
 
-### 4.1 Workflow de nivel 2 (Level-2-Workflow) para Releases
+Cada simulación define sus propios workflows. Los workflows incluidos en la configuración inicial son:
 
-Workflow principal para Releases:
+### 4.1 Simulación "Simplified"
+
+Flujo simplificado de 4 estados por nivel:
+
+| Nivel | Workflow |
+| ----- | -------- |
+| L2 — Release | `Backlog → Committed → In-Progress → Done` |
+| L1 — Feat    | `Backlog → Committed → In-Progress → Done` |
+| L0 — Spec    | `Backlog → Committed → In-Progress → Done` |
+
+* Commitment point: **Committed** (upstream)
+* Delivery point: **Done** (downstream final)
+
+---
+
+### 4.2 Simulación "SDF workflows"
+
+Flujos detallados que modelan un proceso de desarrollo complejo:
+
+**L2 — Release:**
 ```txt
 Initial → Defining → Plan → Ready → Develop → To-Validate → Validation-UAT → Ready-for-Prod → Deploy → Released
 ```
+* Upstream: `Initial → Defining → Plan → Ready`
+* Commitment point: **Ready**
+* Downstream: `Develop → To-Validate → Validation-UAT → Ready-for-Prod → Deploy → Released`
+* Delivery point: **Released**
 
-Consideraciones sobre este workflow:
-* Upstream: Initial → Defining → Plan → Ready
-* Punto de compromiso (commitment-status): Ready
-* Downstream: Develop → To-Validate → Validation-UAT → Ready-for-Prod → Deploy → Released
-* Punto de entrega (delivery-status): Released
-
----
-
-### 4.2 Workflow de nivel 1 (Level-1-Workflow) para Feats
-
+**L1 — Feat:**
 ```txt
 Pending → Refining → Ready-for-Develop → Developing → Code-Review → QA-Validation → Acceptance → Done
 ```
+* Upstream: `Pending → Refining → Ready-for-Develop`
+* Commitment point: **Ready-for-Develop**
+* Downstream: `Developing → Code-Review → QA-Validation → Acceptance → Done`
+* Delivery point: **Done**
 
-Consideraciones sobre este workflow:
-* Upstream: Pending → Refining → Ready-for-Develop
-* Punto de compromiso (commitment-status): Ready-for-Develop
-* Downstream: Developing → Code-Review → QA-Validation → Acceptance → Done
-* Punto de entrega (delivery-status): Done
-
----
-
-### 4.3 Workflow de nivel 0 (Level-0-Workflow) para Specs
-
+**L0 — Spec:**
 ```txt
 Todo → Specifying → Designing → Ready-for-Implement → Implementing → Validation → Completed
 ```
+* Upstream: `Todo → Specifying → Designing → Ready-for-Implement`
+* Commitment point: **Ready-for-Implement**
+* Downstream: `Implementing → Validation → Completed`
+* Delivery point: **Completed**
 
-Consideraciones sobre este workflow:
-* Upstream: Todo → Specifying → Designing → Ready-for-Implement
-* Punto de compromiso (commitment-status): Ready-for-Implement
-* Downstream: Implementing → Validation → Completed
-* Punto de entrega (delivery-status): Completed
+---
+
+### 4.3 Propiedades de cada estado (status)
+
+Cada estado de un workflow tiene los siguientes atributos:
+
+| Propiedad | Tipo | Descripción |
+| --------- | ---- | ----------- |
+| `id` | string | Identificador único del estado |
+| `name` | string | Nombre visible en la UI |
+| `order` | number | Posición secuencial en el workflow |
+| `streamType` | `UPSTREAM` \| `DOWNSTREAM` | Zona del workflow |
+| `isCommitmentPoint` | boolean | Indica el punto de compromiso del nivel |
+| `isDeliveryPoint` | boolean | Indica el estado final (entrega) del nivel |
+| `category` | `TODO` \| `IN_PROGRESS` \| `DONE` | Derivado automáticamente de las propiedades anteriores |
 
 ---
 
 ## ⚙️ 5. Reglas de Negocio
 
-### 5.1 Reglas Release
+Las reglas de negocio son **genéricas**: no dependen de nombres de estados específicos sino de las propiedades estructurales del workflow (`isCommitmentPoint`, `isDeliveryPoint`, `streamType`). Esto permite que el motor de simulación funcione con cualquier configuración de simulación.
 
-1. Cuando un Release pasa a **Ready**:
+### 5.1 Paso 1 — L0 avanza de forma autónoma
 
-   * Se crean todas sus Feats hijas en estado **Pending** (por defecto: 3 Feats)
-
-2. Cuando la PRIMERA Feat pasa a **Developing**:
-
-   * El Release padre pasa a **Develop**
-
-3. Cuando TODAS las Feats están en **Done**:
-
-   * El Release pasa a **To-Validate**
-   * A partir de aquí el Release continúa su flujo downstream de forma autónoma hasta **Released**
+* Los workitems de nivel L0 avanzan con probabilidad configurable (por defecto 50%) en cada tick.
+* Se detienen al alcanzar su `isDeliveryPoint`.
+* No dependen de ningún otro workitem.
 
 ---
 
-### 5.2 Reglas Feat
+### 5.2 Paso 2 — L1 se activa cuando L0 comienza a trabajar
 
-5. Cuando una Feat pasa a **Ready-for-Develop**:
-
-   * Se crean sus Specs hijas en estado **Todo** (por defecto: 3 Specs)
-
-6. Si alguna Spec pasa a **Implementing**:
-
-   * La Feat debe estar o pasar a **Developing**
-
-7. Regla de consistencia estricta:
-
-   * Una Feat NO puede avanzar más allá de **Developing** si alguna Spec NO está en **Completed**
-
-8. Cuando TODAS las Specs están en **Completed**:
-
-   * La Feat avanza a **Code-Review**
-   * Luego continúa su flujo normalmente
+* Cuando algún hijo L0 entra a cualquier estado con `streamType: DOWNSTREAM`, el padre L1 salta directamente a su primer estado downstream (`streamType: DOWNSTREAM`).
+* Esto activa al padre automáticamente cuando el trabajo real en L0 comienza.
 
 ---
 
-### 5.3 Reglas Spec
+### 5.3 Paso 3 — L1 avanza con reglas jerárquicas
 
-9. Las Specs:
-
-   * Avanzan de forma autónoma
-   * No dependen de otros workitems
-
----
-
-### 5.4 Reglas Globales
-
-10. Progresión secuencial:
-
-* Cada workitem inicia su ciclo de vida en el primer estado del workflow (por ejemplo: Initial, Pending o Todo)
-* Cada workitem avanza secuencialmente estado por estado (sin saltos)
-
-11. Restricción de avance:
-
-* En cada ciclo de simulación, un workitem puede avanzar **máximo una columna**
-
-12. Dependencias:
-
-* Workitems en estado de commitment-status (por ejemplo **Ready**, **Ready-for-Develop**, **Ready-for-Implement**) gatillan la creación de sus hijos o su avance depende del avance de sus hijos.
-* Workitems en estado de delivery-status (por ejemplo **Released**, **Done**, **Completed**) son estados finales (done).
-
-13. Autonomía:
-
-* Workitems en estado posterior al commitment-status avanzan por sí mismos si cumplen las reglas jerárquicas (sus hijos ya deben estar done).
-* Los workitems del nivel 0 (Specs) son completamente autónomos, no dependen de otros workitems para avanzar.
+* **Antes del `isCommitmentPoint`** (upstream): avanza autónomamente al 50%.
+* **En el `isCommitmentPoint`**: se crean los hijos L0 (si no existen), con su primer estado del workflow L0. Luego avanza autónomamente al 50%.
+* **En el primer estado downstream** (`streamType: DOWNSTREAM`): **bloqueado** hasta que **todos** sus hijos L0 estén en `isDeliveryPoint`. Cuando se cumple, avanza.
+* **Después del primer downstream**: avanza autónomamente al 50%.
+* **En `isDeliveryPoint`**: se detiene.
 
 ---
 
-### 5.5 Reglas de Fórmula General para distribución de STATUS-CATEGORY
+### 5.4 Paso 4 — L2 se activa cuando L1 comienza a trabajar
 
-* Los STATUS-CATEGORY son tres: TODO, IN-PROGRESS, DONE.
-* Los colores representativos de STATUS-CATEGORY son: TODO=gris, IN-PROGRESS=azul, DONE=verde.
-* Para CADA nivel, la distribución es:
-   * TODO = [Estados del Upstream]
-   * IN-PROGRESS = [Estados del Downstream excepto el último]
-   * DONE = [Estado final del Downstream o delivery-status]
+* Idéntico al Paso 2 pero un nivel arriba: cuando algún hijo L1 entra a downstream, el padre L2 salta a su primer estado downstream.
 
 ---
 
-### 5.6 Reglas de Punto de Compromiso (commitment-status)
+### 5.5 Paso 5 — L2 avanza con reglas jerárquicas
 
-En este modelo y en su configuración por defecto, los puntos de compromiso son:
+* Idéntico al Paso 3 pero para L2 con sus hijos L1:
+* **En `isCommitmentPoint`**: crea hijos L1, luego avanza autónomamente al 50%.
+* **En primer downstream**: **bloqueado** hasta que todos los hijos L1 estén en `isDeliveryPoint`.
+* **Resto**: autónomo o detenido en entrega.
+
+---
+
+### 5.6 Reglas Globales
+
+* **Progresión secuencial**: cada workitem avanza estado por estado sin saltos.
+* **Máximo una transición por tick**: un workitem puede avanzar como máximo un estado por tick.
+* **Estado inicial**: los workitems de L2 inician en el primer estado de su workflow; los workitems hijos creados también inician en el primer estado de su workflow.
+* **Número de hijos**: configurable por simulación (por defecto: 3 hijos por padre).
+
+---
+
+### 5.7 Derivación automática de STATUS-CATEGORY
+
+El campo `category` de cada estado se calcula automáticamente a partir de sus propiedades estructurales:
+
+* `TODO` = todos los estados con `streamType: UPSTREAM`
+* `IN_PROGRESS` = estados con `streamType: DOWNSTREAM` excepto el último
+* `DONE` = el estado con `isDeliveryPoint: true`
+
+Los colores representativos de STATUS-CATEGORY son: TODO=gris, IN-PROGRESS=azul, DONE=verde.
+
+---
+
+### 5.8 Punto de Compromiso (commitment-status)
+
+El `isCommitmentPoint` de cada nivel define el momento en que el equipo se compromete formalmente a ejecutar el workitem y se crean sus hijos. Ejemplos en la simulación "SDF workflows":
 
 | Nivel | Nombre  | commitment-status    | Significado                                    |
 | ----- | ------- | -------------------- | ---------------------------------------------- |
@@ -258,16 +274,27 @@ En este modelo y en su configuración por defecto, los puntos de compromiso son:
 
 ### 6.3 Estado Inicial de la Simulación
 
-* La simulación inicia con **1 Release** en estado **Initial**.
+* La simulación inicia con **N Releases** (configurable, por defecto 1) en el **primer estado** del workflow L2.
 * No existen Feats ni Specs al inicio.
-* Los workitems hijos se crean dinámicamente según las reglas de negocio (§5.1, §5.2).
-* La cantidad inicial de Releases y su estado inicial son configurables via JSON.
+* Los workitems hijos se crean dinámicamente según las reglas de negocio (§5.3, §5.5).
+* La cantidad inicial de Releases es configurable por simulación via JSON.
+* Al cambiar de simulación o presionar Reset, el estado vuelve a este punto inicial.
 
 ---
 
 ## 🖥 7. Interfaz de Usuario
 
-### 7.1 Layout General
+### 7.1 Selector de Simulación
+
+En el encabezado de la aplicación hay un **dropdown** que muestra la lista de simulaciones disponibles (cargadas desde `defaultConfig.json`). Al seleccionar una simulación:
+
+* Se carga la configuración correspondiente (workflows L2, L1, L0).
+* El estado de simulación se resetea al estado inicial de la nueva simulación.
+* El autoplay se detiene.
+
+---
+
+### 7.2 Layout General
 
 Los tres tableros se presentan **verticalmente apilados** en la pantalla, reflejando la jerarquía del modelo:
 
@@ -293,7 +320,7 @@ Cada estado (status) tiene los siguientes atributos:
    * `isCommitmentStatus`: booleano que indica si es un punto de compromiso.
    * `isDeliveryStatus`: booleano que indica si es un punto de entrega.
 
-### 7.2 Tarjetas (workitems)
+### 7.3 Tarjetas (workitems)
 
 Las tarjetas son la forma en que se renderiza un workitem en la UI. Cada tarjeta muestra:
 
@@ -302,7 +329,7 @@ Las tarjetas son la forma en que se renderiza un workitem en la UI. Cada tarjeta
 
 ---
 
-### 7.3 Características UI
+### 7.4 Características UI
 
 * Diseño compacto (sin scroll horizontal)
 * Columnas responsivas (wrap)
@@ -310,7 +337,7 @@ Las tarjetas son la forma en que se renderiza un workitem en la UI. Cada tarjeta
 
 ---
 
-### 7.4 Botones de Acción
+### 7.5 Botones de Acción
 
 | Botón | Descripción |
 | ----- | ----------- |
@@ -352,12 +379,13 @@ El sistema debe mostrar tres tableros Kanban independientes (Release, Feat, Spec
 
 ### RF-03 — Reglas jerárquicas entre workitems
 
-El sistema debe respetar las reglas jerárquicas definidas entre niveles.
+El sistema debe respetar las reglas jerárquicas definidas entre niveles, basadas en las propiedades estructurales de cada workflow.
 
 **Criterios de aceptación:**
-- Cuando una Feat está en Developing y alguna de sus Specs no está en Completed, la Feat no puede avanzar más allá de Developing.
-- Cuando la primera Feat de un Release pasa a Developing, el Release pasa automáticamente a Develop.
-- Cuando todas las Feats de un Release están en Done, el Release pasa automáticamente a To-Validate y luego continúa su flujo autónomamente hasta Released.
+- Un workitem L1 en su primer estado downstream no puede avanzar mientras alguno de sus hijos L0 no haya alcanzado su `isDeliveryPoint`.
+- Cuando el primer hijo L0 de un L1 entra a downstream, el L1 padre salta automáticamente a su primer estado downstream.
+- Cuando el primer hijo L1 de un L2 entra a downstream, el L2 padre salta automáticamente a su primer estado downstream.
+- Cuando todos los hijos L1 de un L2 están en `isDeliveryPoint`, el L2 avanza desde su primer downstream.
 
 ---
 
@@ -366,8 +394,9 @@ El sistema debe respetar las reglas jerárquicas definidas entre niveles.
 El sistema debe crear automáticamente workitems hijos según las reglas de negocio.
 
 **Criterios de aceptación:**
-- Cuando un Release pasa a Ready, se crean exactamente 3 Feats en estado Pending.
-- Cuando una Feat pasa a Ready-for-Develop, se crean exactamente 3 Specs en estado Todo.
+- Cuando un L2 pasa por su `isCommitmentPoint`, se crean exactamente N hijos L1 en el primer estado del workflow L1 (N configurable, por defecto 3).
+- Cuando un L1 pasa por su `isCommitmentPoint`, se crean exactamente N hijos L0 en el primer estado del workflow L0.
+- Los hijos se crean una sola vez (si ya existen no se vuelven a crear).
 - Los IDs de los nuevos workitems siguen la nomenclatura definida (ej: FEAT-1, SPEC-4).
 
 ---
@@ -390,6 +419,17 @@ El sistema debe limitar el avance de cada workitem a una sola transición por ti
 **Criterios de aceptación:**
 - Dado un workitem en estado X, después de un tick puede estar en X o en X+1, nunca en X+2 o posterior.
 - Este límite aplica a todos los workitems de todos los niveles.
+
+---
+
+### RF-08 — Selección de simulación
+
+El sistema debe permitir al usuario seleccionar entre múltiples simulaciones disponibles.
+
+**Criterios de aceptación:**
+- La UI muestra un dropdown con la lista de simulaciones cargadas desde `defaultConfig.json`.
+- Al seleccionar una simulación diferente, el estado de simulación se resetea y los tableros se actualizan con el nuevo workflow.
+- La simulación por defecto está preseleccionada al cargar la aplicación.
 
 ---
 
@@ -432,9 +472,9 @@ El sistema debe reflejar visualmente el estado actual de cada workitem en tiempo
 
 ### RNF-07 Configuración
 
-* El sistema debe ser configurable.
-* La configuración se define mediante un objeto en formato JSON.
-* En esta primera versión MVP, la configuración puede estar definida directamente en el código (hardcoded) o en un archivo; no se requiere UI para editar la configuración.
+* El sistema debe ser configurable mediante el archivo `defaultConfig.json`.
+* La configuración define: las simulaciones disponibles, los workflows (estados, propiedades), y los parámetros de simulación (probabilidad, cantidad de hijos, número inicial de releases).
+* No se requiere UI para editar la configuración; se edita directamente el archivo JSON.
 
 ---
 
@@ -461,29 +501,30 @@ El sistema debe reflejar visualmente el estado actual de cada workitem en tiempo
 | TypeScript    | Tipado estático en toda la aplicación     |
 | useState      | Estado local de la simulación             |
 
-### 11.2 Estructura de Módulos Sugerida
+### 11.2 Estructura de Módulos
 
 ```
 src/
 ├── config/
-│   └── defaultConfig.ts        # Configuración inicial (workflows, niveles, parámetros)
+│   ├── defaultConfig.json      # Fuente de verdad: simulaciones, workflows, parámetros
+│   └── defaultConfig.ts        # Carga y procesa el JSON; asigna category automáticamente
 ├── domain/
-│   ├── types.ts                # Tipos: Workitem, Workflow, Status, Level, etc.
-│   └── rules.ts                # Reglas de negocio (evaluación de transiciones)
+│   └── types.ts                # Tipos TypeScript: Workitem, Workflow, Status, SimState, Config, etc.
 ├── simulation/
-│   └── engine.ts               # Motor de simulación: función pura tick()
+│   └── engine.ts               # Motor de simulación: buildInitialState() y tick() (funciones puras)
 ├── components/
 │   ├── Board.tsx               # Tablero de un nivel
 │   ├── Column.tsx              # Columna (estado del workflow)
 │   └── Card.tsx                # Tarjeta (workitem)
-└── App.tsx                     # Composición principal y estado global
+└── App.tsx                     # Composición principal, estado global y controles de UI
 ```
 
 ### 11.3 Decisiones de Diseño
 
-* **Función pura para el tick:** El motor de simulación (`engine.ts`) es una función pura que recibe el estado actual y devuelve el nuevo estado. Esto facilita el testing y la reproducibilidad.
-* **Separación dominio / UI:** Las reglas de negocio viven en `domain/rules.ts`, independientemente de los componentes React.
-* **Configuración centralizada:** Todos los parámetros variables (workflows, probabilidades, cantidad de hijos, estado inicial) se definen en `config/defaultConfig.ts`.
+* **Función pura para el tick:** `tick(state, config) → state` en `engine.ts` es una función pura sin efectos secundarios. Facilita el testing, la reproducibilidad y el autoplay con `setInterval`.
+* **Motor generalizado:** Las reglas del engine se basan en las propiedades estructurales del workflow (`isCommitmentPoint`, `isDeliveryPoint`, `streamType`), no en IDs de estados. Esto permite usar cualquier simulación definida en el JSON sin modificar el código del motor.
+* **Configuración en JSON:** Todas las simulaciones, workflows y parámetros se definen en `defaultConfig.json`. `defaultConfig.ts` solo carga el JSON y deriva el campo `category` automáticamente.
+* **Múltiples simulaciones:** El JSON soporta un array de simulaciones con un campo `defaultSimulation`. La UI permite seleccionar entre ellas desde un dropdown.
 
 ---
 

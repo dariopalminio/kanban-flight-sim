@@ -6,6 +6,7 @@ import raw from "./defaultConfig.json";
 // =====================
 
 type RawStatus = Omit<Status, "category">;
+type RawSimulation = typeof raw.simulations[0];
 
 const assignCategory = (statuses: RawStatus[]): Status[] => {
   const lastId = statuses[statuses.length - 1].id;
@@ -17,23 +18,38 @@ const assignCategory = (statuses: RawStatus[]): Status[] => {
 };
 
 // =====================
-// BUILD CONFIG FROM JSON
+// BUILD CONFIG FROM SIMULATION
 // =====================
 
-const buildWorkflow = (wf: typeof raw.workflows.L2) => ({
+const buildWorkflow = (wf: RawSimulation["workflows"]["L2"]) => ({
   id: wf.id,
   name: wf.name,
   level: wf.level as WorkitemLevel,
   statuses: assignCategory(wf.statuses as RawStatus[]),
 });
 
-export const defaultConfig: Config = {
-  initialReleaseCount: raw.initialReleaseCount,
-  advanceProbability: raw.advanceProbability,
-  childrenPerParent: raw.childrenPerParent,
+const buildConfig = (sim: RawSimulation): Config => ({
+  initialReleaseCount: sim.initialReleaseCount,
+  advanceProbability: sim.advanceProbability,
+  childrenPerParent: sim.childrenPerParent,
   workflows: {
-    L2: buildWorkflow(raw.workflows.L2),
-    L1: buildWorkflow(raw.workflows.L1),
-    L0: buildWorkflow(raw.workflows.L0),
+    L2: buildWorkflow(sim.workflows.L2),
+    L1: buildWorkflow(sim.workflows.L1),
+    L0: buildWorkflow(sim.workflows.L0),
   },
+});
+
+// =====================
+// PUBLIC API
+// =====================
+
+export const simulationNames: string[] = raw.simulations.map((s) => s.name);
+export const defaultSimulationName: string = raw.defaultSimulation;
+
+export const loadSimulation = (name: string): Config => {
+  const sim = raw.simulations.find((s) => s.name === name);
+  if (!sim) throw new Error(`Simulation "${name}" not found in defaultConfig.json`);
+  return buildConfig(sim);
 };
+
+export const defaultConfig: Config = loadSimulation(raw.defaultSimulation);

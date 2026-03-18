@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { Board } from "./components/Board";
-import { defaultConfig } from "./config/defaultConfig";
+import {
+  defaultSimulationName,
+  loadSimulation,
+  simulationNames,
+} from "./config/defaultConfig";
 import type { HighlightMode, SimState } from "./domain/types";
 import { buildInitialState, tick } from "./simulation/engine";
 
@@ -24,7 +28,10 @@ const BTN_ACTIVE_STYLE: React.CSSProperties = {
 };
 
 export default function App() {
-  const [simState, setSimState] = useState<SimState>(buildInitialState(defaultConfig));
+  const [selectedSim, setSelectedSim] = useState(defaultSimulationName);
+  const config = loadSimulation(selectedSim);
+
+  const [simState, setSimState] = useState<SimState>(buildInitialState(config));
   const [isPlaying, setIsPlaying] = useState(false);
   const [highlightMode, setHighlightMode] = useState<HighlightMode>("none");
 
@@ -32,30 +39,58 @@ export default function App() {
   useEffect(() => {
     if (!isPlaying) return;
     const id = setInterval(
-      () => setSimState((s) => tick(s, defaultConfig)),
+      () => setSimState((s) => tick(s, config)),
       AUTOPLAY_INTERVAL_MS
     );
     return () => clearInterval(id);
-  }, [isPlaying]);
+  }, [isPlaying, config]);
 
-  const handleStep = () => setSimState((s) => tick(s, defaultConfig));
+  const handleSimChange = (name: string) => {
+    setSelectedSim(name);
+    setSimState(buildInitialState(loadSimulation(name)));
+    setIsPlaying(false);
+  };
+
+  const handleStep = () => setSimState((s) => tick(s, config));
 
   const handleReset = () => {
-    setSimState(buildInitialState(defaultConfig));
+    setSimState(buildInitialState(config));
     setIsPlaying(false);
   };
 
   const toggleView = (mode: HighlightMode) =>
     setHighlightMode((prev) => (prev === mode ? "none" : mode));
 
-  const { workflows } = defaultConfig;
+  const { workflows } = config;
   const { workitems, tick: tickCount } = simState;
 
   return (
     <div style={{ background: "#0f172a", minHeight: "100vh", padding: 8, boxSizing: "border-box" }}>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
-        <span style={{ color: "#94a3b8", fontSize: 11, fontWeight: 600, marginRight: 4 }}>
+        {/* Simulation selector */}
+        <select
+          value={selectedSim}
+          onChange={(e) => handleSimChange(e.target.value)}
+          style={{
+            padding: "3px 6px",
+            fontSize: 11,
+            fontWeight: 600,
+            borderRadius: 4,
+            border: "1px solid #475569",
+            background: "#0f172a",
+            color: "white",
+            cursor: "pointer",
+          }}
+        >
+          {simulationNames.map((name) => (
+            <option key={name} value={name}>{name}</option>
+          ))}
+        </select>
+
+        <span style={{ color: "#475569", fontSize: 11 }}>|</span>
+
+        <span style={{ color: "#94a3b8", fontSize: 11, fontWeight: 600 }}>
           Tick: {tickCount}
         </span>
 

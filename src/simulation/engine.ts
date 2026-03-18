@@ -7,10 +7,9 @@ import type { Config, SimState, Workitem, Workflow } from "../domain/types";
 const maybe = (p: number) => Math.random() < p;
 
 const getNextStatusId = (wf: Workflow, statusId: string): string => {
-  const statuses = wf.statuses;
-  const current = statuses.find((s) => s.id === statusId);
+  const current = wf.statuses.find((s) => s.id === statusId);
   if (!current) return statusId;
-  const next = statuses.find((s) => s.order === current.order + 1);
+  const next = wf.statuses.find((s) => s.order === current.order + 1);
   return next ? next.id : statusId;
 };
 
@@ -20,11 +19,37 @@ const getOrder = (wf: Workflow, statusId: string): number =>
 const childrenOf = (items: Workitem[], parentId: string): Workitem[] =>
   items.filter((w) => w.parentId === parentId);
 
-const allInStatus = (items: Workitem[], statusId: string): boolean =>
-  items.length > 0 && items.every((w) => w.statusId === statusId);
+const allAtDelivery = (wf: Workflow, items: Workitem[]): boolean =>
+  items.length > 0 &&
+  items.every((w) => wf.statuses.find((s) => s.id === w.statusId)?.isDeliveryPoint === true);
 
-const anyInStatus = (items: Workitem[], statusId: string): boolean =>
-  items.some((w) => w.statusId === statusId);
+const anyInDownstream = (wf: Workflow, items: Workitem[]): boolean =>
+  items.some((w) => wf.statuses.find((s) => s.id === w.statusId)?.streamType === "DOWNSTREAM");
+
+// Structural key status IDs derived from workflow properties
+type WfKeys = {
+  commitmentId: string;
+  commitmentOrder: number;
+  firstDownstreamId: string;
+  firstDownstreamOrder: number;
+  deliveryOrder: number;
+};
+
+const getWfKeys = (wf: Workflow): WfKeys => {
+  const commitment = wf.statuses.find((s) => s.isCommitmentPoint);
+  const firstDownstream = wf.statuses.find((s) => s.streamType === "DOWNSTREAM");
+  const delivery = wf.statuses.find((s) => s.isDeliveryPoint);
+  if (!commitment || !firstDownstream || !delivery) {
+    throw new Error(`Workflow "${wf.id}" is missing commitment, firstDownstream, or delivery status`);
+  }
+  return {
+    commitmentId: commitment.id,
+    commitmentOrder: commitment.order,
+    firstDownstreamId: firstDownstream.id,
+    firstDownstreamOrder: firstDownstream.order,
+    deliveryOrder: delivery.order,
+  };
+};
 
 const nextId = (
   counters: SimState["idCounters"],
@@ -55,160 +80,122 @@ export const buildInitialState = (config: Config): SimState => ({
 
 export const tick = (state: SimState, config: Config): SimState => {
   const { workflows, advanceProbability, childrenPerParent } = config;
-  const wfL3 = workflows.L2;
-  const wfL2 = workflows.L1;
-  const wfL1 = workflows.L0;
+  const wfL2 = workflows.L2; // top level (Release)
+  const wfL1 = workflows.L1; // mid level (Feat)
+  const wfL0 = workflows.L0; // leaf level (Spec)
+
+  const keysL2 = getWfKeys(wfL2);
+  const keysL1 = getWfKeys(wfL1);
+  const keysL0 = getWfKeys(wfL0);
 
   let items = state.workitems.map((w) => ({ ...w }));
   let counters = { ...state.idCounters };
 
-  // --- PASO 1: Avanzar Specs (L0) autónomamente ---
+  // --- PASO 1: Advance L0 autonomously ---
   items = items.map((w) => {
     if (w.level !== "L0") return w;
+    if (getOrder(wfL0, w.statusId) >= keysL0.deliveryOrder) return w;
     if (!maybe(advanceProbability)) return w;
-    const next = getNextStatusId(wfL1, w.statusId);
-    return { ...w, statusId: next };
+    return { ...w, statusId: getNextStatusId(wfL0, w.statusId) };
   });
 
-  // --- PASO 2: Regla 6 — Feat (L1) → Developing si alguna Spec hija está en Implementing ---
-  const featDevelopOrder = getOrder(wfL2, "feat-developing");
+  // --- PASO 2: Push L1 to first downstream when any L0 child enters downstream ---
   items = items.map((w) => {
     if (w.level !== "L1") return w;
-    const myOrder = getOrder(wfL2, w.statusId);
-    if (myOrder >= featDevelopOrder) return w; // ya está en Developing o más adelante
-    const mySpecs = childrenOf(items, w.id);
-    if (anyInStatus(mySpecs, "spec-implementing")) {
-      return { ...w, statusId: "feat-developing" };
+    if (getOrder(wfL1, w.statusId) >= keysL1.firstDownstreamOrder) return w;
+    if (anyInDownstream(wfL0, childrenOf(items, w.id))) {
+      return { ...w, statusId: keysL1.firstDownstreamId };
     }
     return w;
   });
 
-  // --- PASO 3: Avanzar Feats (L1) con reglas ---
-  const newItems: Workitem[] = [];
+  // --- PASO 3: Advance L1 with rules ---
+  const newL0Children: Workitem[] = [];
 
   items = items.map((w) => {
     if (w.level !== "L1") return w;
 
-    const order = getOrder(wfL2, w.statusId);
-    const featReadyOrder = getOrder(wfL2, "feat-ready");
-    const featDevelopingOrder = getOrder(wfL2, "feat-developing");
+    const order = getOrder(wfL1, w.statusId);
 
-    // Regla 5: crear Specs al llegar a Ready-for-Develop
-    if (w.statusId === "feat-ready") {
-      const hasSpecs = items.some((x) => x.parentId === w.id && x.level === "L0");
-      if (!hasSpecs) {
+    // At delivery: stop
+    if (order >= keysL1.deliveryOrder) return w;
+
+    // At first downstream: blocked until all L0 children at delivery
+    if (order === keysL1.firstDownstreamOrder) {
+      const myL0 = childrenOf([...items, ...newL0Children], w.id);
+      if (allAtDelivery(wfL0, myL0)) {
+        return { ...w, statusId: getNextStatusId(wfL1, w.statusId) };
+      }
+      return w;
+    }
+
+    // At commitment: spawn L0 children if not yet created
+    if (w.statusId === keysL1.commitmentId) {
+      const hasChildren = items.some((x) => x.parentId === w.id && x.level === "L0");
+      if (!hasChildren) {
         for (let i = 0; i < childrenPerParent; i++) {
           const [id, newCounters] = nextId(counters, "L0");
           counters = newCounters;
-          newItems.push({ id, level: "L0", statusId: wfL1.statuses[0].id, parentId: w.id });
+          newL0Children.push({ id, level: "L0", statusId: wfL0.statuses[0].id, parentId: w.id });
         }
       }
     }
 
-    // Regla 7 + 8: en Developing, bloqueado hasta que TODAS las Specs estén Completed
-    if (w.statusId === "feat-developing") {
-      const mySpecs = childrenOf(
-        [...items, ...newItems],
-        w.id
-      );
-      if (allInStatus(mySpecs, "spec-completed")) {
-        // Regla 8: avanzar a Code-Review
-        return { ...w, statusId: "feat-code-review" };
+    // Autonomous advance (upstream or downstream after first downstream)
+    if (!maybe(advanceProbability)) return w;
+    return { ...w, statusId: getNextStatusId(wfL1, w.statusId) };
+  });
+
+  items = [...items, ...newL0Children];
+
+  // --- PASO 4: Push L2 to first downstream when any L1 child enters downstream ---
+  items = items.map((w) => {
+    if (w.level !== "L2") return w;
+    if (getOrder(wfL2, w.statusId) >= keysL2.firstDownstreamOrder) return w;
+    if (anyInDownstream(wfL1, childrenOf(items, w.id))) {
+      return { ...w, statusId: keysL2.firstDownstreamId };
+    }
+    return w;
+  });
+
+  // --- PASO 5: Advance L2 with rules ---
+  const newL1Children: Workitem[] = [];
+
+  items = items.map((w) => {
+    if (w.level !== "L2") return w;
+
+    const order = getOrder(wfL2, w.statusId);
+
+    // At delivery: stop
+    if (order >= keysL2.deliveryOrder) return w;
+
+    // At first downstream: blocked until all L1 children at delivery
+    if (order === keysL2.firstDownstreamOrder) {
+      const myL1 = childrenOf([...items, ...newL1Children], w.id);
+      if (allAtDelivery(wfL1, myL1)) {
+        return { ...w, statusId: getNextStatusId(wfL2, w.statusId) };
       }
-      // Bloqueado
       return w;
     }
 
-    // Upstream (antes de Ready-for-Develop): avance autónomo 50%
-    if (order < featReadyOrder) {
-      if (!maybe(advanceProbability)) return w;
-      return { ...w, statusId: getNextStatusId(wfL2, w.statusId) };
-    }
-
-    // En Ready-for-Develop: avance autónomo 50% hacia Developing
-    if (order === featReadyOrder) {
-      if (!maybe(advanceProbability)) return w;
-      return { ...w, statusId: getNextStatusId(wfL2, w.statusId) };
-    }
-
-    // Downstream después de Developing (Code-Review en adelante): autónomo 50%
-    if (order > featDevelopingOrder) {
-      if (!maybe(advanceProbability)) return w;
-      return { ...w, statusId: getNextStatusId(wfL2, w.statusId) };
-    }
-
-    return w;
-  });
-
-  items = [...items, ...newItems];
-
-  // --- PASO 4: Reglas de Release (L2) basadas en estado de Feats ---
-  items = items.map((w) => {
-    if (w.level !== "L2") return w;
-
-    const myFeats = childrenOf(items, w.id);
-
-    // Regla 2: Ready → Develop cuando primera Feat está en Developing
-    if (w.statusId === "release-ready" && anyInStatus(myFeats, "feat-developing")) {
-      return { ...w, statusId: "release-develop" };
-    }
-
-    // Regla 3: Develop → To-Validate cuando TODAS las Feats están en Done
-    if (w.statusId === "release-develop" && allInStatus(myFeats, "feat-done")) {
-      return { ...w, statusId: "release-to-validate" };
-    }
-
-    return w;
-  });
-
-  // --- PASO 5: Avanzar Releases (L2) con reglas ---
-  const releaseReadyOrder    = getOrder(wfL3, "release-ready");
-  const releaseReleasedOrder = getOrder(wfL3, "release-released");
-  const releaseToValidOrder  = getOrder(wfL3, "release-to-validate");
-
-  const newReleaseChildren: Workitem[] = [];
-
-  items = items.map((w) => {
-    if (w.level !== "L2") return w;
-
-    const order = getOrder(wfL3, w.statusId);
-
-    // Regla 1: crear Feats al llegar a Ready
-    if (w.statusId === "release-ready") {
-      const hasFeats = items.some((x) => x.parentId === w.id && x.level === "L1");
-      if (!hasFeats) {
+    // At commitment: spawn L1 children if not yet created
+    if (w.statusId === keysL2.commitmentId) {
+      const hasChildren = items.some((x) => x.parentId === w.id && x.level === "L1");
+      if (!hasChildren) {
         for (let i = 0; i < childrenPerParent; i++) {
           const [id, newCounters] = nextId(counters, "L1");
           counters = newCounters;
-          newReleaseChildren.push({ id, level: "L1", statusId: wfL2.statuses[0].id, parentId: w.id });
+          newL1Children.push({ id, level: "L1", statusId: wfL1.statuses[0].id, parentId: w.id });
         }
       }
-      // Bloqueado — espera Regla 2 (ya aplicada en Paso 4)
-      return w;
     }
 
-    // Bloqueado en Develop (espera Regla 3, ya aplicada en Paso 4)
-    if (w.statusId === "release-develop") return w;
-
-    // Estado final Released: no avanza
-    if (order >= releaseReleasedOrder) return w;
-
-    // Upstream (antes de Ready): avance autónomo 50%
-    if (order < releaseReadyOrder) {
-      if (!maybe(advanceProbability)) return w;
-      return { ...w, statusId: getNextStatusId(wfL3, w.statusId) };
-    }
-
-    // Downstream desde To-Validate hasta Deploy (antes de Released): autónomo 50%
-    if (order >= releaseToValidOrder && order < releaseReleasedOrder) {
-      if (!maybe(advanceProbability)) return w;
-      return { ...w, statusId: getNextStatusId(wfL3, w.statusId) };
-    }
-
-    return w;
+    // Autonomous advance (upstream or downstream after first downstream)
+    if (!maybe(advanceProbability)) return w;
+    return { ...w, statusId: getNextStatusId(wfL2, w.statusId) };
   });
 
-  items = [...items, ...newReleaseChildren];
+  items = [...items, ...newL1Children];
 
   return {
     tick: state.tick + 1,
