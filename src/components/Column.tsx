@@ -1,0 +1,50 @@
+import type { HighlightMode, Status, Workitem } from "../domain/types";
+import { Card } from "./Card";
+
+type Props = {
+  status: Status;
+  items: Workitem[];
+  highlightMode: HighlightMode;
+};
+
+const getBg = (status: Status, mode: HighlightMode): string => {
+  if (mode === "stream") {
+    return status.streamType === "UPSTREAM" ? "#1e3a8a" : "#065f46";
+  }
+  if (mode === "category") {
+    if (status.category === "TODO") return "#374151";
+    if (status.category === "IN_PROGRESS") return "#1d4ed8";
+    return "#166534";
+  }
+  if (mode === "commitment" && status.isCommitmentPoint) return "#92400e";
+  if (mode === "delivery" && status.isDeliveryPoint) return "#14532d";
+  return "#1e293b";
+};
+
+const getBorder = (status: Status, mode: HighlightMode): string => {
+  if (mode === "delivery" && status.isDeliveryPoint) return "1px solid #4ade80";
+  return "1px solid #334155";
+};
+
+export function Column({ status, items, highlightMode }: Props) {
+  return (
+    <div
+      style={{
+        width: 90,
+        minHeight: 60,
+        background: getBg(status, highlightMode),
+        border: getBorder(status, highlightMode),
+        borderRadius: 3,
+        padding: 4,
+        flexShrink: 0,
+      }}
+    >
+      <div style={{ fontSize: 9, color: "white", fontWeight: 600, marginBottom: 2 }}>
+        {status.name}
+      </div>
+      {items.map((item) => (
+        <Card key={item.id} item={item} />
+      ))}
+    </div>
+  );
+}

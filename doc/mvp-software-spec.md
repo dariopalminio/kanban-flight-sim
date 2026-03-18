@@ -22,9 +22,9 @@
 
 El **Kanban 3 Niveles Simulator (Kanban3NSim)** es una aplicación frontend que simula visualmente flujos de trabajo jerárquicos en tres niveles:
 
-* **L3: Release** → nivel estratégico superior
-* **L2: Feat** → nivel táctico medio
-* **L1: Spec** → nivel operativo bajo o inferior
+* **L2: Release** → nivel estratégico superior
+* **L1: Feat** → nivel táctico medio
+* **L0: Spec** → nivel operativo bajo o inferior
 
 ### ¿Qué modela?
 
@@ -62,7 +62,7 @@ Si bien el sistema tiene una configuración inicial por defecto, es altamente co
 
 ### 3.1 Niveles de Tableros y de Workitems
 
-* En una simulación y configuración existe solo tres niveles: nivel 3 (L3), nivel 2 (L2) y nivel 1 (L1).
+* En una simulación y configuración existe solo tres niveles: nivel 2 (L2), nivel 1 (L1) y nivel 0 (L0).
 * Cada nivel tiene un tablero del workflow asociado al nivel, con su respectiva configuración de estados y reglas.
 * Cada nivel tiene un tipo de workitem asociado, con su respectiva descripción y nivel de abstracción.
 
@@ -70,9 +70,9 @@ La configuración inicial y por defecto es la siguiente:
 
 | Nivel | Nombre    | Descripción                  | Alcance del Nivel |
 | ----- | --------- | ---------------------------- | ----------------- |
-| L3    | Release   | Entrega completa del sistema | Estratégico       |
-| L2    | Feat      | Funcionalidad del sistema    | Táctico           |
-| L1    | Spec      | Unidad implementable         | Operativo         |
+| L2    | Release   | Entrega completa del sistema | Estratégico       |
+| L1    | Feat      | Funcionalidad del sistema    | Táctico           |
+| L0    | Spec      | Unidad implementable         | Operativo         |
 
 ---
 
@@ -80,9 +80,9 @@ La configuración inicial y por defecto es la siguiente:
 
 #### 3.2.1 Workitem Type (workitemType)
 
-* Los workitems son de tres tipos: L1, L2, y L3.
-* En el caso del ejemplo inicial los Workitems son: L3=Release, L2=Feat y L1=Spec.
-* Cada workitemType tiene un color asociado, cada una con su color representativo: L3=azul, L2=naranja y L1=verde respectivamente.
+* Los workitems son de tres tipos: L0, L1, y L2.
+* En el caso del ejemplo inicial los Workitems son: L2=Release, L1=Feat y L0=Spec.
+* Cada workitemType tiene un color asociado, cada una con su color representativo: L2=azul, L1=naranja y L0=verde respectivamente.
 
 #### 3.2.2 Workitem (workitem)
 
@@ -91,43 +91,43 @@ La configuración inicial y por defecto es la siguiente:
    * Workitem type=Feat → FEAT-1, FEAT-2, FEAT-3, ...
    * Workitem type=Spec → SPEC-1, SPEC-2, SPEC-3, ...
 * Cada workitem tiene un estado (status) que representa su posición actual en el workflow.
-* Cada workitem tiene una referencia a su padre (parentId) y a sus hijos (children) para modelar la jerarquía. Los workitems del nivel 3 no tienen padre, los del nivel 2 tienen un padre del nivel 3 e hijos del nivel 1, y los del nivel 1 tienen un padre del nivel 2 y no tienen hijos.
-* Cada workitem tiene un tipo (workitemType) que indica si es L3, L2 o L1 (en el ejemplo de configuración inicial: Release, Feat o Spec).
+* Cada workitem tiene una referencia a su padre (parentId) y a sus hijos (children) para modelar la jerarquía. Los workitems del nivel 2 no tienen padre, los del nivel 1 tienen un padre del nivel 2 e hijos del nivel 0, y los del nivel 0 tienen un padre del nivel 1 y no tienen hijos.
+* Cada workitem tiene un tipo (workitemType) que indica si es L2, L1 o L0 (en el ejemplo de configuración inicial: Release, Feat o Spec).
 
 ---
 
 ## 🔄 4. Workflows
 
-### 4.1 Workflow de nivel 3 (Level-3-Workflow) para Releases
+### 4.1 Workflow de nivel 2 (Level-2-Workflow) para Releases
 
 Workflow principal para Releases:
 ```txt
-Initial → Defining → Plan → Ready → Develop → To-Integrate → Integration-UAT → Ready-for-Prod → Deploy → Released
+Initial → Defining → Plan → Ready → Develop → To-Validate → Validation-UAT → Ready-for-Prod → Deploy → Released
 ```
 
 Consideraciones sobre este workflow:
 * Upstream: Initial → Defining → Plan → Ready
 * Punto de compromiso (commitment-status): Ready
-* Downstream: Develop → To-Integrate → Integration-UAT → Ready-for-Prod → Deploy → Released
+* Downstream: Develop → To-Validate → Validation-UAT → Ready-for-Prod → Deploy → Released
 * Punto de entrega (delivery-status): Released
 
 ---
 
-### 4.2 Workflow de nivel 2 (Level-2-Workflow) para Feats
+### 4.2 Workflow de nivel 1 (Level-1-Workflow) para Feats
 
 ```txt
-Pending → Refining → Ready-for-Develop → Developing → Code-Review → QA-Validation → Acceptance → Ready-to-Integrate → In-Production
+Pending → Refining → Ready-for-Develop → Developing → Code-Review → QA-Validation → Acceptance → Done
 ```
 
 Consideraciones sobre este workflow:
 * Upstream: Pending → Refining → Ready-for-Develop
 * Punto de compromiso (commitment-status): Ready-for-Develop
-* Downstream: Developing → Code-Review → QA-Validation → Acceptance → Ready-to-Integrate → In-Production
-* Punto de entrega (delivery-status): In-Production
+* Downstream: Developing → Code-Review → QA-Validation → Acceptance → Done
+* Punto de entrega (delivery-status): Done
 
 ---
 
-### 4.3 Workflow de nivel 1 (Level-1-Workflow) para Specs
+### 4.3 Workflow de nivel 0 (Level-0-Workflow) para Specs
 
 ```txt
 Todo → Specifying → Designing → Ready-for-Implement → Implementing → Validation → Completed
@@ -153,13 +153,10 @@ Consideraciones sobre este workflow:
 
    * El Release padre pasa a **Develop**
 
-3. Cuando TODAS las Feats están en **Ready-to-Integrate**:
+3. Cuando TODAS las Feats están en **Done**:
 
-   * El Release pasa a **To-Integrate**
-
-4. Cuando TODAS las Feats están en **In-Production**:
-
-   * El Release pasa a **Released**
+   * El Release pasa a **To-Validate**
+   * A partir de aquí el Release continúa su flujo downstream de forma autónoma hasta **Released**
 
 ---
 
@@ -207,12 +204,12 @@ Consideraciones sobre este workflow:
 12. Dependencias:
 
 * Workitems en estado de commitment-status (por ejemplo **Ready**, **Ready-for-Develop**, **Ready-for-Implement**) gatillan la creación de sus hijos o su avance depende del avance de sus hijos.
-* Workitems en estado de delivery-status (por ejemplo **Released**, **In-Production**, **Completed**) son estados finales (done).
+* Workitems en estado de delivery-status (por ejemplo **Released**, **Done**, **Completed**) son estados finales (done).
 
 13. Autonomía:
 
 * Workitems en estado posterior al commitment-status avanzan por sí mismos si cumplen las reglas jerárquicas (sus hijos ya deben estar done).
-* Los workitems del nivel 1 (Specs) son completamente autónomos, no dependen de otros workitems para avanzar.
+* Los workitems del nivel 0 (Specs) son completamente autónomos, no dependen de otros workitems para avanzar.
 
 ---
 
@@ -233,9 +230,9 @@ En este modelo y en su configuración por defecto, los puntos de compromiso son:
 
 | Nivel | Nombre  | commitment-status    | Significado                                    |
 | ----- | ------- | -------------------- | ---------------------------------------------- |
-| L3    | Release | Ready                | "Nos comprometemos a desarrollar este Release" |
-| L2    | Feat    | Ready-for-Develop    | "Nos comprometemos a implementar esta Feat"    |
-| L1    | Spec    | Ready-for-Implement  | "Nos comprometemos a codificar esta Spec"      |
+| L2    | Release | Ready                | "Nos comprometemos a desarrollar este Release" |
+| L1    | Feat    | Ready-for-Develop    | "Nos comprometemos a implementar esta Feat"    |
+| L0    | Spec    | Ready-for-Implement  | "Nos comprometemos a codificar esta Spec"      |
 
 ---
 
@@ -276,11 +273,11 @@ Los tres tableros se presentan **verticalmente apilados** en la pantalla, reflej
 
 ```
 ┌──────────────────────────────────────┐
-│  🟦 Level-3 (Release) Board          │
+│  🟦 Level-2 (Release) Board          │
 ├──────────────────────────────────────┤
-│  🟨 Level-2 (Feat) Board             │
+│  🟨 Level-1 (Feat) Board             │
 ├──────────────────────────────────────┤
-│  🟩 Level-1 (Spec) Board             │
+│  🟩 Level-0 (Spec) Board             │
 └──────────────────────────────────────┘
 ```
 
@@ -301,7 +298,7 @@ Cada estado (status) tiene los siguientes atributos:
 Las tarjetas son la forma en que se renderiza un workitem en la UI. Cada tarjeta muestra:
 
 * El ID del workitem (ej: RELE-1, FEAT-2, SPEC-3)
-* El color del tipo de workitem (L3=azul, L2=naranja, L1=verde)
+* El color del tipo de workitem (L2=azul, L1=naranja, L0=verde)
 
 ---
 
@@ -360,7 +357,7 @@ El sistema debe respetar las reglas jerárquicas definidas entre niveles.
 **Criterios de aceptación:**
 - Cuando una Feat está en Developing y alguna de sus Specs no está en Completed, la Feat no puede avanzar más allá de Developing.
 - Cuando la primera Feat de un Release pasa a Developing, el Release pasa automáticamente a Develop.
-- Cuando todas las Feats de un Release están en In-Production, el Release pasa automáticamente a Released.
+- Cuando todas las Feats de un Release están en Done, el Release pasa automáticamente a To-Validate y luego continúa su flujo autónomamente hasta Released.
 
 ---
 
@@ -505,7 +502,7 @@ src/
 | Término                  | Definición |
 | ------------------------ | ---------- |
 | **Tick**                 | Unidad mínima de tiempo en la simulación. En cada tick, los workitems elegibles pueden avanzar un estado. |
-| **Workitem**             | Unidad de trabajo dentro de la simulación. Puede ser un Release (L3), Feat (L2) o Spec (L1). |
+| **Workitem**             | Unidad de trabajo dentro de la simulación. Puede ser un Release (L2), Feat (L1) o Spec (L0). |
 | **Workflow**             | Secuencia ordenada de estados por la que pasan los workitems de un nivel. |
 | **Status**               | Estado individual dentro de un workflow (ej: Developing, Completed). |
 | **statusCategory**       | Categoría de un estado: TODO (pendiente), IN-PROGRESS (en curso) o DONE (terminado). |
@@ -513,7 +510,7 @@ src/
 | **Downstream**           | Zona del workflow a partir del commitment-status. Representa ejecución activa. |
 | **Commitment Point**     | Estado en el que el equipo se compromete formalmente a ejecutar un workitem. Separa upstream de downstream. |
 | **Delivery Point**       | Estado final del workflow de un workitem. Indica que el trabajo está completamente entregado. |
-| **Jerarquía padre-hijo** | Relación entre workitems de distintos niveles: un Release (L3) contiene Feats (L2), que contienen Specs (L1). |
+| **Jerarquía padre-hijo** | Relación entre workitems de distintos niveles: un Release (L2) contiene Feats (L1), que contienen Specs (L0). |
 | **Autoplay**             | Modo de simulación continua donde los ticks avanzan automáticamente a intervalos regulares. |
 | **Step**                 | Modo de simulación manual donde el usuario avanza la simulación un tick a la vez. |
 

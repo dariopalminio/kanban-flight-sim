@@ -1,0 +1,53 @@
+{
+  "initialReleaseCount": 1,
+  "advanceProbability": 0.5,
+  "childrenPerParent": 3,
+  "workflows": {
+    "L2": {
+      "id": "wf-release",
+      "name": "Release",
+      "level": "L2",
+      "statuses": [
+        { "id": "release-initial",         "name": "Initial",         "order": 1,  "streamType": "UPSTREAM",   "isCommitmentPoint": false, "isDeliveryPoint": false },
+        { "id": "release-defining",        "name": "Defining",        "order": 2,  "streamType": "UPSTREAM",   "isCommitmentPoint": false, "isDeliveryPoint": false },
+        { "id": "release-plan",            "name": "Plan",            "order": 3,  "streamType": "UPSTREAM",   "isCommitmentPoint": false, "isDeliveryPoint": false },
+        { "id": "release-ready",           "name": "Ready",           "order": 4,  "streamType": "UPSTREAM",   "isCommitmentPoint": true,  "isDeliveryPoint": false },
+        { "id": "release-develop",         "name": "Develop",         "order": 5,  "streamType": "DOWNSTREAM", "isCommitmentPoint": false, "isDeliveryPoint": false },
+        { "id": "release-to-validate",     "name": "To-Validate",     "order": 6,  "streamType": "DOWNSTREAM", "isCommitmentPoint": false, "isDeliveryPoint": false },
+        { "id": "release-validation-uat",  "name": "Validation-UAT",  "order": 7,  "streamType": "DOWNSTREAM", "isCommitmentPoint": false, "isDeliveryPoint": false },
+        { "id": "release-ready-for-prod",  "name": "Ready-for-Prod",  "order": 8,  "streamType": "DOWNSTREAM", "isCommitmentPoint": false, "isDeliveryPoint": false },
+        { "id": "release-deploy",          "name": "Deploy",          "order": 9,  "streamType": "DOWNSTREAM", "isCommitmentPoint": false, "isDeliveryPoint": false },
+        { "id": "release-released",        "name": "Released",        "order": 10, "streamType": "DOWNSTREAM", "isCommitmentPoint": false, "isDeliveryPoint": true  }
+      ]
+    },
+    "L1": {
+      "id": "wf-feat",
+      "name": "Feat",
+      "level": "L1",
+      "statuses": [
+        { "id": "feat-pending",     "name": "Pending",           "order": 1, "streamType": "UPSTREAM",   "isCommitmentPoint": false, "isDeliveryPoint": false },
+        { "id": "feat-refining",    "name": "Refining",          "order": 2, "streamType": "UPSTREAM",   "isCommitmentPoint": false, "isDeliveryPoint": false },
+        { "id": "feat-ready",       "name": "Ready-for-Develop", "order": 3, "streamType": "UPSTREAM",   "isCommitmentPoint": true,  "isDeliveryPoint": false },
+        { "id": "feat-developing",  "name": "Developing",        "order": 4, "streamType": "DOWNSTREAM", "isCommitmentPoint": false, "isDeliveryPoint": false },
+        { "id": "feat-code-review", "name": "Code-Review",       "order": 5, "streamType": "DOWNSTREAM", "isCommitmentPoint": false, "isDeliveryPoint": false },
+        { "id": "feat-qa",          "name": "QA-Validation",     "order": 6, "streamType": "DOWNSTREAM", "isCommitmentPoint": false, "isDeliveryPoint": false },
+        { "id": "feat-acceptance",  "name": "Acceptance",        "order": 7, "streamType": "DOWNSTREAM", "isCommitmentPoint": false, "isDeliveryPoint": false },
+        { "id": "feat-done",        "name": "Done",              "order": 8, "streamType": "DOWNSTREAM", "isCommitmentPoint": false, "isDeliveryPoint": true  }
+      ]
+    },
+    "L0": {
+      "id": "wf-spec",
+      "name": "Spec",
+      "level": "L0",
+      "statuses": [
+        { "id": "spec-todo",         "name": "Todo",                "order": 1, "streamType": "UPSTREAM",   "isCommitmentPoint": false, "isDeliveryPoint": false },
+        { "id": "spec-specifying",   "name": "Specifying",          "order": 2, "streamType": "UPSTREAM",   "isCommitmentPoint": false, "isDeliveryPoint": false },
+        { "id": "spec-designing",    "name": "Designing",           "order": 3, "streamType": "UPSTREAM",   "isCommitmentPoint": false, "isDeliveryPoint": false },
+        { "id": "spec-ready-impl",   "name": "Ready-for-Implement", "order": 4, "streamType": "UPSTREAM",   "isCommitmentPoint": true,  "isDeliveryPoint": false },
+        { "id": "spec-implementing", "name": "Implementing",        "order": 5, "streamType": "DOWNSTREAM", "isCommitmentPoint": false, "isDeliveryPoint": false },
+        { "id": "spec-validation",   "name": "Validation",          "order": 6, "streamType": "DOWNSTREAM", "isCommitmentPoint": false, "isDeliveryPoint": false },
+        { "id": "spec-completed",    "name": "Completed",           "order": 7, "streamType": "DOWNSTREAM", "isCommitmentPoint": false, "isDeliveryPoint": true  }
+      ]
+    }
+  }
+}
