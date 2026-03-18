@@ -30,13 +30,13 @@ export function Column({ status, items, highlightMode }: Props) {
   return (
     <div
       style={{
-        width: 90,
+        flex: 1,
+        minWidth: 60,
         minHeight: 60,
         background: getBg(status, highlightMode),
         border: getBorder(status, highlightMode),
         borderRadius: 3,
         padding: 4,
-        flexShrink: 0,
       }}
     >
       <div style={{ fontSize: 9, color: "white", fontWeight: 600, marginBottom: 2 }}>

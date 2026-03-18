@@ -17,6 +17,7 @@ export type Workflow = {
   id: string;
   name: string;
   level: WorkitemLevel;
+  workitemName: string;
   statuses: Status[];
 };
 

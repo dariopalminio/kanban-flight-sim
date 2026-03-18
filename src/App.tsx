@@ -69,6 +69,9 @@ export default function App() {
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
         {/* Simulation selector */}
+                <span style={{ color: "#94a3b8", fontSize: 11, fontWeight: 600 }}>
+          Simulations:
+        </span>
         <select
           value={selectedSim}
           onChange={(e) => handleSimChange(e.target.value)}

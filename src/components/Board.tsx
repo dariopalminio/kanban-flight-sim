@@ -30,7 +30,7 @@ export function Board({ workflow, items, highlightMode }: Props) {
       >
         Kanban Board: {workflow.level} — {workflow.name}
       </div>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 4, width: "100%" }}>
         {workflow.statuses.map((status) => (
           <Column
             key={status.id}

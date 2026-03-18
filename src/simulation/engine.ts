@@ -51,28 +51,34 @@ const getWfKeys = (wf: Workflow): WfKeys => {
   };
 };
 
+const idPrefix = (workitemName: string): string =>
+  workitemName.slice(0, 4).toUpperCase();
+
 const nextId = (
   counters: SimState["idCounters"],
-  level: "L0" | "L1" | "L2"
+  level: "L0" | "L1" | "L2",
+  workitemName: string
 ): [string, SimState["idCounters"]] => {
-  const prefix = level === "L2" ? "RELE" : level === "L1" ? "FEAT" : "SPEC";
   const n = counters[level] + 1;
-  return [`${prefix}-${n}`, { ...counters, [level]: n }];
+  return [`${idPrefix(workitemName)}-${n}`, { ...counters, [level]: n }];
 };
 
 // =====================
 // BUILD INITIAL STATE
 // =====================
 
-export const buildInitialState = (config: Config): SimState => ({
-  tick: 0,
-  idCounters: { L0: 0, L1: 0, L2: config.initialReleaseCount },
-  workitems: Array.from({ length: config.initialReleaseCount }, (_, i) => ({
-    id: `RELE-${i + 1}`,
-    level: "L2" as const,
-    statusId: config.workflows.L2.statuses[0].id,
-  })),
-});
+export const buildInitialState = (config: Config): SimState => {
+  const prefix = idPrefix(config.workflows.L2.workitemName);
+  return {
+    tick: 0,
+    idCounters: { L0: 0, L1: 0, L2: config.initialReleaseCount },
+    workitems: Array.from({ length: config.initialReleaseCount }, (_, i) => ({
+      id: `${prefix}-${i + 1}`,
+      level: "L2" as const,
+      statusId: config.workflows.L2.statuses[0].id,
+    })),
+  };
+};
 
 // =====================
 // TICK — pure function
@@ -134,7 +140,7 @@ export const tick = (state: SimState, config: Config): SimState => {
       const hasChildren = items.some((x) => x.parentId === w.id && x.level === "L0");
       if (!hasChildren) {
         for (let i = 0; i < childrenPerParent; i++) {
-          const [id, newCounters] = nextId(counters, "L0");
+          const [id, newCounters] = nextId(counters, "L0", wfL0.workitemName);
           counters = newCounters;
           newL0Children.push({ id, level: "L0", statusId: wfL0.statuses[0].id, parentId: w.id });
         }
@@ -183,7 +189,7 @@ export const tick = (state: SimState, config: Config): SimState => {
       const hasChildren = items.some((x) => x.parentId === w.id && x.level === "L1");
       if (!hasChildren) {
         for (let i = 0; i < childrenPerParent; i++) {
-          const [id, newCounters] = nextId(counters, "L1");
+          const [id, newCounters] = nextId(counters, "L1", wfL1.workitemName);
           counters = newCounters;
           newL1Children.push({ id, level: "L1", statusId: wfL1.statuses[0].id, parentId: w.id });
         }

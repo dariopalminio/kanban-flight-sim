@@ -25,6 +25,7 @@ const buildWorkflow = (wf: RawSimulation["workflows"]["L2"]) => ({
   id: wf.id,
   name: wf.name,
   level: wf.level as WorkitemLevel,
+  workitemName: wf.workitemName,
   statuses: assignCategory(wf.statuses as RawStatus[]),
 });
 
