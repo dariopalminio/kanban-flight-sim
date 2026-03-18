@@ -1,16 +1,50 @@
 # 🧠 Kanban 3 Niveles Simulator — Especificación de Requerimientos de Software
 
+## Tabla de Contenidos
+
+1. [Descripción General](#1-descripción-general)
+2. [Objetivos](#2-objetivos)
+3. [Modelo de Dominio](#3-modelo-de-dominio)
+4. [Workflows](#4-workflows)
+5. [Reglas de Negocio](#5-reglas-de-negocio)
+6. [Modelo de Simulación](#6-modelo-de-simulación)
+7. [Interfaz de Usuario](#7-interfaz-de-usuario)
+8. [Requerimientos Funcionales](#8-requerimientos-funcionales)
+9. [Requerimientos No Funcionales](#9-requerimientos-no-funcionales)
+10. [Posibles Extensiones](#10-posibles-extensiones)
+11. [Consideraciones Técnicas](#11-consideraciones-técnicas)
+12. [Definición de Done](#12-definición-de-done)
+13. [Glosario](#13-glosario)
+
+---
+
 ## 📌 1. Descripción General
 
-El **Kanban 3 Niveles Simulator (Kanban3NSim)** es una aplicación frontend que permite simular visualmente flujos de trabajo jerárquicos en tres niveles:
+El **Kanban 3 Niveles Simulator (Kanban3NSim)** es una aplicación frontend que simula visualmente flujos de trabajo jerárquicos en tres niveles:
 
 * **L3: Release** → nivel estratégico superior
 * **L2: Feat** → nivel táctico medio
 * **L1: Spec** → nivel operativo bajo o inferior
 
-El sistema modela los flujos de trabajo (workflows) compuestos por estados (status) de los tres niveles (levels) y sus dependencias (dependencias entre workflows). Modela jerarquías padre-hijo entre estos niveles y permite observar cómo evolucionan los elementos de trabajo (workitems) por los estados (status) de diferentes flujos de trabajo (workflows) a lo largo del tiempo mediante una simulación discreta (por pasos). Toda la simulación se visualiza en una vista de tres tableros Kanban paralelos, uno por cada nivel, con sus respectivas columnas de estados (status) y tarjetas que representan elementos de trabajo (workitems). La simulación se ejecuta paso a paso (manual por un botón) o de forma continua (botón de autoplay), mostrando cómo los workitems avanzan por los estados de cada workflow (avanzando por columna), respetando las reglas jerárquicas y de consistencia definidas. El sistema es una herramienta educativa para entender la dinámica de sistemas ágiles complejos con múltiples niveles de trabajo y dependencias.
+### ¿Qué modela?
 
-La interface de simulación permite visualizar conceptos kanban como upstream vs downstream, puntos de compromiso (commitment points) y puntos de entrega (delivery points) en un contexto multi-nivel, mostrando cómo las decisiones y progresos en niveles inferiores afectan a los niveles superiores y viceversa. Si bien el modelo tendrà una configuración inicial por defecto, es altamente configurable, permitiendo definir diferentes workflows, nombres de cada nivel, reglas de negocio y parámetros de simulación para explorar distintos escenarios y dinámicas de trabajo.
+* **Workflows multinivel** compuestos por estados (status) con sus dependencias
+* **Jerarquías padre-hijo** entre workitems de distintos niveles
+* **Propagación de reglas** entre niveles: cómo el avance en niveles inferiores impacta a los superiores y viceversa
+
+### ¿Cómo funciona?
+
+La simulación avanza mediante pasos discretos (ticks), de forma manual (botón Step) o continua (Autoplay). En cada tick, los workitems pueden avanzar al siguiente estado de su workflow respetando las reglas jerárquicas y de consistencia definidas.
+
+La visualización principal es un **panel de tres tableros Kanban apilados verticalmente**, uno por nivel, con columnas que representan estados y tarjetas que representan workitems.
+
+### Propósito
+
+Es una herramienta educativa y de análisis para entender la dinámica de sistemas ágiles complejos con múltiples niveles de trabajo, visualizando conceptos Kanban como upstream/downstream, puntos de compromiso y puntos de entrega en un contexto multi-nivel.
+
+### Configurabilidad
+
+Si bien el sistema tiene una configuración inicial por defecto, es altamente configurable: permite definir diferentes workflows, nombres de niveles, reglas de negocio y parámetros de simulación para explorar distintos escenarios.
 
 ---
 
@@ -28,14 +62,14 @@ La interface de simulación permite visualizar conceptos kanban como upstream vs
 
 ### 3.1 Niveles de Tableros y de Workitems
 
-* En una simulación y configuración existe solo tres niveles: nivel 3 (L3), nivel 2 (L2) y nivel 1 (L1). 
+* En una simulación y configuración existe solo tres niveles: nivel 3 (L3), nivel 2 (L2) y nivel 1 (L1).
 * Cada nivel tiene un tablero del workflow asociado al nivel, con su respectiva configuración de estados y reglas.
 * Cada nivel tiene un tipo de workitem asociado, con su respectiva descripción y nivel de abstracción.
 
-Por ejemplo en configuración inicial y por defecto es la siguiente:
+La configuración inicial y por defecto es la siguiente:
 
 | Nivel | Nombre    | Descripción                  | Alcance del Nivel |
-| ------| --------- | ---------------------------- | ----------------- |
+| ----- | --------- | ---------------------------- | ----------------- |
 | L3    | Release   | Entrega completa del sistema | Estratégico       |
 | L2    | Feat      | Funcionalidad del sistema    | Táctico           |
 | L1    | Spec      | Unidad implementable         | Operativo         |
@@ -44,21 +78,22 @@ Por ejemplo en configuración inicial y por defecto es la siguiente:
 
 ### 3.2 Workitems
 
-#### 3.2.1 Workitem Type  (workitemType)
+#### 3.2.1 Workitem Type (workitemType)
 
 * Los workitems son de tres tipos: L1, L2, y L3.
 * En el caso del ejemplo inicial los Workitems son: L3=Release, L2=Feat y L1=Spec.
 * Cada workitemType tiene un color asociado, cada una con su color representativo: L3=azul, L2=naranja y L1=verde respectivamente.
 
-#### 3.2.2 Workitem  (workitem)
+#### 3.2.2 Workitem (workitem)
 
-* Cada workitem tiene su ID. Los IDs de workitems siguen una nomenclatura [Primeras tres letras del nombre del tipo de workitem]-[ID numérico incremental por tipo], por ejemplo:
+* Cada workitem tiene su ID. Los IDs de workitems siguen una nomenclatura `[Primeras tres letras del nombre del tipo de workitem]-[ID numérico incremental por tipo]`, por ejemplo:
    * Workitem type=Release → RELE-1, RELE-2, RELE-3, ...
    * Workitem type=Feat → FEAT-1, FEAT-2, FEAT-3, ...
    * Workitem type=Spec → SPEC-1, SPEC-2, SPEC-3, ...
 * Cada workitem tiene un estado (status) que representa su posición actual en el workflow.
-* Cada workitem tiene una referencia a su padre (parentId) y a sus hijos (childrens) para modelar la jerarquía. Los workitems del nivel 3 no tienen padre, los del nivel 2 tienen un padre del nivel 3 e hijos del nivel 1, y los del nivel 1 tienen un padre del nivel 2 y no tienen hijos.
+* Cada workitem tiene una referencia a su padre (parentId) y a sus hijos (children) para modelar la jerarquía. Los workitems del nivel 3 no tienen padre, los del nivel 2 tienen un padre del nivel 3 e hijos del nivel 1, y los del nivel 1 tienen un padre del nivel 2 y no tienen hijos.
 * Cada workitem tiene un tipo (workitemType) que indica si es L3, L2 o L1 (en el ejemplo de configuración inicial: Release, Feat o Spec).
+
 ---
 
 ## 🔄 4. Workflows
@@ -75,6 +110,7 @@ Consideraciones sobre este workflow:
 * Punto de compromiso (commitment-status): Ready
 * Downstream: Develop → To-Integrate → Integration-UAT → Ready-for-Prod → Deploy → Released
 * Punto de entrega (delivery-status): Released
+
 ---
 
 ### 4.2 Workflow de nivel 2 (Level-2-Workflow) para Feats
@@ -98,7 +134,7 @@ Todo → Specifying → Designing → Ready-for-Implement → Implementing → V
 ```
 
 Consideraciones sobre este workflow:
-* Upstream: Todo → Specifying → Ready-for-Implement
+* Upstream: Todo → Specifying → Designing → Ready-for-Implement
 * Punto de compromiso (commitment-status): Ready-for-Implement
 * Downstream: Implementing → Validation → Completed
 * Punto de entrega (delivery-status): Completed
@@ -111,7 +147,7 @@ Consideraciones sobre este workflow:
 
 1. Cuando un Release pasa a **Ready**:
 
-   * Se crean todas sus Feats hijas en estado **Pending**
+   * Se crean todas sus Feats hijas en estado **Pending** (por defecto: 3 Feats)
 
 2. Cuando la PRIMERA Feat pasa a **Developing**:
 
@@ -131,7 +167,7 @@ Consideraciones sobre este workflow:
 
 5. Cuando una Feat pasa a **Ready-for-Develop**:
 
-   * Se crean sus Specs hijas en estado **Todo**
+   * Se crean sus Specs hijas en estado **Todo** (por defecto: 3 Specs)
 
 6. Si alguna Spec pasa a **Implementing**:
 
@@ -170,55 +206,83 @@ Consideraciones sobre este workflow:
 
 12. Dependencias:
 
-* Workitems en estado de commitment-status como por ejemplo **Ready / Ready-for-Develop** dependen de sus hijos (gatillan creación de hijos o su avance depende del avance de sus hijos)
-* Workitems en estado de delivery-status como por ejemplo **Released / In-Production / Completed   son estados finales de done.
+* Workitems en estado de commitment-status (por ejemplo **Ready**, **Ready-for-Develop**, **Ready-for-Implement**) gatillan la creación de sus hijos o su avance depende del avance de sus hijos.
+* Workitems en estado de delivery-status (por ejemplo **Released**, **In-Production**, **Completed**) son estados finales (done).
 
 13. Autonomía:
 
-* Workitems en estado posterior a desarrollo avanzan por sí mismos (si cumplen reglas) sin depender del avance de sus hijos porque sus hijos ya deben estar done para que ellos puedan avanzar.
-
-* Los workitems del nivel 1 (Specs) son completamente autónomos, no dependen de otros workitems para avanzar, y avanzan por sí mismos siguiendo su workflow y el paso del tiempo de la simulación.
+* Workitems en estado posterior al commitment-status avanzan por sí mismos si cumplen las reglas jerárquicas (sus hijos ya deben estar done).
+* Los workitems del nivel 1 (Specs) son completamente autónomos, no dependen de otros workitems para avanzar.
 
 ---
 
-### 5.5 Reglas de Fórmula General para distribución de estados STATUS-CATEGORY
+### 5.5 Reglas de Fórmula General para distribución de STATUS-CATEGORY
 
 * Los STATUS-CATEGORY son tres: TODO, IN-PROGRESS, DONE.
-* Los colores representativos de STATUS-CATEGORY son tres: TODO como gris, IN-PROGRESS como azul, DONE como verde.
+* Los colores representativos de STATUS-CATEGORY son: TODO=gris, IN-PROGRESS=azul, DONE=verde.
 * Para CADA nivel, la distribución es:
-   * TODO = [Estados de exploración o Downstream] 
-   * IN PROGRESS = [Estados de ejecución activa del Downstream] (todo downstream excepto el último)
-   * DONE = [Estado final del downstream o delivery-status]
+   * TODO = [Estados del Upstream]
+   * IN-PROGRESS = [Estados del Downstream excepto el último]
+   * DONE = [Estado final del Downstream o delivery-status]
 
-### 5.5 Reglas de Punto de compromiso (commitment-status)
+---
 
-En este modelo y en su configuración por defecto, los puntos de compromiso (commitment-status) son:
-* En L3 y nombre RELEASE: Ready	"Nos comprometemos a desarrollar este Release"
-* En L2 y nombre FEAT: Ready-for-Develop	"Nos comprometemos a implementar esta Feat"
-* En L1 y nombre SPEC: Ready-for-Implement	"Nos comprometemos a codificar esta Spec"
+### 5.6 Reglas de Punto de Compromiso (commitment-status)
+
+En este modelo y en su configuración por defecto, los puntos de compromiso son:
+
+| Nivel | Nombre  | commitment-status    | Significado                                    |
+| ----- | ------- | -------------------- | ---------------------------------------------- |
+| L3    | Release | Ready                | "Nos comprometemos a desarrollar este Release" |
+| L2    | Feat    | Ready-for-Develop    | "Nos comprometemos a implementar esta Feat"    |
+| L1    | Spec    | Ready-for-Implement  | "Nos comprometemos a codificar esta Spec"      |
+
+---
 
 ## ⏱ 6. Modelo de Simulación
 
+### 6.1 Motor de Simulación
+
 * Simulación basada en pasos discretos (ticks)
 * Cada tick representa una unidad de tiempo
-* En la simulación automática (autoplay), los ticks avanzan automáticamente cada cierto intervalo configurado (por ejemplo, cada 1 segundo)
+* En la simulación automática (autoplay), los ticks avanzan automáticamente cada cierto intervalo configurable (por defecto: 1 segundo)
 * En cada tick:
 
   * Los workitems pueden o no avanzar (probabilístico)
   * Se evalúan reglas jerárquicas
   * Se aplican restricciones de consistencia
 
+### 6.2 Componente Probabilístico
+
+* En cada tick, cada workitem elegible tiene una **probabilidad del 50%** de avanzar al siguiente estado de su workflow.
+* Un workitem es "elegible" si cumple todas las reglas de negocio aplicables (jerárquicas y de consistencia).
+* La probabilidad es uniforme para todos los workitems y estados (no varía por nivel ni por estado).
+* Este valor es configurable via JSON.
+
+### 6.3 Estado Inicial de la Simulación
+
+* La simulación inicia con **1 Release** en estado **Initial**.
+* No existen Feats ni Specs al inicio.
+* Los workitems hijos se crean dinámicamente según las reglas de negocio (§5.1, §5.2).
+* La cantidad inicial de Releases y su estado inicial son configurables via JSON.
+
 ---
 
 ## 🖥 7. Interfaz de Usuario
 
-### 7.1 Tableros
+### 7.1 Layout General
 
-La UI presenta tres tableros independientes:
+Los tres tableros se presentan **verticalmente apilados** en la pantalla, reflejando la jerarquía del modelo:
 
-* 🟦 Level-3 (Release) Board
-* 🟨 Level-2 (Feat) Board
-* 🟩 Level-1 (Spec) Board
+```
+┌──────────────────────────────────────┐
+│  🟦 Level-3 (Release) Board          │
+├──────────────────────────────────────┤
+│  🟨 Level-2 (Feat) Board             │
+├──────────────────────────────────────┤
+│  🟩 Level-1 (Spec) Board             │
+└──────────────────────────────────────┘
+```
 
 Cada tablero:
 
@@ -226,16 +290,18 @@ Cada tablero:
 * Muestra tarjetas (workitems)
 * Se actualiza en cada tick
 
-* Cada estado (status) tiene los siguientes atributos:
-   * statusCategory: TODO, IN-PROGRESS o DONE.
-   * streamType: UPSTREAM o DOWNSTREAM.
-   * isCommitmentStatus: booleano que indica si es un punto de compromiso.
-   * isDeliveryStatus: booleano que indica si es un punto de entrega.
+Cada estado (status) tiene los siguientes atributos:
+   * `statusCategory`: TODO, IN-PROGRESS o DONE.
+   * `streamType`: UPSTREAM o DOWNSTREAM.
+   * `isCommitmentStatus`: booleano que indica si es un punto de compromiso.
+   * `isDeliveryStatus`: booleano que indica si es un punto de entrega.
 
-### 7.2 Tarjetas  (workitems)
+### 7.2 Tarjetas (workitems)
 
-Las tarjetas es la forma en que se muestra o renderiza un workitem en la UI.
-De principio la tarjeta muestra el ID del workitem y se pinta del color del tipo de workitem.
+Las tarjetas son la forma en que se renderiza un workitem en la UI. Cada tarjeta muestra:
+
+* El ID del workitem (ej: RELE-1, FEAT-2, SPEC-3)
+* El color del tipo de workitem (L3=azul, L2=naranja, L1=verde)
 
 ---
 
@@ -244,49 +310,100 @@ De principio la tarjeta muestra el ID del workitem y se pinta del color del tipo
 * Diseño compacto (sin scroll horizontal)
 * Columnas responsivas (wrap)
 * Alta densidad de información
-* Actualización manual (botón “Step”)
 
-### 7.4 Botones de acción
+---
 
-* Debe haber un botón de "Step" para avanzar la simulación un tick. 
-* Debe haber un botón de "Autoplay" para ejecutar la simulación de forma continua.
-* Debe haber un botón para resetear  "Reset" la simulación al inicio.
-* Un botón "Upstream vs Downstream view" para pintar las columnas que representan el upstream de un color y las que representan downstrem de otro color.
-* Un botón "Status Category view" para pintar las columnas que representan el statusCategory Todo, In-Progress y Done con colores específicos.
-* Un botón "Commitment status View" para resaltar los puntos de estado de compromiso (columna del commitment-status).
-* Un botón "Delivery status View" para resaltar los puntos de estado de entrega (columna delivery-status) con un borde o fondo especial.
+### 7.4 Botones de Acción
+
+| Botón | Descripción |
+| ----- | ----------- |
+| **Step** | Avanza la simulación un tick manualmente |
+| **Autoplay** | Ejecuta la simulación de forma continua (un tick por segundo). Vuelve a presionar para pausar |
+| **Reset** | Resetea la simulación al estado inicial (1 Release en Initial, sin Feats ni Specs) |
+| **Upstream vs Downstream** | Toggle: pinta las columnas upstream de un color y las downstream de otro |
+| **Status Category** | Toggle: pinta las columnas según su statusCategory (TODO=gris, IN-PROGRESS=azul, DONE=verde) |
+| **Commitment Status** | Toggle: resalta con borde/fondo especial la columna de commitment-status de cada tablero |
+| **Delivery Status** | Toggle: resalta con borde/fondo especial la columna de delivery-status de cada tablero |
+
+**Comportamiento de los botones de vista:** Los cuatro botones de vista (Upstream/Downstream, Status Category, Commitment Status, Delivery Status) son **toggles mutuamente excluyentes** — activar uno desactiva automáticamente el anterior activo.
 
 ---
 
 ## ⚡ 8. Requerimientos Funcionales
 
-### RF-01
+### RF-01 — Simulación por pasos
 
-El sistema debe permitir simular la evolución de workflows por pasos.
+El sistema debe permitir simular la evolución de workflows paso a paso.
 
-### RF-02
+**Criterios de aceptación:**
+- Dado que la simulación está activa, cuando el usuario presiona "Step", entonces todos los workitems elegibles avanzan máximo un estado.
+- Dado que la simulación está en autoplay, entonces los ticks avanzan automáticamente cada 1 segundo sin intervención del usuario.
+- Dado que el usuario presiona "Reset", entonces la simulación vuelve al estado inicial (1 Release en Initial, sin Feats ni Specs).
 
-El sistema debe mostrar tres tableros independientes (Release, Feat, Spec).
+---
 
-### RF-03
+### RF-02 — Tres tableros independientes
 
-El sistema debe respetar las reglas jerárquicas entre workitems.
+El sistema debe mostrar tres tableros Kanban independientes (Release, Feat, Spec) apilados verticalmente.
 
-### RF-04
+**Criterios de aceptación:**
+- Cada tablero muestra únicamente los workitems de su nivel correspondiente.
+- Cada tablero se actualiza de forma independiente en cada tick.
+- Los tres tableros son visibles simultáneamente sin scroll horizontal.
 
-El sistema debe crear automáticamente workitems hijos según reglas.
+---
 
-### RF-05
+### RF-03 — Reglas jerárquicas entre workitems
 
-El sistema debe impedir estados inválidos (consistencia).
+El sistema debe respetar las reglas jerárquicas definidas entre niveles.
 
-### RF-06
+**Criterios de aceptación:**
+- Cuando una Feat está en Developing y alguna de sus Specs no está en Completed, la Feat no puede avanzar más allá de Developing.
+- Cuando la primera Feat de un Release pasa a Developing, el Release pasa automáticamente a Develop.
+- Cuando todas las Feats de un Release están en In-Production, el Release pasa automáticamente a Released.
 
-El sistema debe limitar el avance a una sola transición por tick.
+---
 
-### RF-07
+### RF-04 — Creación automática de workitems hijos
 
-El sistema debe reflejar visualmente el estado actual de cada workitem.
+El sistema debe crear automáticamente workitems hijos según las reglas de negocio.
+
+**Criterios de aceptación:**
+- Cuando un Release pasa a Ready, se crean exactamente 3 Feats en estado Pending.
+- Cuando una Feat pasa a Ready-for-Develop, se crean exactamente 3 Specs en estado Todo.
+- Los IDs de los nuevos workitems siguen la nomenclatura definida (ej: FEAT-1, SPEC-4).
+
+---
+
+### RF-05 — Consistencia de estados
+
+El sistema debe impedir que los workitems lleguen a estados inválidos.
+
+**Criterios de aceptación:**
+- Un workitem nunca omite estados intermedios (avance secuencial obligatorio).
+- Una Feat en estado posterior a Developing no puede existir si alguna de sus Specs no está en Completed.
+- El sistema no permite transiciones que violen las reglas de negocio definidas en §5.
+
+---
+
+### RF-06 — Máximo una transición por tick
+
+El sistema debe limitar el avance de cada workitem a una sola transición por tick.
+
+**Criterios de aceptación:**
+- Dado un workitem en estado X, después de un tick puede estar en X o en X+1, nunca en X+2 o posterior.
+- Este límite aplica a todos los workitems de todos los niveles.
+
+---
+
+### RF-07 — Visualización del estado actual
+
+El sistema debe reflejar visualmente el estado actual de cada workitem en tiempo real.
+
+**Criterios de aceptación:**
+- Cada tarjeta muestra el ID del workitem y su color de tipo.
+- Después de cada tick, las tarjetas se reposicionan en la columna correcta.
+- Los botones de vista colorean las columnas correctamente según su modo activo, y son mutuamente excluyentes.
 
 ---
 
@@ -319,28 +436,57 @@ El sistema debe reflejar visualmente el estado actual de cada workitem.
 ### RNF-07 Configuración
 
 * El sistema debe ser configurable.
-* La configuración debe hacerse mediante un objeto formato JSON.
-* En esta primera versión MVP, la configuración se puede definir directamente en el código (hardcoded) o en archivo y no es necesario una UI para editar la configuración.
+* La configuración se define mediante un objeto en formato JSON.
+* En esta primera versión MVP, la configuración puede estar definida directamente en el código (hardcoded) o en un archivo; no se requiere UI para editar la configuración.
 
 ---
 
 ## 📊 10. Posibles Extensiones
 
 * Métricas (lead time, cycle time)
-* WIP limits
+* Configuración de demanda (cantidad de workitems creados automáticamente).
+* WIP limits por columna
 * Animaciones entre columnas
-* Autoplay (simulación continua)
-* Highlight de dependencias
-* Exportación de datos
+* Highlight de dependencias entre workitems
+* Exportación de datos de simulación
+* Editor visual de configuración (los estados de los workfow por nivel, nombre de niveles,reglas, parámetros)
+* Exportación de archivo de configuración JSON
 
 ---
 
 ## 🧠 11. Consideraciones Técnicas
 
-* Framework: React + Vite
-* Lenguaje: TypeScript
-* Estado: local (useState)
-* Simulación: función pura determinística con componente probabilístico
+### 11.1 Stack Tecnológico
+
+| Tecnología    | Uso                                       |
+| ------------- | ----------------------------------------- |
+| React + Vite  | Framework UI y bundler                    |
+| TypeScript    | Tipado estático en toda la aplicación     |
+| useState      | Estado local de la simulación             |
+
+### 11.2 Estructura de Módulos Sugerida
+
+```
+src/
+├── config/
+│   └── defaultConfig.ts        # Configuración inicial (workflows, niveles, parámetros)
+├── domain/
+│   ├── types.ts                # Tipos: Workitem, Workflow, Status, Level, etc.
+│   └── rules.ts                # Reglas de negocio (evaluación de transiciones)
+├── simulation/
+│   └── engine.ts               # Motor de simulación: función pura tick()
+├── components/
+│   ├── Board.tsx               # Tablero de un nivel
+│   ├── Column.tsx              # Columna (estado del workflow)
+│   └── Card.tsx                # Tarjeta (workitem)
+└── App.tsx                     # Composición principal y estado global
+```
+
+### 11.3 Decisiones de Diseño
+
+* **Función pura para el tick:** El motor de simulación (`engine.ts`) es una función pura que recibe el estado actual y devuelve el nuevo estado. Esto facilita el testing y la reproducibilidad.
+* **Separación dominio / UI:** Las reglas de negocio viven en `domain/rules.ts`, independientemente de los componentes React.
+* **Configuración centralizada:** Todos los parámetros variables (workflows, probabilidades, cantidad de hijos, estado inicial) se definen en `config/defaultConfig.ts`.
 
 ---
 
@@ -354,13 +500,31 @@ El sistema debe reflejar visualmente el estado actual de cada workitem.
 
 ---
 
+## 📖 13. Glosario
+
+| Término                  | Definición |
+| ------------------------ | ---------- |
+| **Tick**                 | Unidad mínima de tiempo en la simulación. En cada tick, los workitems elegibles pueden avanzar un estado. |
+| **Workitem**             | Unidad de trabajo dentro de la simulación. Puede ser un Release (L3), Feat (L2) o Spec (L1). |
+| **Workflow**             | Secuencia ordenada de estados por la que pasan los workitems de un nivel. |
+| **Status**               | Estado individual dentro de un workflow (ej: Developing, Completed). |
+| **statusCategory**       | Categoría de un estado: TODO (pendiente), IN-PROGRESS (en curso) o DONE (terminado). |
+| **Upstream**             | Zona del workflow anterior al commitment-status. Representa actividades de exploración y preparación. |
+| **Downstream**           | Zona del workflow a partir del commitment-status. Representa ejecución activa. |
+| **Commitment Point**     | Estado en el que el equipo se compromete formalmente a ejecutar un workitem. Separa upstream de downstream. |
+| **Delivery Point**       | Estado final del workflow de un workitem. Indica que el trabajo está completamente entregado. |
+| **Jerarquía padre-hijo** | Relación entre workitems de distintos niveles: un Release (L3) contiene Feats (L2), que contienen Specs (L1). |
+| **Autoplay**             | Modo de simulación continua donde los ticks avanzan automáticamente a intervalos regulares. |
+| **Step**                 | Modo de simulación manual donde el usuario avanza la simulación un tick a la vez. |
+
+---
+
 # 🎯 Resultado
 
 Este sistema permite modelar de forma realista:
 
 * Sistemas ágiles complejos
 * Dependencias entre niveles
-* Flujo de valor desde Spec → Release
+* Flujo de valor que en este ejemplo es desde Spec → Feat → Release
 
 ---
-
