@@ -2,9 +2,9 @@ import type { HighlightMode, Workitem, Workflow } from "../domain/types";
 import { Column } from "./Column";
 
 const LEVEL_HEADER_COLORS: Record<string, string> = {
-  L2: "#1d4ed8",
-  L1: "#ea580c",
-  L0: "#16a34a",
+  L2: "#04288b",
+  L1: "#ad4208",
+  L0: "#2e4e3a",
 };
 
 type Props = {
@@ -22,7 +22,7 @@ export function Board({ workflow, items, highlightMode }: Props) {
           fontWeight: 700,
           color: "white",
           background: LEVEL_HEADER_COLORS[workflow.level] ?? "#334155",
-          padding: "3px 6px",
+          padding: "1px 6px",
           borderRadius: "3px 3px 0 0",
           marginBottom: 4,
           display: "inline-block",

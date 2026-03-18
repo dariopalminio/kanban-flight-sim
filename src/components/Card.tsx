@@ -16,8 +16,9 @@ export function Card({ item }: Props) {
         color: "white",
         fontSize: 9,
         fontWeight: 600,
-        padding: "2px 4px",
-        marginTop: 2,
+        padding: "0px 4px",
+        marginTop: 4,
+        lineHeight: "18px",
         borderRadius: 2,
         textAlign: "center",
       }}

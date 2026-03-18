@@ -16,7 +16,7 @@ const getBg = (status: Status, mode: HighlightMode): string => {
     if (status.category === "IN_PROGRESS") return "#1d4ed8";
     return "#166534";
   }
-  if (mode === "commitment" && status.isCommitmentPoint) return "#92400e";
+  if (mode === "commitment" && status.isCommitmentPoint) return "#ddb121";
   if (mode === "delivery" && status.isDeliveryPoint) return "#14532d";
   return "#1e293b";
 };
@@ -39,7 +39,7 @@ export function Column({ status, items, highlightMode }: Props) {
         padding: 4,
       }}
     >
-      <div style={{ fontSize: 9, color: "white", fontWeight: 600, marginBottom: 2 }}>
+      <div style={{ fontSize: 9, color: "white", fontWeight: 600, marginBottom: 2, textDecoration: status.isCommitmentPoint ? "underline" : "none" }}>
         {status.name}
       </div>
       {items.map((item) => (

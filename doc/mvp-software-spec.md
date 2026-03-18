@@ -1,4 +1,4 @@
-# 🧠 Kanban 3 Niveles Simulator — Especificación de Requerimientos de Software
+# 🧠 Simulador de Vuelo Kanban — Especificación de Requerimientos de Software
 
 ## Tabla de Contenidos
 
@@ -31,7 +31,7 @@
 
 ## 📌 1. Descripción General
 
-El **Kanban 3 Niveles Simulator (Kanban3NSim)** es una aplicación frontend que simula visualmente flujos de trabajo jerárquicos en tres niveles:
+El **Simulador de Vuelo Kanban (KanbanFlightSim)** es una aplicación frontend que simula visualmente flujos de trabajo jerárquicos en tres niveles:
 
 * **L2: Release** → nivel estratégico superior
 * **L1: Feat** → nivel táctico medio
@@ -117,9 +117,9 @@ Flujo simplificado de 4 estados por nivel:
 
 | Nivel | Workflow |
 | ----- | -------- |
-| L2 — Release | `Backlog → Committed → In-Progress → Done` |
-| L1 — Feat    | `Backlog → Committed → In-Progress → Done` |
-| L0 — Spec    | `Backlog → Committed → In-Progress → Done` |
+| L2 — Epic | `Backlog → Committed → In-Progress → Done` |
+| L1 — Story    | `Backlog → Committed → In-Progress → Done` |
+| L0 — Subtask    | `Backlog → Committed → In-Progress → Done` |
 
 * Commitment point: **Committed** (upstream)
 * Delivery point: **Done** (downstream final)
@@ -182,7 +182,7 @@ Las reglas de negocio son **genéricas**: no dependen de nombres de estados espe
 ### 5.1 Paso 1 — L0 avanza de forma autónoma
 
 * Los workitems de nivel L0 avanzan con probabilidad configurable (por defecto 50%) en cada tick.
-* Se detienen al alcanzar su `isDeliveryPoint`.
+* Se detienen al alcanzar su estado final o `isDeliveryPoint`.
 * No dependen de ningún otro workitem.
 
 ---
