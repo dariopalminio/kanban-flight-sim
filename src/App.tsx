@@ -5,7 +5,7 @@ import {
   loadSimulation,
   simulationNames,
 } from "./config/defaultConfig";
-import type { HighlightMode, SimState } from "./domain/types";
+import type { HighlightMode, SimState, ViewMode } from "./domain/types";
 import { buildInitialState, tick } from "./simulation/engine";
 
 const AUTOPLAY_INTERVAL_MS = 1000;
@@ -34,6 +34,7 @@ export default function App() {
   const [simState, setSimState] = useState<SimState>(buildInitialState(config));
   const [isPlaying, setIsPlaying] = useState(false);
   const [highlightMode, setHighlightMode] = useState<HighlightMode>("none");
+  const [viewMode, setViewMode] = useState<ViewMode>("portafolio");
 
   // Autoplay
   useEffect(() => {
@@ -63,6 +64,7 @@ export default function App() {
 
   const { workflows } = config;
   const { workitems, tick: tickCount } = simState;
+  const visibleLevels = viewMode === "portafolio" ? [3, 2] : viewMode === "delivery" ? [2, 1, 0] : [3, 2, 1, 0];
 
   return (
     <div style={{ background: "#0f172a", minHeight: "100vh", padding: "6px 8px", boxSizing: "border-box" }}>
@@ -113,6 +115,27 @@ export default function App() {
 
         <span style={{ color: "#475569", fontSize: 11, marginLeft: 4 }}>|</span>
 
+        {/* Board view mode selector */}
+        <span style={{ color: "#94a3b8", fontSize: 11, fontWeight: 600 }}>View:</span>
+        {(["portafolio", "delivery", "full"] as ViewMode[]).map((mode) => (
+          <label
+            key={mode}
+            style={{ display: "flex", alignItems: "center", gap: 4, cursor: "pointer", color: "white", fontSize: 11, fontWeight: 600 }}
+          >
+            <input
+              type="radio"
+              name="viewMode"
+              value={mode}
+              checked={viewMode === mode}
+              onChange={() => setViewMode(mode)}
+              style={{ cursor: "pointer", accentColor: "#94a3b8" }}
+            />
+            {mode.charAt(0).toUpperCase() + mode.slice(1)}
+          </label>
+        ))}
+
+        <span style={{ color: "#475569", fontSize: 11, marginLeft: 4 }}>|</span>
+
         {/* View toggles (mutually exclusive) */}
         <button
           style={highlightMode === "stream" ? BTN_ACTIVE_STYLE : BTN_STYLE}
@@ -141,26 +164,34 @@ export default function App() {
       </div>
 
       {/* Boards — L3 arriba, L0 abajo */}
-      <Board
-        workflow={workflows.L3}
-        items={workitems.filter((w) => w.level === "L3")}
-        highlightMode={highlightMode}
-      />
-      <Board
-        workflow={workflows.L2}
-        items={workitems.filter((w) => w.level === "L2")}
-        highlightMode={highlightMode}
-      />
-      <Board
-        workflow={workflows.L1}
-        items={workitems.filter((w) => w.level === "L1")}
-        highlightMode={highlightMode}
-      />
-      <Board
-        workflow={workflows.L0}
-        items={workitems.filter((w) => w.level === "L0")}
-        highlightMode={highlightMode}
-      />
+      {visibleLevels.includes(3) && (
+        <Board
+          workflow={workflows.L3}
+          items={workitems.filter((w) => w.level === "L3")}
+          highlightMode={highlightMode}
+        />
+      )}
+      {visibleLevels.includes(2) && (
+        <Board
+          workflow={workflows.L2}
+          items={workitems.filter((w) => w.level === "L2")}
+          highlightMode={highlightMode}
+        />
+      )}
+      {visibleLevels.includes(1) && (
+        <Board
+          workflow={workflows.L1}
+          items={workitems.filter((w) => w.level === "L1")}
+          highlightMode={highlightMode}
+        />
+      )}
+      {visibleLevels.includes(0) && (
+        <Board
+          workflow={workflows.L0}
+          items={workitems.filter((w) => w.level === "L0")}
+          highlightMode={highlightMode}
+        />
+      )}
     </div>
   );
 }

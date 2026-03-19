@@ -2,6 +2,7 @@ export type StatusCategory = "TODO" | "IN_PROGRESS" | "DONE";
 export type StreamType = "UPSTREAM" | "DOWNSTREAM";
 export type WorkitemLevel = "L0" | "L1" | "L2" | "L3";
 export type HighlightMode = "none" | "stream" | "category" | "commitment" | "delivery";
+export type ViewMode = "portafolio" | "delivery" | "full";
 
 export type Status = {
   id: string;

@@ -192,24 +192,34 @@
       "demandInterval": 0,
       "workflows": {
         "L3": {
-          "id": "wf-project",
-          "name": "Project",
+          "id": "wf-initiative",
+          "name": "Initiative",
           "level": "L3",
-          "workitemName": "Project",
+          "workitemName": "Initiative",
           "statuses": [
             {
-              "id": "project-draft",
-              "name": "Draft",
+              "id": "initiative-funnel",
+              "name": "Funnel",
               "order": 1,
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
-              "description": "Idea inicial de proyecto, sin análisis detallado"
+              "description": "Iniciativa entra al embudo del portafolio"
             },
             {
-              "id": "project-discovery",
-              "name": "Discovery",
+              "id": "initiative-draft",
+              "name": "Draft",
               "order": 2,
+              "streamType": "UPSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false,
+              "description": "Idea inicial de proyecto d efiniéndose, sin análisis detallado",
+              "wipLimit": 5
+            },
+            {
+              "id": "initiative-discovery",
+              "name": "Discovery",
+              "order": 3,
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
@@ -217,9 +227,9 @@
               "wipLimit": 3
             },
             {
-              "id": "project-approved",
-              "name": "Approved",
-              "order": 3,
+              "id": "initiative-approval",
+              "name": "Approval",
+              "order": 4,
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
@@ -227,9 +237,19 @@
               "wipLimit": 3
             },
             {
-              "id": "project-planned",
+              "id": "initiative-approved",
+              "name": "Approved",
+              "order": 5,
+              "streamType": "UPSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false,
+              "description": "Proyecto aprobado y priorizado, listo para planificación",
+              "wipLimit": 3
+            },
+            {
+              "id": "initiative-planned",
               "name": "Planned",
-              "order": 4,
+              "order": 6,
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": true,
               "isPosDeliveryPoint": false,
@@ -237,9 +257,9 @@
               "wipLimit": 2
             },
             {
-              "id": "project-in-development",
+              "id": "initiative-in-development",
               "name": "In-Development",
-              "order": 5,
+              "order": 7,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
@@ -247,18 +267,18 @@
               "wipLimit": 1
             },
             {
-              "id": "project-measuring",
+              "id": "initiative-measuring",
               "name": "Measuring-Results",
-              "order": 6,
+              "order": 8,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
               "description": "Métricas y evaluación de resultados"
             },
             {
-              "id": "project-finished",
+              "id": "initiative-finished",
               "name": "Finished",
-              "order": 7,
+              "order": 9,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": true,
