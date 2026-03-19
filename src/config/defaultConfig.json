@@ -221,7 +221,8 @@
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
-              "description": "Análisis de viabilidad, investigación y descubrimiento"
+              "description": "Análisis de viabilidad, investigación y descubrimiento",
+              "wipLimit": 3
             },
             {
               "id": "project-approved",
@@ -293,7 +294,8 @@
               "order": 2,
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": false,
-              "isPosDeliveryPoint": false
+              "isPosDeliveryPoint": false,
+              "wipLimit": 4
             },
             {
               "id": "release-plan",
@@ -301,7 +303,8 @@
               "order": 3,
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": false,
-              "isPosDeliveryPoint": false
+              "isPosDeliveryPoint": false,
+              "wipLimit": 3
             },
             {
               "id": "release-ready",
@@ -309,7 +312,8 @@
               "order": 4,
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": true,
-              "isPosDeliveryPoint": false
+              "isPosDeliveryPoint": false,
+              "wipLimit": 2
             },
             {
               "id": "release-develop",
@@ -382,7 +386,8 @@
               "order": 2,
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": false,
-              "isPosDeliveryPoint": false
+              "isPosDeliveryPoint": false,
+              "wipLimit": 5
             },
             {
               "id": "feat-ready",
@@ -390,7 +395,8 @@
               "order": 3,
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": true,
-              "isPosDeliveryPoint": false
+              "isPosDeliveryPoint": false,
+              "wipLimit": 3
             },
             {
               "id": "feat-developing",
@@ -454,7 +460,8 @@
               "order": 2,
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": false,
-              "isPosDeliveryPoint": false
+              "isPosDeliveryPoint": false,
+              "wipLimit": 8
             },
             {
               "id": "spec-designing",
@@ -462,7 +469,8 @@
               "order": 3,
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": false,
-              "isPosDeliveryPoint": false
+              "isPosDeliveryPoint": false,
+              "wipLimit": 5
             },
             {
               "id": "spec-ready-impl",
@@ -470,7 +478,8 @@
               "order": 4,
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": true,
-              "isPosDeliveryPoint": false
+              "isPosDeliveryPoint": false,
+              "wipLimit": 4
             },
             {
               "id": "spec-implementing",

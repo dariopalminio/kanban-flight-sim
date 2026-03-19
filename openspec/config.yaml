@@ -1,0 +1,109 @@
+schema: spec-driven
+
+context: |
+  ## Project: Kanban Flight Simulator (KanbanFlightSim)
+
+  An educational browser SPA that visually simulates multi-level hierarchical Kanban workflows.
+  Users step through discrete ticks to observe how work items flow across four levels simultaneously,
+  subject to WIP limits, commitment points, and parent-child dependency rules.
+
+  ## Tech Stack
+  - React 18 + Vite (SPA, no backend)
+  - TypeScript (strict, all code is typed)
+  - No external UI libraries — all styling is inline CSS via React style props
+  - No test framework currently present
+
+  ## Architecture
+  ```
+  src/
+  ├── config/
+  │   ├── defaultConfig.json   # Source of truth: all simulations, workflows, parameters
+  │   └── defaultConfig.ts     # Loads JSON; derives `category` field automatically
+  ├── domain/
+  │   └── types.ts             # Core types: Workitem, Workflow, Status, SimState, Config, HighlightMode
+  ├── simulation/
+  │   └── engine.ts            # Pure functions: buildInitialState(config) and tick(state, config) → state
+  ├── components/
+  │   ├── Board.tsx            # One board per level (L3–L0)
+  │   ├── Column.tsx           # One column per workflow status
+  │   └── Card.tsx             # One card per workitem
+  └── App.tsx                  # Root: React state, controls, board composition
+  ```
+
+  ## Domain Concepts
+
+  ### Four Hierarchical Levels
+  Every simulation has four levels: L3 (strategic), L2 (tactical high), L1 (tactical mid), L0 (operational).
+  Each level has its own Kanban board and workflow. L3 contains L2, L2 contains L1, L1 contains L0.
+
+  ### Workitem
+  A unit of work. Fields: `id` (string), `level` (L0–L3), `statusId`, `parentId?`.
+  ID format: `<PREFIX>-<n>` for L3, `<PREFIX>-<n>p<PARENT_BASE>` for children.
+  PREFIX = first 4 chars of `workitemName` in uppercase (e.g., "Project" → "PROJ").
+
+  ### Status / Workflow
+  A workflow is an ordered list of statuses. Key status properties:
+  - `streamType`: UPSTREAM (before commitment) or DOWNSTREAM (after commitment)
+  - `isBeforeCommitmentPoint`: true on the status where children are spawned
+  - `isPosDeliveryPoint`: true on the final status (item stops here)
+  - `wipLimit`: optional cap on concurrent items in that column
+  - `category`: derived automatically — UPSTREAM→TODO, last status→DONE, rest→IN_PROGRESS
+
+  ### Simulation Engine (engine.ts)
+  `tick(state, config) → state` is a **pure function** (no side effects, no mutation of input).
+  Executes 7 ordered steps per tick:
+  1. Advance L0 autonomously (probabilistic)
+  2. Push L1 to first-downstream when any L0 child enters downstream
+  3. Advance L1 with hierarchical rules (may spawn L0 children at commitment point)
+  4. Push L2 to first-downstream when any L1 child enters downstream
+  5. Advance L2 with hierarchical rules (may spawn L1 children at commitment point)
+  6. Push L3 to first-downstream when any L2 child enters downstream
+  7. Advance L3 with hierarchical rules (may spawn L2 children at commitment point)
+
+  Blocking rule: a parent at its first-downstream status cannot advance until ALL its children
+  are at `isPosDeliveryPoint`.
+
+  WIP tracking uses a mutable intra-tick counter (makeWipTracker): each approved transition
+  increments the target column count within the same step, preventing multiple items from
+  bypassing a wipLimit in the same tick.
+
+  ### Configuration (defaultConfig.json)
+  All simulations are data-driven. No code changes needed to add a new simulation.
+  Key parameters per simulation: `initialReleaseCount`, `advanceProbability` (default 0.5),
+  `childrenPerParent` (default 3).
+
+  Bundled simulations:
+  - "Simplified": 4 statuses per level (Backlog → Committed → In-Progress → Done)
+  - "SDF workflows": complex multi-status flows (L3=7, L2=10, L1=8, L0=7 statuses)
+
+  ### UI Highlight Modes (HighlightMode)
+  Four mutually-exclusive view toggles: `stream` (upstream/downstream), `category` (TODO/IN_PROGRESS/DONE),
+  `commitment` (highlights commitment-point column), `delivery` (highlights delivery-point column).
+
+  ## Conventions
+  - Engine functions must remain pure — no side effects, no global state
+  - Business rules are generic: they use structural properties (isBeforeCommitmentPoint, etc.),
+    never hardcoded status names or IDs
+  - All configuration lives in defaultConfig.json — never hardcode simulation-specific values in TS
+  - Inline styles only (no CSS classes, no CSS modules, no Tailwind)
+  - Conventional commits preferred
+
+rules:
+  proposal:
+    - Capabilities must use kebab-case names matching existing openspec/specs/ folders when modifying existing specs
+    - Always verify whether a capability already has a spec in openspec/specs/ before listing it as "New"
+    - Keep proposals focused — this is a small single-purpose app; avoid scope creep
+  design:
+    - Reference engine.ts step numbers (Step 1–7) when discussing simulation logic changes
+    - Call out any change to the pure-function contract of tick() explicitly
+    - If a change touches defaultConfig.json schema, describe the migration for existing simulation entries
+  specs:
+    - Use SHALL/MUST for all normative requirements; avoid "should" or "may"
+    - Every requirement must have at least one concrete scenario with WHEN/THEN format
+    - Scenarios must use exactly 4 hashtags (####) — never 3
+    - When specifying UI colors, use the exact hex values from the source code
+    - When specifying engine behavior, reference the relevant step number (Step 1–7)
+  tasks:
+    - Group tasks by: config changes, engine changes, component changes, then verification
+    - Each task must be completable in a single coding session
+    - Always include a verification task for each changed capability
