@@ -104,7 +104,7 @@ export const buildInitialState = (config: Config): SimState => {
 // =====================
 
 export const tick = (state: SimState, config: Config): SimState => {
-  const { workflows, advanceProbability, childrenPerParent } = config;
+  const { workflows, advanceProbability, childrenPerParent, demandInterval } = config;
   const wfL3 = workflows.L3;
   const wfL2 = workflows.L2;
   const wfL1 = workflows.L1;
@@ -161,6 +161,9 @@ export const tick = (state: SimState, config: Config): SimState => {
       return w;
     }
 
+    if (!maybe(advanceProbability)) return w;
+    const next = getNextStatusId(wfL1, w.statusId);
+    if (!wipL1(w.statusId, next)) return w;
     if (w.statusId === keysL1.commitmentId) {
       const hasChildren = items.some((x) => x.parentId === w.id && x.level === "L0");
       if (!hasChildren) {
@@ -171,10 +174,6 @@ export const tick = (state: SimState, config: Config): SimState => {
         }
       }
     }
-
-    if (!maybe(advanceProbability)) return w;
-    const next = getNextStatusId(wfL1, w.statusId);
-    if (!wipL1(w.statusId, next)) return w;
     return { ...w, statusId: next };
   });
 
@@ -212,6 +211,9 @@ export const tick = (state: SimState, config: Config): SimState => {
       return w;
     }
 
+    if (!maybe(advanceProbability)) return w;
+    const next = getNextStatusId(wfL2, w.statusId);
+    if (!wipL2(w.statusId, next)) return w;
     if (w.statusId === keysL2.commitmentId) {
       const hasChildren = items.some((x) => x.parentId === w.id && x.level === "L1");
       if (!hasChildren) {
@@ -222,10 +224,6 @@ export const tick = (state: SimState, config: Config): SimState => {
         }
       }
     }
-
-    if (!maybe(advanceProbability)) return w;
-    const next = getNextStatusId(wfL2, w.statusId);
-    if (!wipL2(w.statusId, next)) return w;
     return { ...w, statusId: next };
   });
 
@@ -263,6 +261,9 @@ export const tick = (state: SimState, config: Config): SimState => {
       return w;
     }
 
+    if (!maybe(advanceProbability)) return w;
+    const next = getNextStatusId(wfL3, w.statusId);
+    if (!wipL3(w.statusId, next)) return w;
     if (w.statusId === keysL3.commitmentId) {
       const hasChildren = items.some((x) => x.parentId === w.id && x.level === "L2");
       if (!hasChildren) {
@@ -273,17 +274,21 @@ export const tick = (state: SimState, config: Config): SimState => {
         }
       }
     }
-
-    if (!maybe(advanceProbability)) return w;
-    const next = getNextStatusId(wfL3, w.statusId);
-    if (!wipL3(w.statusId, next)) return w;
     return { ...w, statusId: next };
   });
 
   items = [...items, ...newL2Children];
 
+  // --- PASO 8: Inject new L3 demand item ---
+  const nextTick = state.tick + 1;
+  if (demandInterval > 0 && nextTick % demandInterval === 0) {
+    const [id, newCounters] = nextId(counters, "L3", wfL3.workitemName);
+    counters = newCounters;
+    items = [...items, { id, level: "L3" as const, statusId: wfL3.statuses[0].id }];
+  }
+
   return {
-    tick: state.tick + 1,
+    tick: nextTick,
     idCounters: counters,
     workitems: items,
   };

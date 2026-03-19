@@ -34,6 +34,7 @@ const buildConfig = (sim: RawSimulation): Config => ({
   initialReleaseCount: sim.initialReleaseCount,
   advanceProbability: sim.advanceProbability,
   childrenPerParent: sim.childrenPerParent,
+  demandInterval: sim.demandInterval ?? 0,
   workflows: {
     L3: buildWorkflow(sim.workflows.L3),
     L2: buildWorkflow(sim.workflows.L2),

@@ -6,6 +6,7 @@
       "initialReleaseCount": 1,
       "advanceProbability": 0.5,
       "childrenPerParent": 3,
+      "demandInterval": 5,
       "workflows": {
         "L3": {
           "id": "wf-project",
@@ -23,8 +24,8 @@
               "description": "Ideas de Release, sin análisis detallado"
             },
             {
-              "id": "project-committed",
-              "name": "Committed",
+              "id": "project-Selected",
+              "name": "Selected",
               "order": 2,
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": true,
@@ -69,8 +70,8 @@
               "description": "Ideas de Epic, sin análisis detallado"
             },
             {
-              "id": "epic-committed",
-              "name": "Committed",
+              "id": "epic-Selected",
+              "name": "Selected",
               "order": 2,
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": true,
@@ -115,8 +116,8 @@
               "description": "Feature priorizada, sin especificar"
             },
             {
-              "id": "story-committed",
-              "name": "Committed",
+              "id": "story-Selected",
+              "name": "Selected",
               "order": 2,
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": true,
@@ -152,23 +153,13 @@
           "workitemName": "Subtask",
           "statuses": [
             {
-              "id": "subtask-backlog",
-              "name": "Backlog",
+              "id": "subtask-todo",
+              "name": "Todo",
               "order": 1,
-              "streamType": "UPSTREAM",
-              "isBeforeCommitmentPoint": false,
-              "isPosDeliveryPoint": false,
-              "description": "Subtask técnica identificada"
-            },
-            {
-              "id": "subtask-committed",
-              "name": "Committed",
-              "order": 2,
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": true,
               "isPosDeliveryPoint": false,
-              "description": "Subtask lista para codificar",
-              "wipLimit": 8
+              "description": "Subtask técnica identificada"
             },
             {
               "id": "subtask-in-progress",
@@ -198,6 +189,7 @@
       "initialReleaseCount": 1,
       "advanceProbability": 0.5,
       "childrenPerParent": 3,
+      "demandInterval": 0,
       "workflows": {
         "L3": {
           "id": "wf-project",

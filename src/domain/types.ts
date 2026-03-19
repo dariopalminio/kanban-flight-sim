@@ -42,4 +42,5 @@ export type Config = {
   initialReleaseCount: number;
   advanceProbability: number;
   childrenPerParent: number;
+  demandInterval: number;
 };

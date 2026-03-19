@@ -130,13 +130,13 @@ export default function App() {
           style={highlightMode === "commitment" ? BTN_ACTIVE_STYLE : BTN_STYLE}
           onClick={() => toggleView("commitment")}
         >
-          Commitment Status
+          Before Commitment Point
         </button>
         <button
           style={highlightMode === "delivery" ? BTN_ACTIVE_STYLE : BTN_STYLE}
           onClick={() => toggleView("delivery")}
         >
-          Delivery Status
+          Pos Delivery Point
         </button>
       </div>
 
