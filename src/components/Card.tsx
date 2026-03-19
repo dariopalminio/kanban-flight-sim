@@ -1,6 +1,7 @@
 import type { Workitem } from "../domain/types";
 
 const LEVEL_COLORS: Record<string, string> = {
+  L3: "#7c3aed",
   L2: "#1d4ed8",
   L1: "#ea580c",
   L0: "#16a34a",

@@ -169,20 +169,20 @@ Cada estado de un workflow tiene los siguientes atributos:
 | `name` | string | Nombre visible en la UI |
 | `order` | number | Posición secuencial en el workflow |
 | `streamType` | `UPSTREAM` \| `DOWNSTREAM` | Zona del workflow |
-| `isCommitmentPoint` | boolean | Indica el punto de compromiso del nivel |
-| `isDeliveryPoint` | boolean | Indica el estado final (entrega) del nivel |
+| `isBeforeCommitmentPoint` | boolean | Indica el punto de compromiso del nivel |
+| `isPosDeliveryPoint` | boolean | Indica el estado final (entrega) del nivel |
 | `category` | `TODO` \| `IN_PROGRESS` \| `DONE` | Derivado automáticamente de las propiedades anteriores |
 
 ---
 
 ## ⚙️ 5. Reglas de Negocio
 
-Las reglas de negocio son **genéricas**: no dependen de nombres de estados específicos sino de las propiedades estructurales del workflow (`isCommitmentPoint`, `isDeliveryPoint`, `streamType`). Esto permite que el motor de simulación funcione con cualquier configuración de simulación.
+Las reglas de negocio son **genéricas**: no dependen de nombres de estados específicos sino de las propiedades estructurales del workflow (`isBeforeCommitmentPoint`, `isPosDeliveryPoint`, `streamType`). Esto permite que el motor de simulación funcione con cualquier configuración de simulación.
 
 ### 5.1 Paso 1 — L0 avanza de forma autónoma
 
 * Los workitems de nivel L0 avanzan con probabilidad configurable (por defecto 50%) en cada tick.
-* Se detienen al alcanzar su estado final o `isDeliveryPoint`.
+* Se detienen al alcanzar su estado final o `isPosDeliveryPoint`.
 * No dependen de ningún otro workitem.
 
 ---
@@ -196,11 +196,11 @@ Las reglas de negocio son **genéricas**: no dependen de nombres de estados espe
 
 ### 5.3 Paso 3 — L1 avanza con reglas jerárquicas
 
-* **Antes del `isCommitmentPoint`** (upstream): avanza autónomamente al 50%.
-* **En el `isCommitmentPoint`**: se crean los hijos L0 (si no existen), con su primer estado del workflow L0. Luego avanza autónomamente al 50%.
-* **En el primer estado downstream** (`streamType: DOWNSTREAM`): **bloqueado** hasta que **todos** sus hijos L0 estén en `isDeliveryPoint`. Cuando se cumple, avanza.
+* **Antes del `isBeforeCommitmentPoint`** (upstream): avanza autónomamente al 50%.
+* **En el `isBeforeCommitmentPoint`**: se crean los hijos L0 (si no existen), con su primer estado del workflow L0. Luego avanza autónomamente al 50%.
+* **En el primer estado downstream** (`streamType: DOWNSTREAM`): **bloqueado** hasta que **todos** sus hijos L0 estén en `isPosDeliveryPoint`. Cuando se cumple, avanza.
 * **Después del primer downstream**: avanza autónomamente al 50%.
-* **En `isDeliveryPoint`**: se detiene.
+* **En `isPosDeliveryPoint`**: se detiene.
 
 ---
 
@@ -213,8 +213,8 @@ Las reglas de negocio son **genéricas**: no dependen de nombres de estados espe
 ### 5.5 Paso 5 — L2 avanza con reglas jerárquicas
 
 * Idéntico al Paso 3 pero para L2 con sus hijos L1:
-* **En `isCommitmentPoint`**: crea hijos L1, luego avanza autónomamente al 50%.
-* **En primer downstream**: **bloqueado** hasta que todos los hijos L1 estén en `isDeliveryPoint`.
+* **En `isBeforeCommitmentPoint`**: crea hijos L1, luego avanza autónomamente al 50%.
+* **En primer downstream**: **bloqueado** hasta que todos los hijos L1 estén en `isPosDeliveryPoint`.
 * **Resto**: autónomo o detenido en entrega.
 
 ---
@@ -234,7 +234,7 @@ El campo `category` de cada estado se calcula automáticamente a partir de sus p
 
 * `TODO` = todos los estados con `streamType: UPSTREAM`
 * `IN_PROGRESS` = estados con `streamType: DOWNSTREAM` excepto el último
-* `DONE` = el estado con `isDeliveryPoint: true`
+* `DONE` = el estado con `isPosDeliveryPoint: true`
 
 Los colores representativos de STATUS-CATEGORY son: TODO=gris, IN-PROGRESS=azul, DONE=verde.
 
@@ -242,7 +242,7 @@ Los colores representativos de STATUS-CATEGORY son: TODO=gris, IN-PROGRESS=azul,
 
 ### 5.8 Punto de Compromiso (commitment-status)
 
-El `isCommitmentPoint` de cada nivel define el momento en que el equipo se compromete formalmente a ejecutar el workitem y se crean sus hijos. Ejemplos en la simulación "SDF workflows":
+El `isBeforeCommitmentPoint` de cada nivel define el momento en que el equipo se compromete formalmente a ejecutar el workitem y se crean sus hijos. Ejemplos en la simulación "SDF workflows":
 
 | Nivel | Nombre  | commitment-status    | Significado                                    |
 | ----- | ------- | -------------------- | ---------------------------------------------- |
@@ -382,10 +382,10 @@ El sistema debe mostrar tres tableros Kanban independientes (Release, Feat, Spec
 El sistema debe respetar las reglas jerárquicas definidas entre niveles, basadas en las propiedades estructurales de cada workflow.
 
 **Criterios de aceptación:**
-- Un workitem L1 en su primer estado downstream no puede avanzar mientras alguno de sus hijos L0 no haya alcanzado su `isDeliveryPoint`.
+- Un workitem L1 en su primer estado downstream no puede avanzar mientras alguno de sus hijos L0 no haya alcanzado su `isPosDeliveryPoint`.
 - Cuando el primer hijo L0 de un L1 entra a downstream, el L1 padre salta automáticamente a su primer estado downstream.
 - Cuando el primer hijo L1 de un L2 entra a downstream, el L2 padre salta automáticamente a su primer estado downstream.
-- Cuando todos los hijos L1 de un L2 están en `isDeliveryPoint`, el L2 avanza desde su primer downstream.
+- Cuando todos los hijos L1 de un L2 están en `isPosDeliveryPoint`, el L2 avanza desde su primer downstream.
 
 ---
 
@@ -394,8 +394,8 @@ El sistema debe respetar las reglas jerárquicas definidas entre niveles, basada
 El sistema debe crear automáticamente workitems hijos según las reglas de negocio.
 
 **Criterios de aceptación:**
-- Cuando un L2 pasa por su `isCommitmentPoint`, se crean exactamente N hijos L1 en el primer estado del workflow L1 (N configurable, por defecto 3).
-- Cuando un L1 pasa por su `isCommitmentPoint`, se crean exactamente N hijos L0 en el primer estado del workflow L0.
+- Cuando un L2 pasa por su `isBeforeCommitmentPoint`, se crean exactamente N hijos L1 en el primer estado del workflow L1 (N configurable, por defecto 3).
+- Cuando un L1 pasa por su `isBeforeCommitmentPoint`, se crean exactamente N hijos L0 en el primer estado del workflow L0.
 - Los hijos se crean una sola vez (si ya existen no se vuelven a crear).
 - Los IDs de los nuevos workitems siguen la nomenclatura definida (ej: FEAT-1, SPEC-4).
 
@@ -522,7 +522,7 @@ src/
 ### 11.3 Decisiones de Diseño
 
 * **Función pura para el tick:** `tick(state, config) → state` en `engine.ts` es una función pura sin efectos secundarios. Facilita el testing, la reproducibilidad y el autoplay con `setInterval`.
-* **Motor generalizado:** Las reglas del engine se basan en las propiedades estructurales del workflow (`isCommitmentPoint`, `isDeliveryPoint`, `streamType`), no en IDs de estados. Esto permite usar cualquier simulación definida en el JSON sin modificar el código del motor.
+* **Motor generalizado:** Las reglas del engine se basan en las propiedades estructurales del workflow (`isBeforeCommitmentPoint`, `isPosDeliveryPoint`, `streamType`), no en IDs de estados. Esto permite usar cualquier simulación definida en el JSON sin modificar el código del motor.
 * **Configuración en JSON:** Todas las simulaciones, workflows y parámetros se definen en `defaultConfig.json`. `defaultConfig.ts` solo carga el JSON y deriva el campo `category` automáticamente.
 * **Múltiples simulaciones:** El JSON soporta un array de simulaciones con un campo `defaultSimulation`. La UI permite seleccionar entre ellas desde un dropdown.
 

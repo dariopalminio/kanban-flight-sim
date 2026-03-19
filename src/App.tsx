@@ -65,9 +65,9 @@ export default function App() {
   const { workitems, tick: tickCount } = simState;
 
   return (
-    <div style={{ background: "#0f172a", minHeight: "100vh", padding: 8, boxSizing: "border-box" }}>
+    <div style={{ background: "#0f172a", minHeight: "100vh", padding: "6px 8px", boxSizing: "border-box" }}>
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
         {/* Simulation selector */}
                 <span style={{ color: "#94a3b8", fontSize: 11, fontWeight: 600 }}>
           Simulations:
@@ -140,7 +140,12 @@ export default function App() {
         </button>
       </div>
 
-      {/* Boards — L2 arriba, L0 abajo */}
+      {/* Boards — L3 arriba, L0 abajo */}
+      <Board
+        workflow={workflows.L3}
+        items={workitems.filter((w) => w.level === "L3")}
+        highlightMode={highlightMode}
+      />
       <Board
         workflow={workflows.L2}
         items={workitems.filter((w) => w.level === "L2")}

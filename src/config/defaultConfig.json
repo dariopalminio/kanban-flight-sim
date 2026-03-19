@@ -1,145 +1,192 @@
 {
   "defaultSimulation": "Simplified",
-  "simulations": [{
+  "simulations": [
+    {
       "name": "Simplified",
       "initialReleaseCount": 1,
       "advanceProbability": 0.5,
       "childrenPerParent": 3,
       "workflows": {
+        "L3": {
+          "id": "wf-project",
+          "name": "Project",
+          "level": "L3",
+          "workitemName": "Project",
+          "statuses": [
+            {
+              "id": "project-backlog",
+              "name": "Backlog",
+              "order": 1,
+              "streamType": "UPSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false,
+              "description": "Ideas de Release, sin análisis detallado"
+            },
+            {
+              "id": "project-committed",
+              "name": "Committed",
+              "order": 2,
+              "streamType": "UPSTREAM",
+              "isBeforeCommitmentPoint": true,
+              "isPosDeliveryPoint": false,
+              "description": "Epic planificado y priorizado, listo para desarrollo",
+              "wipLimit": 3
+            },
+            {
+              "id": "project-in-progress",
+              "name": "In-Progress",
+              "order": 3,
+              "streamType": "DOWNSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false,
+              "description": "Epic en desarrollo activo",
+              "wipLimit": 1
+            },
+            {
+              "id": "project-done",
+              "name": "Done",
+              "order": 4,
+              "streamType": "DOWNSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": true,
+              "description": "Epic liberado a producción"
+            }
+          ]
+        },
         "L2": {
-          "id": "wf-release",
+          "id": "wf-epic",
           "name": "Epic",
           "level": "L2",
           "workitemName": "Epic",
           "statuses": [
             {
-              "id": "release-backlog",
+              "id": "epic-backlog",
               "name": "Backlog",
               "order": 1,
               "streamType": "UPSTREAM",
-              "isCommitmentPoint": false,
-              "isDeliveryPoint": false,
-              "description": "Ideas de Release, sin análisis detallado"
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false,
+              "description": "Ideas de Epic, sin análisis detallado"
             },
             {
-              "id": "release-committed",
+              "id": "epic-committed",
               "name": "Committed",
               "order": 2,
               "streamType": "UPSTREAM",
-              "isCommitmentPoint": true,
-              "isDeliveryPoint": false,
+              "isBeforeCommitmentPoint": true,
+              "isPosDeliveryPoint": false,
               "description": "Epic planificado y priorizado, listo para desarrollo",
               "wipLimit": 3
             },
             {
-              "id": "release-in-progress",
+              "id": "epic-in-progress",
               "name": "In-Progress",
               "order": 3,
               "streamType": "DOWNSTREAM",
-              "isCommitmentPoint": false,
-              "isDeliveryPoint": false,
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false,
               "description": "Epic en desarrollo activo",
-              "wipLimit": 2
+              "wipLimit": 1
             },
             {
-              "id": "release-done",
+              "id": "epic-done",
               "name": "Done",
               "order": 4,
               "streamType": "DOWNSTREAM",
-              "isCommitmentPoint": false,
-              "isDeliveryPoint": true,
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": true,
               "description": "Epic liberado a producción"
             }
           ]
         },
         "L1": {
-          "id": "wf-feat",
+          "id": "wf-story",
           "name": "Story",
           "level": "L1",
           "workitemName": "Story",
           "statuses": [
             {
-              "id": "feat-backlog",
+              "id": "story-backlog",
               "name": "Backlog",
               "order": 1,
               "streamType": "UPSTREAM",
-              "isCommitmentPoint": false,
-              "isDeliveryPoint": false,
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false,
               "description": "Feature priorizada, sin especificar"
             },
             {
-              "id": "feat-committed",
+              "id": "story-committed",
               "name": "Committed",
               "order": 2,
               "streamType": "UPSTREAM",
-              "isCommitmentPoint": true,
-              "isDeliveryPoint": false,
+              "isBeforeCommitmentPoint": true,
+              "isPosDeliveryPoint": false,
               "description": "Story especificada y lista para implementar",
               "wipLimit": 5
             },
             {
-              "id": "feat-in-progress",
+              "id": "story-in-progress",
               "name": "In-Progress",
               "order": 3,
               "streamType": "DOWNSTREAM",
-              "isCommitmentPoint": false,
-              "isDeliveryPoint": false,
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false,
               "description": "Story en implementación",
               "wipLimit": 3
             },
             {
-              "id": "feat-done",
+              "id": "story-done",
               "name": "Done",
               "order": 4,
               "streamType": "DOWNSTREAM",
-              "isCommitmentPoint": false,
-              "isDeliveryPoint": true,
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": true,
               "description": "Story completada y validada"
             }
           ]
         },
         "L0": {
-          "id": "wf-spec",
+          "id": "wf-subtask",
           "name": "Subtask",
           "level": "L0",
           "workitemName": "Subtask",
           "statuses": [
             {
-              "id": "spec-backlog",
+              "id": "subtask-backlog",
               "name": "Backlog",
               "order": 1,
               "streamType": "UPSTREAM",
-              "isCommitmentPoint": false,
-              "isDeliveryPoint": false,
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false,
               "description": "Subtask técnica identificada"
             },
             {
-              "id": "spec-committed",
+              "id": "subtask-committed",
               "name": "Committed",
               "order": 2,
               "streamType": "UPSTREAM",
-              "isCommitmentPoint": true,
-              "isDeliveryPoint": false,
+              "isBeforeCommitmentPoint": true,
+              "isPosDeliveryPoint": false,
               "description": "Subtask lista para codificar",
               "wipLimit": 8
             },
             {
-              "id": "spec-in-progress",
+              "id": "subtask-in-progress",
               "name": "In-Progress",
               "order": 3,
               "streamType": "DOWNSTREAM",
-              "isCommitmentPoint": false,
-              "isDeliveryPoint": false,
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false,
               "description": "Subtask en codificación",
               "wipLimit": 4
             },
             {
-              "id": "spec-done",
+              "id": "subtask-done",
               "name": "Done",
               "order": 4,
               "streamType": "DOWNSTREAM",
-              "isCommitmentPoint": false,
-              "isDeliveryPoint": true,
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": true,
               "description": "Subtask completada"
             }
           ]
@@ -147,27 +194,172 @@
       }
     },
     {
-      "name": "SDF workflosws",
+      "name": "SDF workflows",
       "initialReleaseCount": 1,
       "advanceProbability": 0.5,
       "childrenPerParent": 3,
       "workflows": {
+        "L3": {
+          "id": "wf-project",
+          "name": "Project",
+          "level": "L3",
+          "workitemName": "Project",
+          "statuses": [
+            {
+              "id": "project-draft",
+              "name": "Draft",
+              "order": 1,
+              "streamType": "UPSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false,
+              "description": "Idea inicial de proyecto, sin análisis detallado"
+            },
+            {
+              "id": "project-discovery",
+              "name": "Discovery",
+              "order": 2,
+              "streamType": "UPSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false,
+              "description": "Análisis de viabilidad, investigación y descubrimiento"
+            },
+            {
+              "id": "project-approved",
+              "name": "Approved",
+              "order": 3,
+              "streamType": "UPSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false,
+              "description": "Proyecto aprobado y priorizado, listo para planificación",
+              "wipLimit": 3
+            },
+            {
+              "id": "project-planned",
+              "name": "Planned",
+              "order": 4,
+              "streamType": "UPSTREAM",
+              "isBeforeCommitmentPoint": true,
+              "isPosDeliveryPoint": false,
+              "description": "Proyecto planificado, alcance definido y recursos asignados",
+              "wipLimit": 2
+            },
+            {
+              "id": "project-in-development",
+              "name": "In-Development",
+              "order": 5,
+              "streamType": "DOWNSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false,
+              "description": "Proyecto en desarrollo activo",
+              "wipLimit": 1
+            },
+            {
+              "id": "project-measuring",
+              "name": "Measuring-Results",
+              "order": 6,
+              "streamType": "DOWNSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false,
+              "description": "Métricas y evaluación de resultados"
+            },
+            {
+              "id": "project-finished",
+              "name": "Finished",
+              "order": 7,
+              "streamType": "DOWNSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": true,
+              "description": "Proyecto completado y entregado"
+            }
+          ]
+        },
         "L2": {
           "id": "wf-release",
           "name": "Release",
           "level": "L2",
           "workitemName": "Release",
           "statuses": [
-            { "id": "release-initial",         "name": "Initial",         "order": 1,  "streamType": "UPSTREAM",   "isCommitmentPoint": false, "isDeliveryPoint": false },
-            { "id": "release-defining",        "name": "Defining",        "order": 2,  "streamType": "UPSTREAM",   "isCommitmentPoint": false, "isDeliveryPoint": false },
-            { "id": "release-plan",            "name": "Plan",            "order": 3,  "streamType": "UPSTREAM",   "isCommitmentPoint": false, "isDeliveryPoint": false },
-            { "id": "release-ready",           "name": "Ready",           "order": 4,  "streamType": "UPSTREAM",   "isCommitmentPoint": true,  "isDeliveryPoint": false },
-            { "id": "release-develop",         "name": "Develop",         "order": 5,  "streamType": "DOWNSTREAM", "isCommitmentPoint": false, "isDeliveryPoint": false },
-            { "id": "release-to-validate",     "name": "To-Validate",     "order": 6,  "streamType": "DOWNSTREAM", "isCommitmentPoint": false, "isDeliveryPoint": false },
-            { "id": "release-validation-uat",  "name": "Validation-UAT",  "order": 7,  "streamType": "DOWNSTREAM", "isCommitmentPoint": false, "isDeliveryPoint": false },
-            { "id": "release-ready-for-prod",  "name": "Ready-for-Prod",  "order": 8,  "streamType": "DOWNSTREAM", "isCommitmentPoint": false, "isDeliveryPoint": false },
-            { "id": "release-deploy",          "name": "Deploy",          "order": 9,  "streamType": "DOWNSTREAM", "isCommitmentPoint": false, "isDeliveryPoint": false },
-            { "id": "release-released",        "name": "Released",        "order": 10, "streamType": "DOWNSTREAM", "isCommitmentPoint": false, "isDeliveryPoint": true  }
+            {
+              "id": "release-initial",
+              "name": "Initial",
+              "order": 1,
+              "streamType": "UPSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false
+            },
+            {
+              "id": "release-defining",
+              "name": "Defining",
+              "order": 2,
+              "streamType": "UPSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false
+            },
+            {
+              "id": "release-plan",
+              "name": "Plan",
+              "order": 3,
+              "streamType": "UPSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false
+            },
+            {
+              "id": "release-ready",
+              "name": "Ready",
+              "order": 4,
+              "streamType": "UPSTREAM",
+              "isBeforeCommitmentPoint": true,
+              "isPosDeliveryPoint": false
+            },
+            {
+              "id": "release-develop",
+              "name": "Develop",
+              "order": 5,
+              "streamType": "DOWNSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false,
+              "wipLimit": 1
+            },
+            {
+              "id": "release-to-validate",
+              "name": "To-Validate",
+              "order": 6,
+              "streamType": "DOWNSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false
+            },
+            {
+              "id": "release-validation-uat",
+              "name": "Validation-UAT",
+              "order": 7,
+              "streamType": "DOWNSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false
+            },
+            {
+              "id": "release-ready-for-prod",
+              "name": "Ready-for-Prod",
+              "order": 8,
+              "streamType": "DOWNSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false
+            },
+            {
+              "id": "release-deploy",
+              "name": "Deploy",
+              "order": 9,
+              "streamType": "DOWNSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false
+            },
+            {
+              "id": "release-released",
+              "name": "Released",
+              "order": 10,
+              "streamType": "DOWNSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": true
+            }
           ]
         },
         "L1": {
@@ -176,14 +368,70 @@
           "level": "L1",
           "workitemName": "Feat",
           "statuses": [
-            { "id": "feat-pending",     "name": "Pending",           "order": 1, "streamType": "UPSTREAM",   "isCommitmentPoint": false, "isDeliveryPoint": false },
-            { "id": "feat-refining",    "name": "Refining",          "order": 2, "streamType": "UPSTREAM",   "isCommitmentPoint": false, "isDeliveryPoint": false },
-            { "id": "feat-ready",       "name": "Ready-for-Develop", "order": 3, "streamType": "UPSTREAM",   "isCommitmentPoint": true,  "isDeliveryPoint": false },
-            { "id": "feat-developing",  "name": "Developing",        "order": 4, "streamType": "DOWNSTREAM", "isCommitmentPoint": false, "isDeliveryPoint": false },
-            { "id": "feat-code-review", "name": "Code-Review",       "order": 5, "streamType": "DOWNSTREAM", "isCommitmentPoint": false, "isDeliveryPoint": false },
-            { "id": "feat-qa",          "name": "QA-Validation",     "order": 6, "streamType": "DOWNSTREAM", "isCommitmentPoint": false, "isDeliveryPoint": false },
-            { "id": "feat-acceptance",  "name": "Acceptance",        "order": 7, "streamType": "DOWNSTREAM", "isCommitmentPoint": false, "isDeliveryPoint": false },
-            { "id": "feat-done",        "name": "Done",              "order": 8, "streamType": "DOWNSTREAM", "isCommitmentPoint": false, "isDeliveryPoint": true  }
+            {
+              "id": "feat-pending",
+              "name": "Pending",
+              "order": 1,
+              "streamType": "UPSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false
+            },
+            {
+              "id": "feat-refining",
+              "name": "Refining",
+              "order": 2,
+              "streamType": "UPSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false
+            },
+            {
+              "id": "feat-ready",
+              "name": "Ready-for-Develop",
+              "order": 3,
+              "streamType": "UPSTREAM",
+              "isBeforeCommitmentPoint": true,
+              "isPosDeliveryPoint": false
+            },
+            {
+              "id": "feat-developing",
+              "name": "Developing",
+              "order": 4,
+              "streamType": "DOWNSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false
+            },
+            {
+              "id": "feat-code-review",
+              "name": "Code-Review",
+              "order": 5,
+              "streamType": "DOWNSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false
+            },
+            {
+              "id": "feat-qa",
+              "name": "QA-Validation",
+              "order": 6,
+              "streamType": "DOWNSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false
+            },
+            {
+              "id": "feat-acceptance",
+              "name": "Acceptance",
+              "order": 7,
+              "streamType": "DOWNSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false
+            },
+            {
+              "id": "feat-done",
+              "name": "Done",
+              "order": 8,
+              "streamType": "DOWNSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": true
+            }
           ]
         },
         "L0": {
@@ -192,13 +440,62 @@
           "level": "L0",
           "workitemName": "Spec",
           "statuses": [
-            { "id": "spec-todo",         "name": "Todo",                "order": 1, "streamType": "UPSTREAM",   "isCommitmentPoint": false, "isDeliveryPoint": false },
-            { "id": "spec-specifying",   "name": "Specifying",          "order": 2, "streamType": "UPSTREAM",   "isCommitmentPoint": false, "isDeliveryPoint": false },
-            { "id": "spec-designing",    "name": "Designing",           "order": 3, "streamType": "UPSTREAM",   "isCommitmentPoint": false, "isDeliveryPoint": false },
-            { "id": "spec-ready-impl",   "name": "Ready-for-Implement", "order": 4, "streamType": "UPSTREAM",   "isCommitmentPoint": true,  "isDeliveryPoint": false },
-            { "id": "spec-implementing", "name": "Implementing",        "order": 5, "streamType": "DOWNSTREAM", "isCommitmentPoint": false, "isDeliveryPoint": false },
-            { "id": "spec-validation",   "name": "Validation",          "order": 6, "streamType": "DOWNSTREAM", "isCommitmentPoint": false, "isDeliveryPoint": false },
-            { "id": "spec-completed",    "name": "Completed",           "order": 7, "streamType": "DOWNSTREAM", "isCommitmentPoint": false, "isDeliveryPoint": true  }
+            {
+              "id": "spec-todo",
+              "name": "Todo",
+              "order": 1,
+              "streamType": "UPSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false
+            },
+            {
+              "id": "spec-specifying",
+              "name": "Specifying",
+              "order": 2,
+              "streamType": "UPSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false
+            },
+            {
+              "id": "spec-designing",
+              "name": "Designing",
+              "order": 3,
+              "streamType": "UPSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false
+            },
+            {
+              "id": "spec-ready-impl",
+              "name": "Ready-for-Implement",
+              "order": 4,
+              "streamType": "UPSTREAM",
+              "isBeforeCommitmentPoint": true,
+              "isPosDeliveryPoint": false
+            },
+            {
+              "id": "spec-implementing",
+              "name": "Implementing",
+              "order": 5,
+              "streamType": "DOWNSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false
+            },
+            {
+              "id": "spec-validation",
+              "name": "Validation",
+              "order": 6,
+              "streamType": "DOWNSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false
+            },
+            {
+              "id": "spec-completed",
+              "name": "Completed",
+              "order": 7,
+              "streamType": "DOWNSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": true
+            }
           ]
         }
       }

@@ -1,6 +1,6 @@
 export type StatusCategory = "TODO" | "IN_PROGRESS" | "DONE";
 export type StreamType = "UPSTREAM" | "DOWNSTREAM";
-export type WorkitemLevel = "L0" | "L1" | "L2";
+export type WorkitemLevel = "L0" | "L1" | "L2" | "L3";
 export type HighlightMode = "none" | "stream" | "category" | "commitment" | "delivery";
 
 export type Status = {
@@ -8,9 +8,10 @@ export type Status = {
   name: string;
   order: number;
   streamType: StreamType;
-  isCommitmentPoint: boolean;
-  isDeliveryPoint: boolean;
+  isBeforeCommitmentPoint: boolean;
+  isPosDeliveryPoint: boolean;
   category: StatusCategory;
+  wipLimit?: number;
 };
 
 export type Workflow = {
@@ -28,7 +29,7 @@ export type Workitem = {
   parentId?: string;
 };
 
-export type IdCounters = { L0: number; L1: number; L2: number };
+export type IdCounters = { L0: number; L1: number; L2: number; L3: number };
 
 export type SimState = {
   workitems: Workitem[];
@@ -37,7 +38,7 @@ export type SimState = {
 };
 
 export type Config = {
-  workflows: { L2: Workflow; L1: Workflow; L0: Workflow };
+  workflows: { L3: Workflow; L2: Workflow; L1: Workflow; L0: Workflow };
   initialReleaseCount: number;
   advanceProbability: number;
   childrenPerParent: number;

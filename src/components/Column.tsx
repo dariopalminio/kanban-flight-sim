@@ -16,13 +16,13 @@ const getBg = (status: Status, mode: HighlightMode): string => {
     if (status.category === "IN_PROGRESS") return "#1d4ed8";
     return "#166534";
   }
-  if (mode === "commitment" && status.isCommitmentPoint) return "#ddb121";
-  if (mode === "delivery" && status.isDeliveryPoint) return "#14532d";
+  if (mode === "commitment" && status.isBeforeCommitmentPoint) return "#ddb121";
+  if (mode === "delivery" && status.isPosDeliveryPoint) return "#14532d";
   return "#1e293b";
 };
 
 const getBorder = (status: Status, mode: HighlightMode): string => {
-  if (mode === "delivery" && status.isDeliveryPoint) return "1px solid #4ade80";
+  if (mode === "delivery" && status.isPosDeliveryPoint) return "1px solid #4ade80";
   return "1px solid #334155";
 };
 
@@ -36,11 +36,11 @@ export function Column({ status, items, highlightMode }: Props) {
         background: getBg(status, highlightMode),
         border: getBorder(status, highlightMode),
         borderRadius: 3,
-        padding: 4,
+        padding: "2px 4px",
       }}
     >
-      <div style={{ fontSize: 9, color: "white", fontWeight: 600, marginBottom: 2, textDecoration: status.isCommitmentPoint ? "underline" : "none" }}>
-        {status.name}
+      <div style={{ fontSize: 9, color: "white", fontWeight: 600, lineHeight: "13px", marginBottom: 1, textDecoration: status.isBeforeCommitmentPoint ? "underline" : "none" }}>
+        {status.name}{status.wipLimit != null ? ` [${items.length}/${status.wipLimit}]` : ""}
       </div>
       {items.map((item) => (
         <Card key={item.id} item={item} />

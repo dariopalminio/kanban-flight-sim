@@ -5,15 +5,16 @@ import raw from "./defaultConfig.json";
 // CATEGORY HELPER
 // =====================
 
-type RawStatus = Omit<Status, "category">;
+type RawStatus = Omit<Status, "category" | "wipLimit"> & { wipLimit?: number };
 type RawSimulation = typeof raw.simulations[0];
 
 const assignCategory = (statuses: RawStatus[]): Status[] => {
   const lastId = statuses[statuses.length - 1].id;
   return statuses.map((s) => {
-    if (s.streamType === "UPSTREAM") return { ...s, category: "TODO" as const };
-    if (s.id === lastId) return { ...s, category: "DONE" as const };
-    return { ...s, category: "IN_PROGRESS" as const };
+    const category = s.streamType === "UPSTREAM" ? "TODO" as const
+      : s.id === lastId ? "DONE" as const
+      : "IN_PROGRESS" as const;
+    return { ...s, category, wipLimit: s.wipLimit };
   });
 };
 
@@ -34,6 +35,7 @@ const buildConfig = (sim: RawSimulation): Config => ({
   advanceProbability: sim.advanceProbability,
   childrenPerParent: sim.childrenPerParent,
   workflows: {
+    L3: buildWorkflow(sim.workflows.L3),
     L2: buildWorkflow(sim.workflows.L2),
     L1: buildWorkflow(sim.workflows.L1),
     L0: buildWorkflow(sim.workflows.L0),
