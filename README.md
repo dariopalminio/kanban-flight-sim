@@ -1,73 +1,89 @@
-# React + TypeScript + Vite
+# Kanban Flight Simulator
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A visual Kanban flow simulator for understanding multi-level hierarchical workflows. Built as an educational tool to explore concepts like upstream/downstream, commitment points, delivery points, and WIP limits across four levels of work.
 
-Currently, two official plugins are available:
+## What it does
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+The simulator models work flowing through four hierarchical levels simultaneously:
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+L3 (e.g. Project)  ─── contains ──▶  L2 (e.g. Epic)
+L2 (e.g. Epic)     ─── contains ──▶  L1 (e.g. Story)
+L1 (e.g. Story)    ─── contains ──▶  L0 (e.g. Subtask)
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Each level has its own Kanban board with configurable statuses. Work items advance through their workflow tick by tick, following hierarchical rules: a parent item is unblocked only when its children complete their work; children are created automatically when a parent reaches its commitment point.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Getting started
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
+
+## Controls
+
+| Button | Action |
+|--------|--------|
+| **Step** | Advance the simulation one tick |
+| **Autoplay** | Run continuously (one tick/second). Press again to pause |
+| **Reset** | Return to the initial state |
+| **Upstream / Downstream** | Highlight columns by stream zone |
+| **Status Category** | Highlight columns by category (TODO / IN-PROGRESS / DONE) |
+| **Commitment Status** | Highlight the commitment point column on each board |
+| **Delivery Status** | Highlight the delivery point column on each board |
+
+Use the dropdown in the header to switch between available simulations.
+
+## Configuration
+
+All simulations are defined in [`src/config/defaultConfig.json`](src/config/defaultConfig.json). Each simulation specifies:
+
+- Four workflows (L3, L2, L1, L0), each with an ordered list of statuses
+- `advanceProbability` — probability each eligible work item advances per tick (default: `0.5`)
+- `childrenPerParent` — how many child work items are created at the commitment point (default: `3`)
+- `initialReleaseCount` — number of L3 work items to start with (default: `1`)
+
+Each status supports:
+- `streamType`: `UPSTREAM` or `DOWNSTREAM`
+- `isBeforeCommitmentPoint`: marks the status where children are spawned
+- `isPosDeliveryPoint`: marks the final status (work item stops here)
+- `wipLimit`: optional cap on how many work items can occupy this column at once
+
+Adding a new simulation is as simple as appending a new entry to the `simulations` array in the JSON — no code changes needed.
+
+## Bundled simulations
+
+| Name | Levels |
+|------|--------|
+| **Simplified** | Project → Epic → Story → Subtask, 4 statuses each |
+| **SDF workflows** | Project (7 statuses) → Release (10) → Feat (8) → Spec (7) |
+
+## Architecture
+
+```
+src/
+├── config/
+│   ├── defaultConfig.json   # Source of truth: simulations, workflows, parameters
+│   └── defaultConfig.ts     # Loads JSON and derives the `category` field
+├── domain/
+│   └── types.ts             # TypeScript types: Workitem, Workflow, Status, SimState, Config
+├── simulation/
+│   └── engine.ts            # Pure functions: buildInitialState() and tick()
+├── components/
+│   ├── Board.tsx            # One board per level
+│   ├── Column.tsx           # One column per status
+│   └── Card.tsx             # One card per work item
+└── App.tsx                  # Root: state, controls, board composition
+```
+
+The simulation engine is a **pure function** — `tick(state, config) → state` — with no side effects. This makes it easy to test, replay, and drive with `setInterval` for autoplay.
+
+## Documentation
+
+Full requirements specification: [`doc/mvp-software-spec.md`](doc/mvp-software-spec.md)
+
+## Stack
+
+- React + Vite
+- TypeScript
