@@ -9,7 +9,7 @@ type Props = {
 
 const getBg = (status: Status, mode: HighlightMode): string => {
   if (mode === "stream") {
-    return status.streamType === "UPSTREAM" ? "#1e3a8a" : "#065f46";
+    return status.streamType === "UPSTREAM" ? "#e5b532" : "#2c85de";
   }
   if (mode === "category") {
     if (status.category === "TODO") return "#374151";

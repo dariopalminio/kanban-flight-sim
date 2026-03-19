@@ -16,7 +16,7 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## [v1.0.0] — 2026-03-18
+## [v1.0.0] MVP — 2026-03-18
 
 ### Added
 - **Motor de simulación puro** (`engine.ts`) — `tick(state, config) → state` función pura sin efectos secundarios. Ejecuta 7 pasos ordenados por tick con reglas jerárquicas L0–L3, avance probabilístico (50% por defecto), bloqueo en first-downstream hasta que todos los hijos estén en delivery, y spawn de hijos en el commitment point.
