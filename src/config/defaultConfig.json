@@ -164,7 +164,7 @@
             {
               "id": "subtask-in-progress",
               "name": "In-Progress",
-              "order": 3,
+              "order": 2,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
@@ -174,7 +174,7 @@
             {
               "id": "subtask-done",
               "name": "Done",
-              "order": 4,
+              "order": 3,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": true,
@@ -353,8 +353,8 @@
               "isPosDeliveryPoint": false
             },
             {
-              "id": "release-ready-for-prod",
-              "name": "Ready-for-Prod",
+              "id": "release-ready-for-release",
+              "name": "Ready-for-Release",
               "order": 8,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
@@ -502,8 +502,8 @@
               "isPosDeliveryPoint": false
             },
             {
-              "id": "spec-validation",
-              "name": "Validation",
+              "id": "spec-validating",
+              "name": "Validating",
               "order": 6,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,

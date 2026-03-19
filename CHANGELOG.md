@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v1.0.2] — 2026-03-19
+
+### Added
+- **Selector de vista de tableros** — Grupo de radio buttons ("Portafolio", "Delivery", "Full") en el panel de controles que filtra qué tableros se muestran:
+  - *Portafolio*: muestra L3 y L2 (vista estratégica). Selección por defecto al cargar.
+  - *Delivery*: muestra L2, L1 y L0 (vista operativa).
+  - *Full*: muestra los cuatro tableros simultáneamente.
+  Los tableros no visibles se desmontan del DOM; el estado de simulación se preserva al cambiar de vista.
+
+### Fixed
+- **Orden incorrecto en L0 Simplified** — El estado `In-Progress` del workflow Subtask tenía `order: 3` (saltándose el 2), lo que impedía que `getNextStatusId` encontrara el siguiente estado desde `Todo`. Los workitems L0 nunca salían de "Todo", bloqueando la cadena completa L0→L1→L2→L3. Corregido a `order: 2` y `Done` a `order: 3`.
+
+---
+
 ## [v1.0.1] — 2026-03-19
 
 ### Fixed
