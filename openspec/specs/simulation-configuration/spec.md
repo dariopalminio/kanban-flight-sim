@@ -111,3 +111,29 @@ The default configuration SHALL include at least two pre-built simulations:
 #### Scenario: Simplified simulation loads with 4 statuses per level
 - **WHEN** the "Simplified" simulation is selected
 - **THEN** each of the four workflows has exactly 4 statuses
+
+---
+
+### Requirement: Optional hasReadySignal field on status definition
+Each status entry in `defaultConfig.json` MAY include `"hasReadySignal": true`. When present and `true`, workitems in that status go through two-phase advancement as described in the `ready-signal` spec. The field is optional; omitting it preserves existing behavior exactly.
+
+#### Scenario: Status with hasReadySignal true is valid configuration
+- **WHEN** a status entry has `"hasReadySignal": true`
+- **THEN** the config loads without error and the status is recognized by the engine for two-phase advancement
+
+#### Scenario: Status without hasReadySignal loads as before
+- **WHEN** a status entry does not include `hasReadySignal`
+- **THEN** the loaded `Status` has no `hasReadySignal` field and advances in a single phase as before
+
+---
+
+### Requirement: Optional isBuffer field on status definition
+Each status entry in `defaultConfig.json` MAY include `"isBuffer": true`. When present, the column is treated as a ready buffer (all items implicitly ready to be pulled). The field is optional; omitting it preserves existing behavior exactly.
+
+#### Scenario: Status with isBuffer true is valid configuration
+- **WHEN** a status entry has `"isBuffer": true`
+- **THEN** the config loads without error and `status.isBuffer` is `true` in the loaded workflow
+
+#### Scenario: Status without isBuffer loads as before
+- **WHEN** a status entry does not include `isBuffer`
+- **THEN** the loaded `Status` has no `isBuffer` field and no visual or behavioral change occurs

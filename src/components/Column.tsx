@@ -37,13 +37,14 @@ export function Column({ status, items, highlightMode }: Props) {
         border: getBorder(status, highlightMode),
         borderRadius: 3,
         padding: "2px 4px",
+        borderTop: status.isBuffer ? "2px solid #22c55e" : undefined,
       }}
     >
       <div style={{ fontSize: 9, color: "white", fontWeight: 600, lineHeight: "13px", marginBottom: 1, textDecoration: status.isBeforeCommitmentPoint ? "underline" : "none" }}>
-        {status.name}{status.wipLimit != null ? ` [${items.length}/${status.wipLimit}]` : ""}
+        {status.name}{status.wipLimit != null ? ` [${items.length}/${status.wipLimit}]` : ""}{status.isBuffer && <span style={{ color: "#22c55e", marginLeft: 2 }}>✓</span>}
       </div>
       {items.map((item) => (
-        <Card key={item.id} item={item} />
+        <Card key={item.id} item={item} isBuffer={status.isBuffer} />
       ))}
     </div>
   );

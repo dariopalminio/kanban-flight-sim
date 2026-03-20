@@ -42,6 +42,27 @@ const makeWipTracker = (wf: Workflow, items: Workitem[]) => {
   };
 };
 
+// Two-phase advancement for statuses with hasReadySignal:
+//   Phase 1: !isReady → mark isReady:true (stays in same status)
+//   Phase 2:  isReady → advance to next status (clears isReady)
+// For statuses without hasReadySignal: advances normally in one step.
+const advanceOrSignal = (
+  item: Workitem,
+  wf: Workflow,
+  wipFn: (from: string, to: string) => boolean,
+  prob: number
+): Workitem => {
+  const status = wf.statuses.find((s) => s.id === item.statusId);
+  if (status?.hasReadySignal && !item.isReady) {
+    if (!maybe(prob)) return item;
+    return { ...item, isReady: true };
+  }
+  if (!maybe(prob)) return item;
+  const next = getNextStatusId(wf, item.statusId);
+  if (!wipFn(item.statusId, next)) return item;
+  return { ...item, statusId: next, isReady: undefined };
+};
+
 // Structural key status IDs derived from workflow properties
 type WfKeys = {
   commitmentId: string;
@@ -123,10 +144,7 @@ export const tick = (state: SimState, config: Config): SimState => {
   items = items.map((w) => {
     if (w.level !== "L0") return w;
     if (getOrder(wfL0, w.statusId) >= keysL0.deliveryOrder) return w;
-    if (!maybe(advanceProbability)) return w;
-    const next = getNextStatusId(wfL0, w.statusId);
-    if (!wipL0(w.statusId, next)) return w;
-    return { ...w, statusId: next };
+    return advanceOrSignal(w, wfL0, wipL0, advanceProbability);
   });
 
   // --- PASO 2: Push L1 to first downstream when any L0 child enters downstream ---
@@ -161,6 +179,10 @@ export const tick = (state: SimState, config: Config): SimState => {
       return w;
     }
 
+    const status = wfL1.statuses.find((s) => s.id === w.statusId);
+    if (status?.hasReadySignal && !w.isReady) {
+      return maybe(advanceProbability) ? { ...w, isReady: true } : w;
+    }
     if (!maybe(advanceProbability)) return w;
     const next = getNextStatusId(wfL1, w.statusId);
     if (!wipL1(w.statusId, next)) return w;
@@ -174,7 +196,7 @@ export const tick = (state: SimState, config: Config): SimState => {
         }
       }
     }
-    return { ...w, statusId: next };
+    return { ...w, statusId: next, isReady: undefined };
   });
 
   items = [...items, ...newL0Children];
@@ -211,6 +233,10 @@ export const tick = (state: SimState, config: Config): SimState => {
       return w;
     }
 
+    const status = wfL2.statuses.find((s) => s.id === w.statusId);
+    if (status?.hasReadySignal && !w.isReady) {
+      return maybe(advanceProbability) ? { ...w, isReady: true } : w;
+    }
     if (!maybe(advanceProbability)) return w;
     const next = getNextStatusId(wfL2, w.statusId);
     if (!wipL2(w.statusId, next)) return w;
@@ -224,7 +250,7 @@ export const tick = (state: SimState, config: Config): SimState => {
         }
       }
     }
-    return { ...w, statusId: next };
+    return { ...w, statusId: next, isReady: undefined };
   });
 
   items = [...items, ...newL1Children];
@@ -261,6 +287,10 @@ export const tick = (state: SimState, config: Config): SimState => {
       return w;
     }
 
+    const status = wfL3.statuses.find((s) => s.id === w.statusId);
+    if (status?.hasReadySignal && !w.isReady) {
+      return maybe(advanceProbability) ? { ...w, isReady: true } : w;
+    }
     if (!maybe(advanceProbability)) return w;
     const next = getNextStatusId(wfL3, w.statusId);
     if (!wipL3(w.statusId, next)) return w;
@@ -274,7 +304,7 @@ export const tick = (state: SimState, config: Config): SimState => {
         }
       }
     }
-    return { ...w, statusId: next };
+    return { ...w, statusId: next, isReady: undefined };
   });
 
   items = [...items, ...newL2Children];
