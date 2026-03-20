@@ -184,7 +184,8 @@
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
               "description": "Idea inicial de proyecto d efiniéndose, sin análisis detallado",
-              "wipLimit": 5
+              "wipLimit": 5,
+              "hasReadySignal": true
             },
             {
               "id": "initiative-discovery",
@@ -194,7 +195,8 @@
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
               "description": "Análisis de viabilidad, investigación y descubrimiento",
-              "wipLimit": 3
+              "wipLimit": 3,
+              "hasReadySignal": true
             },
             {
               "id": "initiative-approval",
@@ -204,7 +206,8 @@
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
               "description": "Proyecto aprobado y priorizado, listo para planificación",
-              "wipLimit": 3
+              "wipLimit": 3,
+              "hasReadySignal": true
             },
             {
               "id": "initiative-planning",
@@ -214,7 +217,8 @@
               "isBeforeCommitmentPoint": true,
               "isPosDeliveryPoint": false,
               "description": "Proyecto planificado, alcance definido y recursos asignados",
-              "wipLimit": 2
+              "wipLimit": 2,
+              "hasReadySignal": true
             },
             {
               "id": "initiative-in-development",
@@ -224,7 +228,8 @@
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
               "description": "Proyecto en desarrollo activo",
-              "wipLimit": 1
+              "wipLimit": 1,
+              "hasReadySignal": true
             },
             {
               "id": "initiative-measuring",
@@ -233,7 +238,8 @@
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
-              "description": "Métricas y evaluación de resultados"
+              "description": "Métricas y evaluación de resultados",
+              "hasReadySignal": true
             },
             {
               "id": "initiative-finished",
@@ -267,7 +273,8 @@
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
-              "wipLimit": 4
+              "wipLimit": 4,
+              "hasReadySignal": true
             },
             {
               "id": "release-plan",
@@ -276,7 +283,8 @@
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": true,
               "isPosDeliveryPoint": false,
-              "wipLimit": 3
+              "wipLimit": 3,
+              "hasReadySignal": true
             },
             {
               "id": "release-develop",
@@ -285,7 +293,8 @@
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
-              "wipLimit": 1
+              "wipLimit": 1,
+              "hasReadySignal": true
             },
             {
               "id": "release-validation-uat",
@@ -293,7 +302,8 @@
               "order": 5,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
-              "isPosDeliveryPoint": false
+              "isPosDeliveryPoint": false,
+              "hasReadySignal": true
             },
             {
               "id": "release-deploy",
@@ -334,7 +344,8 @@
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": true,
               "isPosDeliveryPoint": false,
-              "wipLimit": 5
+              "wipLimit": 5,
+              "hasReadySignal": true
             },
             {
               "id": "feat-developing",
@@ -342,7 +353,8 @@
               "order": 3,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
-              "isPosDeliveryPoint": false
+              "isPosDeliveryPoint": false,
+              "hasReadySignal": true
             },
             {
               "id": "feat-code-review",
@@ -350,7 +362,8 @@
               "order": 4,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
-              "isPosDeliveryPoint": false
+              "isPosDeliveryPoint": false,
+              "hasReadySignal": true
             },
             {
               "id": "feat-qa",
@@ -358,7 +371,8 @@
               "order": 5,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
-              "isPosDeliveryPoint": false
+              "isPosDeliveryPoint": false,
+              "hasReadySignal": true
             },
             {
               "id": "feat-acceptance",
@@ -399,7 +413,8 @@
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
-              "wipLimit": 8
+              "wipLimit": 8,
+              "hasReadySignal": true
             },
             {
               "id": "spec-designing",
@@ -408,7 +423,8 @@
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
-              "wipLimit": 5
+              "wipLimit": 5,
+              "hasReadySignal": true
             },
             {
               "id": "spec-implementing",
@@ -416,7 +432,8 @@
               "order": 4,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": true,
-              "isPosDeliveryPoint": false
+              "isPosDeliveryPoint": false,
+              "hasReadySignal": true
             },
             {
               "id": "spec-validating",
@@ -424,7 +441,8 @@
               "order": 5,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
-              "isPosDeliveryPoint": false
+              "isPosDeliveryPoint": false,
+              "hasReadySignal": true
             },
             {
               "id": "spec-completed",

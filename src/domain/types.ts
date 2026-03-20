@@ -13,6 +13,7 @@ export type Status = {
   isPosDeliveryPoint: boolean;
   category: StatusCategory;
   wipLimit?: number;
+  hasReadySignal?: boolean;
 };
 
 export type Workflow = {
@@ -28,6 +29,7 @@ export type Workitem = {
   level: WorkitemLevel;
   statusId: string;
   parentId?: string;
+  isReady?: boolean;
 };
 
 export type IdCounters = { L0: number; L1: number; L2: number; L3: number };

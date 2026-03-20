@@ -7,9 +7,13 @@ All simulations SHALL be defined in `src/config/defaultConfig.json`. The JSON co
 - **WHEN** a new entry is appended to the `simulations` array in `defaultConfig.json`
 - **THEN** the new simulation appears in the dropdown and is fully functional without modifying any TypeScript source file
 
-#### Scenario: Default simulation loaded on startup
-- **WHEN** the application initializes
-- **THEN** the simulation named by `defaultSimulation` is loaded and active
+#### Scenario: Default simulation loaded on startup — name matches
+- **WHEN** the application initializes and `defaultSimulation` matches a simulation in the array
+- **THEN** that simulation is loaded and active
+
+#### Scenario: Default simulation not found — fallback applied
+- **WHEN** the application initializes and `defaultSimulation` does not match any simulation in the array
+- **THEN** the first simulation in the `simulations` array is loaded, and a warning is surfaced to the UI via `configLoadResult.error`
 
 ---
 
@@ -107,3 +111,16 @@ The default configuration SHALL include at least two pre-built simulations:
 #### Scenario: Simplified simulation loads with 4 statuses per level
 - **WHEN** the "Simplified" simulation is selected
 - **THEN** each of the four workflows has exactly 4 statuses
+
+---
+
+### Requirement: Optional hasReadySignal field on status definition
+Each status entry in `defaultConfig.json` MAY include `"hasReadySignal": true`. When present and `true`, workitems in that status go through two-phase advancement as described in the `ready-signal` spec. The field is optional; omitting it preserves existing behavior exactly.
+
+#### Scenario: Status with hasReadySignal true is valid configuration
+- **WHEN** a status entry has `"hasReadySignal": true`
+- **THEN** the config loads without error and the status is recognized by the engine for two-phase advancement
+
+#### Scenario: Status without hasReadySignal loads as before
+- **WHEN** a status entry does not include `hasReadySignal`
+- **THEN** the loaded `Status` has no `hasReadySignal` field and advances in a single phase as before
