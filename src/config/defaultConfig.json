@@ -21,6 +21,7 @@
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": true,
               "isPosDeliveryPoint": false,
+              "isBuffer": true,
               "description": "Ideas de Release, sin análisis detallado"
             },
             {
@@ -57,6 +58,7 @@
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": true,
               "isPosDeliveryPoint": false,
+              "isBuffer": true,
               "description": "Ideas de Epic, sin análisis detallado"
             },
             {
@@ -93,6 +95,7 @@
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": true,
               "isPosDeliveryPoint": false,
+              "isBuffer": true,
               "description": "Feature priorizada, sin especificar"
             },
             {
@@ -129,6 +132,7 @@
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": true,
               "isPosDeliveryPoint": false,
+              "isBuffer": true,
               "description": "Subtask técnica identificada"
             },
             {
@@ -174,6 +178,7 @@
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
+              "isBuffer": true,
               "description": "Iniciativa entra al embudo del portafolio"
             },
             {
@@ -278,7 +283,7 @@
             },
             {
               "id": "release-plan",
-              "name": "Plan",
+              "name": "Release-Plan",
               "order": 3,
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": true,
@@ -335,12 +340,23 @@
               "order": 1,
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": false,
-              "isPosDeliveryPoint": false
+              "isPosDeliveryPoint": false,
+              "isBuffer": true
             },
             {
               "id": "feat-refining",
               "name": "Refining",
               "order": 2,
+              "streamType": "UPSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false,
+              "wipLimit": 5,
+              "hasReadySignal": true
+            },
+            {
+              "id": "feat-refining",
+              "name": "Plan",
+              "order": 3,
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": true,
               "isPosDeliveryPoint": false,
@@ -350,7 +366,7 @@
             {
               "id": "feat-developing",
               "name": "Developing",
-              "order": 3,
+              "order": 4,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
@@ -359,7 +375,7 @@
             {
               "id": "feat-code-review",
               "name": "Code-Review",
-              "order": 4,
+              "order": 5,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
@@ -368,7 +384,7 @@
             {
               "id": "feat-qa",
               "name": "QA-Validation",
-              "order": 5,
+              "order": 6,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
@@ -377,7 +393,7 @@
             {
               "id": "feat-acceptance",
               "name": "Acceptance",
-              "order": 6,
+              "order": 7,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false
@@ -385,7 +401,7 @@
             {
               "id": "feat-done",
               "name": "Done",
-              "order": 7,
+              "order": 8,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": true
@@ -404,7 +420,8 @@
               "order": 1,
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": false,
-              "isPosDeliveryPoint": false
+              "isPosDeliveryPoint": false,
+              "isBuffer": true
             },
             {
               "id": "spec-specifying",

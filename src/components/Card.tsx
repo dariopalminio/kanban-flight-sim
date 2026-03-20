@@ -3,13 +3,14 @@ import type { Workitem } from "../domain/types";
 const LEVEL_COLORS: Record<string, string> = {
   L3: "#7c3aed",
   L2: "#1d4ed8",
-  L1: "#ea580c",
-  L0: "#1f6e79",
+  L1: "#1f6e79",
+  L0: "#ea580c",
 };
 
-type Props = { item: Workitem };
+type Props = { item: Workitem; isBuffer?: boolean };
 
-export function Card({ item }: Props) {
+export function Card({ item, isBuffer }: Props) {
+  const showReady = item.isReady && !isBuffer;
   return (
     <div
       style={{
@@ -23,12 +24,12 @@ export function Card({ item }: Props) {
         lineHeight: "18px",
         borderRadius: 2,
         textAlign: "center",
-        borderLeft: item.isReady ? "3px solid #22c55e" : "3px solid transparent",
-        boxShadow: item.isReady ? "0 0 5px #22c55e88" : "none",
+        borderLeft: showReady ? "3px solid #22c55e" : "3px solid transparent",
+        boxShadow: showReady ? "0 0 5px #22c55e88" : "none",
       }}
     >
       {item.id}
-      {item.isReady && (
+      {showReady && (
         <span
           style={{
             position: "absolute",

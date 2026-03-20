@@ -14,6 +14,7 @@ export type Status = {
   category: StatusCategory;
   wipLimit?: number;
   hasReadySignal?: boolean;
+  isBuffer?: boolean;
 };
 
 export type Workflow = {

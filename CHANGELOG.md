@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v1.0.3] — 2026-03-19
+
+### Added
+- **Columnas buffer** (`isBuffer`) — Un status marcado `"isBuffer": true` es un buffer de entrada por naturaleza: todos los ítems en él están implícitamente listos para ser jalados. La columna muestra un `✓` verde (`#22c55e`) en el encabezado y un borde superior verde de 2px. Las tarjetas dentro de la columna **no** muestran el badge individual (el check de la columna reemplaza al check de tarjeta). Configurado en los buffers de ambas simulaciones:
+  - *Simple workflows*: `project-todo`, `epic-todo`, `story-todo`, `subtask-todo`
+  - *SDF workflows*: `initiative-funnel`, `feat-pending`, `spec-todo`
+- **Señal ready en tarjetas** (`hasReadySignal`) — Los statuses de trabajo pueden marcarse `"hasReadySignal": true` para activar avance en dos fases: el ítem primero se marca `isReady: true` (señal visual) y en un tick posterior avanza al siguiente status. La tarjeta muestra un badge `✓` verde circular, borde izquierdo verde y glow al estar lista. Implementado en los statuses de trabajo de *SDF workflows*.
+- **Manejo de errores de configuración** — La página nunca queda en blanco ante JSON malformado o `defaultSimulation` no encontrado:
+  - JSON inválido: se muestra un mensaje de error legible en pantalla (ErrorBoundary + handler inline en `index.html`).
+  - Nombre de simulación no encontrado: se carga la primera simulación disponible como fallback y se muestra un banner de advertencia amarillo en la UI.
+
+---
+
 ## [v1.0.2] — 2026-03-19
 
 ### Added
