@@ -8,6 +8,14 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      window.addEventListener('error', function(e) {
+        var root = document.getElementById('root');
+        if (root && !root.hasChildNodes()) {
+          root.innerHTML = '<div style="padding:32px;font-family:monospace;color:#dc2626;background:#0f172a;min-height:100vh"><h2 style="margin:0 0 12px">Error de configuración</h2><pre style="white-space:pre-wrap;word-break:break-word;margin:0">' + (e.message || 'Error desconocido al cargar la aplicación.') + '</pre></div>';
+        }
+      });
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

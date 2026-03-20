@@ -1,8 +1,8 @@
 {
-  "defaultSimulation": "Simple workflows",
+  "defaultSimulation": "Simplified",
   "simulations": [
     {
-      "name": "Simple workflows",
+      "name": "Simplified",
       "initialReleaseCount": 1,
       "advanceProbability": 0.5,
       "childrenPerParent": 3,
@@ -15,18 +15,28 @@
           "workitemName": "Project",
           "statuses": [
             {
-              "id": "project-todo",
-              "name": "Todo",
+              "id": "project-backlog",
+              "name": "Backlog",
               "order": 1,
               "streamType": "UPSTREAM",
-              "isBeforeCommitmentPoint": true,
+              "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
               "description": "Ideas de Release, sin análisis detallado"
             },
             {
+              "id": "project-Selected",
+              "name": "Selected",
+              "order": 2,
+              "streamType": "UPSTREAM",
+              "isBeforeCommitmentPoint": true,
+              "isPosDeliveryPoint": false,
+              "description": "Epic planificado y priorizado, listo para desarrollo",
+              "wipLimit": 3
+            },
+            {
               "id": "project-in-progress",
               "name": "In-Progress",
-              "order": 2,
+              "order": 3,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
@@ -36,7 +46,7 @@
             {
               "id": "project-done",
               "name": "Done",
-              "order": 3,
+              "order": 4,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": true,
@@ -51,18 +61,28 @@
           "workitemName": "Epic",
           "statuses": [
             {
-              "id": "epic-todo",
-              "name": "Todo",
+              "id": "epic-backlog",
+              "name": "Backlog",
               "order": 1,
               "streamType": "UPSTREAM",
-              "isBeforeCommitmentPoint": true,
+              "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
               "description": "Ideas de Epic, sin análisis detallado"
             },
             {
+              "id": "epic-Selected",
+              "name": "Selected",
+              "order": 2,
+              "streamType": "UPSTREAM",
+              "isBeforeCommitmentPoint": true,
+              "isPosDeliveryPoint": false,
+              "description": "Epic planificado y priorizado, listo para desarrollo",
+              "wipLimit": 3
+            },
+            {
               "id": "epic-in-progress",
               "name": "In-Progress",
-              "order": 2,
+              "order": 3,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
@@ -72,7 +92,7 @@
             {
               "id": "epic-done",
               "name": "Done",
-              "order": 3,
+              "order": 4,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": true,
@@ -87,18 +107,28 @@
           "workitemName": "Story",
           "statuses": [
             {
-              "id": "story-todo",
-              "name": "Todo",
+              "id": "story-backlog",
+              "name": "Backlog",
               "order": 1,
               "streamType": "UPSTREAM",
-              "isBeforeCommitmentPoint": true,
+              "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
               "description": "Feature priorizada, sin especificar"
             },
             {
+              "id": "story-Selected",
+              "name": "Selected",
+              "order": 2,
+              "streamType": "UPSTREAM",
+              "isBeforeCommitmentPoint": true,
+              "isPosDeliveryPoint": false,
+              "description": "Story especificada y lista para implementar",
+              "wipLimit": 5
+            },
+            {
               "id": "story-in-progress",
               "name": "In-Progress",
-              "order": 2,
+              "order": 3,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
@@ -108,7 +138,7 @@
             {
               "id": "story-done",
               "name": "Done",
-              "order": 3,
+              "order": 4,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": true,
@@ -207,9 +237,19 @@
               "wipLimit": 3
             },
             {
-              "id": "initiative-planning",
-              "name": "Planning",
+              "id": "initiative-approved",
+              "name": "Approved",
               "order": 5,
+              "streamType": "UPSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false,
+              "description": "Proyecto aprobado y priorizado, listo para planificación",
+              "wipLimit": 3
+            },
+            {
+              "id": "initiative-planned",
+              "name": "Planned",
+              "order": 6,
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": true,
               "isPosDeliveryPoint": false,
@@ -219,7 +259,7 @@
             {
               "id": "initiative-in-development",
               "name": "In-Development",
-              "order": 6,
+              "order": 7,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
@@ -229,7 +269,7 @@
             {
               "id": "initiative-measuring",
               "name": "Measuring-Results",
-              "order": 7,
+              "order": 8,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
@@ -238,7 +278,7 @@
             {
               "id": "initiative-finished",
               "name": "Finished",
-              "order": 8,
+              "order": 9,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": true,
@@ -274,23 +314,48 @@
               "name": "Plan",
               "order": 3,
               "streamType": "UPSTREAM",
-              "isBeforeCommitmentPoint": true,
+              "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
               "wipLimit": 3
             },
             {
+              "id": "release-ready",
+              "name": "Ready",
+              "order": 4,
+              "streamType": "UPSTREAM",
+              "isBeforeCommitmentPoint": true,
+              "isPosDeliveryPoint": false,
+              "wipLimit": 2
+            },
+            {
               "id": "release-develop",
               "name": "Develop",
-              "order": 4,
+              "order": 5,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
               "wipLimit": 1
             },
             {
+              "id": "release-to-validate",
+              "name": "To-Validate",
+              "order": 6,
+              "streamType": "DOWNSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false
+            },
+            {
               "id": "release-validation-uat",
               "name": "Validation-UAT",
-              "order": 5,
+              "order": 7,
+              "streamType": "DOWNSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false
+            },
+            {
+              "id": "release-ready-for-release",
+              "name": "Ready-for-Release",
+              "order": 8,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false
@@ -298,7 +363,7 @@
             {
               "id": "release-deploy",
               "name": "Deploy",
-              "order": 6,
+              "order": 9,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false
@@ -306,7 +371,7 @@
             {
               "id": "release-released",
               "name": "Released",
-              "order": 7,
+              "order": 10,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": true
@@ -332,14 +397,23 @@
               "name": "Refining",
               "order": 2,
               "streamType": "UPSTREAM",
-              "isBeforeCommitmentPoint": true,
+              "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
               "wipLimit": 5
             },
             {
+              "id": "feat-ready",
+              "name": "Ready-for-Develop",
+              "order": 3,
+              "streamType": "UPSTREAM",
+              "isBeforeCommitmentPoint": true,
+              "isPosDeliveryPoint": false,
+              "wipLimit": 3
+            },
+            {
               "id": "feat-developing",
               "name": "Developing",
-              "order": 3,
+              "order": 4,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false
@@ -347,7 +421,7 @@
             {
               "id": "feat-code-review",
               "name": "Code-Review",
-              "order": 4,
+              "order": 5,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false
@@ -355,7 +429,7 @@
             {
               "id": "feat-qa",
               "name": "QA-Validation",
-              "order": 5,
+              "order": 6,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false
@@ -363,7 +437,7 @@
             {
               "id": "feat-acceptance",
               "name": "Acceptance",
-              "order": 6,
+              "order": 7,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false
@@ -371,7 +445,7 @@
             {
               "id": "feat-done",
               "name": "Done",
-              "order": 7,
+              "order": 8,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": true
@@ -411,17 +485,26 @@
               "wipLimit": 5
             },
             {
+              "id": "spec-ready-impl",
+              "name": "Ready-for-Implement",
+              "order": 4,
+              "streamType": "UPSTREAM",
+              "isBeforeCommitmentPoint": true,
+              "isPosDeliveryPoint": false,
+              "wipLimit": 4
+            },
+            {
               "id": "spec-implementing",
               "name": "Implementing",
-              "order": 4,
+              "order": 5,
               "streamType": "DOWNSTREAM",
-              "isBeforeCommitmentPoint": true,
+              "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false
             },
             {
               "id": "spec-validating",
               "name": "Validating",
-              "order": 5,
+              "order": 6,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false
@@ -429,7 +512,7 @@
             {
               "id": "spec-completed",
               "name": "Completed",
-              "order": 6,
+              "order": 7,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": true

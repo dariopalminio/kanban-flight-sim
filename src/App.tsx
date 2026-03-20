@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Board } from "./components/Board";
 import {
+  configLoadResult,
   defaultSimulationName,
   loadSimulation,
   simulationNames,
@@ -68,6 +69,11 @@ export default function App() {
 
   return (
     <div style={{ background: "#0f172a", minHeight: "100vh", padding: "6px 8px", boxSizing: "border-box" }}>
+      {configLoadResult.error && (
+        <div style={{ background: "#854d0e", color: "#fef08a", padding: "8px 12px", borderRadius: 4, marginBottom: 8, fontSize: 12, fontWeight: 600 }}>
+          ⚠ {configLoadResult.error}
+        </div>
+      )}
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
         {/* Simulation selector */}
