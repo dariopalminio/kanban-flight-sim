@@ -199,14 +199,25 @@
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
-              "description": "Análisis de viabilidad, investigación y descubrimiento",
+              "description": "Análisis de viabilidad, investigación y descubrimiento desde la perspectiva de negocio, tecnología y experiencia de usuario (UX)",
+              "wipLimit": 3,
+              "hasReadySignal": true
+            },
+            {
+              "id": "initiative-specifying",
+              "name": "Specifying",
+              "order": 4,
+              "streamType": "UPSTREAM",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false,
+              "description": "Especificación del proyecto o iniciativa, definición de alcance y objetivos",
               "wipLimit": 3,
               "hasReadySignal": true
             },
             {
               "id": "initiative-approval",
               "name": "Approval",
-              "order": 4,
+              "order": 5,
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
@@ -217,7 +228,7 @@
             {
               "id": "initiative-planning",
               "name": "Planning",
-              "order": 5,
+              "order": 6,
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": true,
               "isPosDeliveryPoint": false,
@@ -228,7 +239,7 @@
             {
               "id": "initiative-in-development",
               "name": "In-Development",
-              "order": 6,
+              "order": 7,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
@@ -239,7 +250,7 @@
             {
               "id": "initiative-measuring",
               "name": "Measuring-Results",
-              "order": 7,
+              "order": 8,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
@@ -249,7 +260,7 @@
             {
               "id": "initiative-finished",
               "name": "Finished",
-              "order": 8,
+              "order": 9,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": true,
@@ -441,8 +452,8 @@
               "isBuffer": true
             },
             {
-              "id": "spec-specifying",
-              "name": "Specifying",
+              "id": "spec-specify",
+              "name": "Specify",
               "description": "Especificación técnica en proceso de especificación (propose, specify)",
               "order": 2,
               "streamType": "UPSTREAM",
