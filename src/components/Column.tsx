@@ -40,7 +40,7 @@ export function Column({ status, items, highlightMode }: Props) {
         borderTop: status.isBuffer ? "2px solid #22c55e" : undefined,
       }}
     >
-      <div style={{ fontSize: 9, color: "white", fontWeight: 600, lineHeight: "13px", marginBottom: 1, textDecoration: status.isBeforeCommitmentPoint ? "underline" : "none" }}>
+      <div title={status.description || undefined} style={{ fontSize: 9, color: "white", fontWeight: 600, lineHeight: "13px", marginBottom: 1, textDecoration: status.isBeforeCommitmentPoint ? "underline" : "none" }}>
         {status.name}{status.wipLimit != null ? ` [${items.length}/${status.wipLimit}]` : ""}{status.isBuffer && <span style={{ color: "#22c55e", marginLeft: 2 }}>✓</span>}
       </div>
       {items.map((item) => (

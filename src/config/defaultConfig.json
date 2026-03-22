@@ -22,7 +22,7 @@
               "isBeforeCommitmentPoint": true,
               "isPosDeliveryPoint": false,
               "isBuffer": true,
-              "description": "Ideas de Release, sin análisis detallado"
+              "description": "Ideas de Project, sin análisis detallado"
             },
             {
               "id": "project-in-progress",
@@ -31,7 +31,7 @@
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
-              "description": "Epic en desarrollo activo",
+              "description": "Projecto en desarrollo activo",
               "wipLimit": 1
             },
             {
@@ -41,7 +41,7 @@
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": true,
-              "description": "Epic liberado a producción"
+              "description": "Projecto terminado"
             }
           ]
         },
@@ -188,7 +188,7 @@
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
-              "description": "Idea inicial de proyecto d efiniéndose, sin análisis detallado",
+              "description": "Idea inicial de proyecto definiéndose, sin análisis detallado",
               "wipLimit": 5,
               "hasReadySignal": true
             },
@@ -210,7 +210,7 @@
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
-              "description": "Proyecto aprobado y priorizado, listo para planificación",
+              "description": "Aprobación y priorización, para quedar listo para planificación",
               "wipLimit": 3,
               "hasReadySignal": true
             },
@@ -221,7 +221,7 @@
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": true,
               "isPosDeliveryPoint": false,
-              "description": "Proyecto planificado, alcance definido y recursos asignados",
+              "description": "Planificación, alcance definido y recursos asignados",
               "wipLimit": 2,
               "hasReadySignal": true
             },
@@ -232,7 +232,7 @@
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
-              "description": "Proyecto en desarrollo activo",
+              "description": "Proyecto en desarrollo activo (desarrollo incremental e iterativo)",
               "wipLimit": 1,
               "hasReadySignal": true
             },
@@ -253,7 +253,7 @@
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": true,
-              "description": "Proyecto completado y entregado"
+              "description": "Proyecto completado y cerrado"
             }
           ]
         },
@@ -266,6 +266,7 @@
             {
               "id": "release-initial",
               "name": "Initial",
+              "description": "Nuevo release iniciado, sin análisis detallado",
               "order": 1,
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": false,
@@ -276,6 +277,7 @@
               "id": "release-defining",
               "name": "Defining",
               "order": 2,
+              "description": "Definición y especificación del release",
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
@@ -286,6 +288,7 @@
               "id": "release-plan",
               "name": "Release-Plan",
               "order": 3,
+              "description": "Planificación del release, alcance definido y recursos asignados",
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": true,
               "isPosDeliveryPoint": false,
@@ -295,6 +298,7 @@
             {
               "id": "release-develop",
               "name": "Develop",
+              "description": "Desarrollo del release",
               "order": 4,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
@@ -305,6 +309,7 @@
             {
               "id": "release-validation-uat",
               "name": "Validation-UAT",
+              "description": "Validación del release en el entorno de pruebas",
               "order": 5,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
@@ -314,6 +319,7 @@
             {
               "id": "release-deploy",
               "name": "Deploy",
+              "description": "Despliegue del release en el entorno de producción",
               "order": 6,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
@@ -322,6 +328,7 @@
             {
               "id": "release-released",
               "name": "Released",
+              "description": "Release completado y cerrado (entregado al cliente, en producción)",
               "order": 7,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
@@ -338,6 +345,7 @@
             {
               "id": "feat-pending",
               "name": "Pending",
+              "description": "Nueva feature identificada, sin análisis detallado (pendiente)",
               "order": 1,
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": false,
@@ -347,6 +355,7 @@
             {
               "id": "feat-refining",
               "name": "Refining",
+              "description": "Refinamiento de la feature, análisis detallado y preparación para desarrollo",
               "order": 2,
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": false,
@@ -357,6 +366,7 @@
             {
               "id": "feat-refining",
               "name": "Plan",
+              "description": "Planificación de la feature, alcance definido y recursos asignados",
               "order": 3,
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": true,
@@ -367,6 +377,7 @@
             {
               "id": "feat-developing",
               "name": "Developing",
+              "description": "Desarrollo de la feature",
               "order": 4,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
@@ -376,6 +387,7 @@
             {
               "id": "feat-code-review",
               "name": "Code-Review",
+              "description": "Revisión del código de la feature",
               "order": 5,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
@@ -385,6 +397,7 @@
             {
               "id": "feat-qa",
               "name": "QA-Validation",
+              "description": "Validación de la feature en el entorno de pruebas",
               "order": 6,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
@@ -394,6 +407,7 @@
             {
               "id": "feat-acceptance",
               "name": "Acceptance",
+              "description": "Aceptación de la feature por parte del representante del cliente",
               "order": 7,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
@@ -402,6 +416,7 @@
             {
               "id": "feat-done",
               "name": "Done",
+              "description": "Feature completada y cerrada",
               "order": 8,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
@@ -418,6 +433,7 @@
             {
               "id": "spec-todo",
               "name": "Todo",
+              "description": "Nueva especificación técnica identificada, sin análisis detallado",
               "order": 1,
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": false,
@@ -427,6 +443,7 @@
             {
               "id": "spec-specifying",
               "name": "Specifying",
+              "description": "Especificación técnica en proceso de especificación (propose, specify)",
               "order": 2,
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": false,
@@ -437,6 +454,7 @@
             {
               "id": "spec-designing",
               "name": "Designing",
+              "description": "Análisis, Diseño, Plan y tasking de la especificación técnica",
               "order": 3,
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": true,
@@ -447,6 +465,7 @@
             {
               "id": "spec-implementing",
               "name": "Implementing",
+              "description": "Implementación de la especificación técnica",
               "order": 4,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
@@ -456,6 +475,7 @@
             {
               "id": "spec-validating",
               "name": "Validating",
+              "description": "Validación de la especificación técnica",
               "order": 5,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,
@@ -465,6 +485,7 @@
             {
               "id": "spec-completed",
               "name": "Completed",
+              "description": "Especificación técnica completada, archivada y cerrada",
               "order": 6,
               "streamType": "DOWNSTREAM",
               "isBeforeCommitmentPoint": false,

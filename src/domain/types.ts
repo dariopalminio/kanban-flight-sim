@@ -15,6 +15,7 @@ export type Status = {
   wipLimit?: number;
   hasReadySignal?: boolean;
   isBuffer?: boolean;
+  description?: string;
 };
 
 export type Workflow = {
