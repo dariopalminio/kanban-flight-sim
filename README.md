@@ -1,3 +1,6 @@
+![kanban-flight-sim](./assets/images/kanban-flight-sim-logo-v1.png)
+
+
 # Kanban Flight Simulator
 
 A visual Kanban flow simulator for understanding multi-level hierarchical workflows. Built as an educational tool to explore concepts like upstream/downstream, commitment points, delivery points, and WIP limits across four levels of work.

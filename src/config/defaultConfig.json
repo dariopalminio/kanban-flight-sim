@@ -269,7 +269,8 @@
               "order": 1,
               "streamType": "UPSTREAM",
               "isBeforeCommitmentPoint": false,
-              "isPosDeliveryPoint": false
+              "isPosDeliveryPoint": false,
+              "isBuffer": true
             },
             {
               "id": "release-defining",
@@ -438,7 +439,7 @@
               "name": "Designing",
               "order": 3,
               "streamType": "UPSTREAM",
-              "isBeforeCommitmentPoint": false,
+              "isBeforeCommitmentPoint": true,
               "isPosDeliveryPoint": false,
               "wipLimit": 5,
               "hasReadySignal": true
@@ -448,7 +449,7 @@
               "name": "Implementing",
               "order": 4,
               "streamType": "DOWNSTREAM",
-              "isBeforeCommitmentPoint": true,
+              "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
               "hasReadySignal": true
             },
