@@ -65,6 +65,7 @@ Each status in a workflow SHALL have the following fields:
 | `name` | string | yes | Display label in the column header |
 | `order` | number | yes | Sequential position (used for advancement logic) |
 | `streamType` | `UPSTREAM`\|`DOWNSTREAM` | yes | Zone of the workflow |
+| `statusCategory` | `TODO`\|`IN_PROGRESS`\|`DONE` | yes | Explicit category used for column highlight |
 | `isBeforeCommitmentPoint` | boolean | yes | `true` for the one status immediately before the commitment point; children are spawned here |
 | `isPosDeliveryPoint` | boolean | yes | `true` for the final/delivery status; item stops here |
 | `wipLimit` | number | no | If set, caps concurrent items in this column |
@@ -79,26 +80,26 @@ Exactly one status per workflow SHALL have `isBeforeCommitmentPoint: true`. Exac
 - **WHEN** a workflow is loaded
 - **THEN** exactly one status has `isPosDeliveryPoint: true`
 
+#### Scenario: statusCategory field is present on every status
+- **WHEN** the configuration is loaded
+- **THEN** every `Status` object has a `category` field with value `"TODO"`, `"IN_PROGRESS"`, or `"DONE"`, sourced from `statusCategory` in the JSON
+
 ---
 
 ### Requirement: Automatic `category` derivation
-The `category` field SHALL NOT be stored in `defaultConfig.json`. It is computed at load time by `defaultConfig.ts` using the following rules:
+The `statusCategory` field SHALL be stored explicitly in `defaultConfig.json` for every status. The config loader (`defaultConfig.ts`) SHALL read this field directly and map it to the `category` field of the domain `Status` type. The automatic derivation logic (`assignCategory()`) SHALL be removed.
 
-- `TODO` — all statuses with `streamType: UPSTREAM`
-- `DONE` — the last status in the array (which has `isPosDeliveryPoint: true`)
-- `IN_PROGRESS` — all remaining downstream statuses (not the last)
+#### Scenario: statusCategory "TODO" is preserved
+- **WHEN** a status in the JSON has `"statusCategory": "TODO"`
+- **THEN** the loaded `Status` has `category: "TODO"`
 
-#### Scenario: UPSTREAM statuses become TODO
-- **WHEN** a status has `streamType: "UPSTREAM"`
-- **THEN** its derived `category` is `"TODO"`
+#### Scenario: statusCategory "IN_PROGRESS" is preserved
+- **WHEN** a status in the JSON has `"statusCategory": "IN_PROGRESS"`
+- **THEN** the loaded `Status` has `category: "IN_PROGRESS"`
 
-#### Scenario: Last status becomes DONE
-- **WHEN** a status is the last in its workflow's statuses array
-- **THEN** its derived `category` is `"DONE"`
-
-#### Scenario: Non-last downstream statuses become IN_PROGRESS
-- **WHEN** a downstream status is not the last in the array
-- **THEN** its derived `category` is `"IN_PROGRESS"`
+#### Scenario: statusCategory "DONE" is preserved
+- **WHEN** a status in the JSON has `"statusCategory": "DONE"`
+- **THEN** the loaded `Status` has `category: "DONE"`
 
 ---
 

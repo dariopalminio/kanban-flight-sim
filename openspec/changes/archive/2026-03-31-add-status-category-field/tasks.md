@@ -24,4 +24,4 @@
 ## 5. Verificación
 
 - [x] 5.1 Compilar el proyecto (`npm run build`) sin errores de TypeScript
-- [ ] 5.2 Verificar en el navegador que el botón "Status Category" pinta las columnas con los colores correctos (`#374151` TODO, `#1d4ed8` IN_PROGRESS, `#166534` DONE)
+- [x] 5.2 Verificar en el navegador que el botón "Status Category" pinta las columnas con los colores correctos (`#374151` TODO, `#1d4ed8` IN_PROGRESS, `#166534` DONE)
