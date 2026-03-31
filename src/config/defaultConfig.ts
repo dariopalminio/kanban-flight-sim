@@ -1,11 +1,11 @@
-import type { Config, Status, WorkitemLevel } from "../domain/types";
+import type { Config, Status, StatusCategory, WorkitemLevel } from "../domain/types";
 import rawString from "./defaultConfig.json?raw";
 
 // =====================
 // CATEGORY HELPER
 // =====================
 
-type RawStatus = Omit<Status, "category" | "wipLimit"> & { wipLimit?: number };
+type RawStatus = Omit<Status, "category" | "wipLimit"> & { statusCategory: StatusCategory; wipLimit?: number };
 
 interface RawWorkflow {
   id: string;
@@ -29,16 +29,6 @@ interface RawConfig {
   simulations: RawSimulation[];
 }
 
-const assignCategory = (statuses: RawStatus[]): Status[] => {
-  const lastId = statuses[statuses.length - 1].id;
-  return statuses.map((s) => {
-    const category = s.streamType === "UPSTREAM" ? "TODO" as const
-      : s.id === lastId ? "DONE" as const
-      : "IN_PROGRESS" as const;
-    return { ...s, category, wipLimit: s.wipLimit };
-  });
-};
-
 // =====================
 // BUILD CONFIG FROM SIMULATION
 // =====================
@@ -48,7 +38,7 @@ const buildWorkflow = (wf: RawWorkflow) => ({
   name: wf.name,
   level: wf.level as WorkitemLevel,
   workitemName: wf.workitemName,
-  statuses: assignCategory(wf.statuses),
+  statuses: wf.statuses.map(({ statusCategory, ...s }) => ({ ...s, category: statusCategory })),
 });
 
 const buildConfig = (sim: RawSimulation): Config => ({

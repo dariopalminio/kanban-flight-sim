@@ -1,8 +1,8 @@
 {
-  "defaultSimulation": "Simple workflows",
+  "defaultSimulation": "Essential Kanban FL",
   "simulations": [
     {
-      "name": "Simple workflows",
+      "name": "Essential Kanban FL",
       "initialReleaseCount": 1,
       "advanceProbability": 0.5,
       "childrenPerParent": 3,
@@ -15,32 +15,51 @@
           "workitemName": "Project",
           "statuses": [
             {
-              "id": "project-todo",
-              "name": "Todo",
+              "id": "project-backlog",
+              "name": "Backlog",
               "order": 1,
               "streamType": "UPSTREAM",
+              "statusCategory": "TODO",
               "isBeforeCommitmentPoint": true,
               "isPosDeliveryPoint": false,
               "isBuffer": true,
               "description": "Ideas de Project, sin análisis detallado"
             },
             {
-              "id": "project-in-progress",
-              "name": "In-Progress",
+              "id": "project-selected",
+              "name": "Selected",
               "order": 2,
               "streamType": "DOWNSTREAM",
+              "statusCategory": "TODO",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
+              "isBuffer": true,
+              "description": "Projecto seleccionado para desarrollo",
+              "wipLimit": 1,
+              "hasReadySignal": false
+            },
+            {
+              "id": "project-in-progress",
+              "name": "In-Progress",
+              "order": 3,
+              "streamType": "DOWNSTREAM",
+              "statusCategory": "IN_PROGRESS",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false,
+              "isBuffer": false,
               "description": "Projecto en desarrollo activo",
-              "wipLimit": 1
+              "wipLimit": 1,
+              "hasReadySignal": true
             },
             {
               "id": "project-done",
               "name": "Done",
-              "order": 3,
+              "order": 4,
               "streamType": "DOWNSTREAM",
+              "statusCategory": "DONE",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": true,
+              "isBuffer": false,
               "description": "Projecto terminado"
             }
           ]
@@ -52,32 +71,50 @@
           "workitemName": "Epic",
           "statuses": [
             {
-              "id": "epic-todo",
-              "name": "Todo",
+              "id": "epic-backlog",
+              "name": "Backlog",
               "order": 1,
               "streamType": "UPSTREAM",
+              "statusCategory": "TODO",
               "isBeforeCommitmentPoint": true,
               "isPosDeliveryPoint": false,
               "isBuffer": true,
               "description": "Ideas de Epic, sin análisis detallado"
             },
             {
-              "id": "epic-in-progress",
-              "name": "In-Progress",
+              "id": "epic-selected",
+              "name": "Selected",
               "order": 2,
               "streamType": "DOWNSTREAM",
+              "statusCategory": "TODO",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
-              "description": "Epic en desarrollo activo",
+              "isBuffer": true,
+              "description": "Epic seleccionada para desarrollo",
               "wipLimit": 1
+            },
+            {
+              "id": "epic-in-progress",
+              "name": "In-Progress",
+              "order": 3,
+              "streamType": "DOWNSTREAM",
+              "statusCategory": "IN_PROGRESS",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false,
+              "isBuffer": false,
+              "description": "Epic en desarrollo activo",
+              "wipLimit": 1,
+              "hasReadySignal": true
             },
             {
               "id": "epic-done",
               "name": "Done",
-              "order": 3,
+              "order": 4,
               "streamType": "DOWNSTREAM",
+              "statusCategory": "DONE",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": true,
+              "isBuffer": false,
               "description": "Epic liberado a producción"
             }
           ]
@@ -89,32 +126,50 @@
           "workitemName": "Story",
           "statuses": [
             {
-              "id": "story-todo",
-              "name": "Todo",
+              "id": "story-backlog",
+              "name": "Backlog",
               "order": 1,
               "streamType": "UPSTREAM",
+              "statusCategory": "TODO",
               "isBeforeCommitmentPoint": true,
               "isPosDeliveryPoint": false,
               "isBuffer": true,
               "description": "Feature priorizada, sin especificar"
             },
             {
-              "id": "story-in-progress",
-              "name": "In-Progress",
+              "id": "story-selected",
+              "name": "Selected",
               "order": 2,
               "streamType": "DOWNSTREAM",
+              "statusCategory": "TODO",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
+              "isBuffer": true,
+              "description": "Story seleccionada para desarrollo",
+              "wipLimit": 1
+            },
+            {
+              "id": "story-in-progress",
+              "name": "In-Progress",
+              "order": 3,
+              "streamType": "DOWNSTREAM",
+              "statusCategory": "IN_PROGRESS",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false,
+              "isBuffer": false,
               "description": "Story en implementación",
-              "wipLimit": 3
+              "wipLimit": 3,
+              "hasReadySignal": true
             },
             {
               "id": "story-done",
               "name": "Done",
-              "order": 3,
+              "order": 4,
               "streamType": "DOWNSTREAM",
+              "statusCategory": "DONE",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": true,
+              "isBuffer": false,
               "description": "Story completada y validada"
             }
           ]
@@ -130,6 +185,7 @@
               "name": "Todo",
               "order": 1,
               "streamType": "UPSTREAM",
+              "statusCategory": "TODO",
               "isBeforeCommitmentPoint": true,
               "isPosDeliveryPoint": false,
               "isBuffer": true,
@@ -140,18 +196,23 @@
               "name": "In-Progress",
               "order": 2,
               "streamType": "DOWNSTREAM",
+              "statusCategory": "IN_PROGRESS",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
+              "isBuffer": false,
               "description": "Subtask en codificación",
-              "wipLimit": 4
+              "wipLimit": 4,
+              "hasReadySignal": true
             },
             {
               "id": "subtask-done",
               "name": "Done",
               "order": 3,
               "streamType": "DOWNSTREAM",
+              "statusCategory": "DONE",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": true,
+              "isBuffer": false,
               "description": "Subtask completada"
             }
           ]
@@ -176,6 +237,7 @@
               "name": "Embudo",
               "order": 1,
               "streamType": "UPSTREAM",
+              "statusCategory": "TODO",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
               "isBuffer": true,
@@ -186,8 +248,10 @@
               "name": "Definir&Descubrir",
               "order": 2,
               "streamType": "UPSTREAM",
+              "statusCategory": "IN_PROGRESS",
               "isBeforeCommitmentPoint": true,
               "isPosDeliveryPoint": false,
+              "isBuffer": false,
               "description": "Análisis profundo: Lean Business Case, descubrimiento, definición de MVP, hipótesis de valor, OKRs, recursos estimados.",
               "wipLimit": 3,
               "hasReadySignal": true
@@ -197,8 +261,10 @@
               "name": "Seleccionada",
               "order": 3,
               "streamType": "DOWNSTREAM",
+              "statusCategory": "TODO",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
+              "isBuffer": true,
               "description": "Buffer. Iniciativas aprobadas, priorizadas, esperando capacidad.",
               "wipLimit": 2,
               "hasReadySignal": false
@@ -208,8 +274,10 @@
               "name": "En-Desarrollo",
               "order": 4,
               "streamType": "DOWNSTREAM",
+              "statusCategory": "IN_PROGRESS",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
+              "isBuffer": false,
               "description": "Construcción técnica. Incluye hitos de revisión (MVP Review) para perseverar/pivotar/detener.",
               "wipLimit": 1,
               "hasReadySignal": true
@@ -219,8 +287,10 @@
               "name": "Midiendo-Valor",
               "order": 5,
               "streamType": "DOWNSTREAM",
+              "statusCategory": "IN_PROGRESS",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
+              "isBuffer": false,
               "description": "Período de monitoreo post-lanzamiento con timebox definido. Se recolectan datos de adopción, ROI, OKRs.",
               "hasReadySignal": true
             },
@@ -229,8 +299,10 @@
               "name": "Finalizada",
               "order": 6,
               "streamType": "DOWNSTREAM",
+              "statusCategory": "DONE",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": true,
+              "isBuffer": false,
               "hasReadySignal": false,
               "description": "Cierre formal. Se evalúa el desempeño contra la hipótesis inicial. Se clasifica la iniciativa: Deficiente / Sólida / Excepcional. Se documentan lecciones aprendidas."
             }
@@ -248,6 +320,7 @@
               "order": 1,
               "description": "Refinamiento del alcance: release propuesto, validar dependencias, priorizar Features, asegurar claridad de requisitos de negocio.",
               "streamType": "UPSTREAM",
+              "statusCategory": "TODO",
               "isBeforeCommitmentPoint": true,
               "isPosDeliveryPoint": false,
               "wipLimit": 4,
@@ -259,8 +332,10 @@
               "order": 2,
               "description": "Buffer. Release completamente definido, aprobado y con capacidad asignada. Espera inicio de desarrollo.",
               "streamType": "DOWNSTREAM",
+              "statusCategory": "TODO",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
+              "isBuffer": true,
               "wipLimit": 3,
               "hasReadySignal": false
             },
@@ -270,8 +345,10 @@
               "description": "Las Features del Release están siendo desarrolladas. El Release avanza a medida que las Features se completan.",
               "order": 3,
               "streamType": "DOWNSTREAM",
+              "statusCategory": "IN_PROGRESS",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
+              "isBuffer": false,
               "wipLimit": 1,
               "hasReadySignal": true
             },
@@ -281,8 +358,10 @@
               "description": "Pruebas de integración end-to-end, regresión, y validación técnica. El Release está desplegado en entorno de integración/staging.",
               "order": 4,
               "streamType": "DOWNSTREAM",
+              "statusCategory": "IN_PROGRESS",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
+              "isBuffer": false,
               "hasReadySignal": true
             },
             {
@@ -291,8 +370,10 @@
               "description": "Validación con stakeholders (negocio, producto, usuarios clave). Se confirma que el Release cumple con los criterios de aceptación y genera el valor esperado.",
               "order": 5,
               "streamType": "DOWNSTREAM",
+              "statusCategory": "IN_PROGRESS",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
+              "isBuffer": false,
               "hasReadySignal": true
             },
             {
@@ -301,8 +382,10 @@
               "description": "Release desplegado en producción y cerrado. Se verifica operatividad. Se archiva documentación.",
               "order": 6,
               "streamType": "DOWNSTREAM",
+              "statusCategory": "DONE",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": true,
+              "isBuffer": false,
               "hasReadySignal": false
             }
           ]
@@ -319,8 +402,10 @@
               "description": "Exploración de ideas, análisis de viabilidad, refinamiento de requisitos. Se refinan requisitos y se definen criterios de aceptación con negocio/PO.",
               "order": 1,
               "streamType": "UPSTREAM",
+              "statusCategory": "TODO",
               "isBeforeCommitmentPoint": true,
               "isPosDeliveryPoint": false,
+              "isBuffer": false,
               "wipLimit": 5,
               "hasReadySignal": true
             },
@@ -330,8 +415,10 @@
               "description": "Buffer. Story refinada, estimada, esperando capacidad de desarrollo.",
               "order": 2,
               "streamType": "DOWNSTREAM",
+              "statusCategory": "TODO",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
+              "isBuffer": true,
               "wipLimit": 5,
               "hasReadySignal": false
             },
@@ -341,8 +428,10 @@
               "description": "Implementación técnica. Incluye codificación, pruebas unitarias, y revisión de código (si aplica como actividad dentro del estado).",
               "order": 3,
               "streamType": "DOWNSTREAM",
+              "statusCategory": "IN_PROGRESS",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
+              "isBuffer": false,
               "hasReadySignal": true
             },
             {
@@ -351,8 +440,10 @@
               "description": "Pruebas de QA, validación técnica, regresión.",
               "order": 4,
               "streamType": "DOWNSTREAM",
+              "statusCategory": "IN_PROGRESS",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
+              "isBuffer": false,
               "hasReadySignal": true
             },
             {
@@ -361,8 +452,10 @@
               "description": "Validación de negocio con PO/stakeholders. Confirmación de que cumple criterios de aceptación y genera valor.",
               "order": 5,
               "streamType": "DOWNSTREAM",
+              "statusCategory": "IN_PROGRESS",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
+              "isBuffer": false,
               "hasReadySignal": true
             },
             {
@@ -371,8 +464,10 @@
               "description": "Story completada técnicamente y fusionada en rama release/. Lista para ser liberada con el Release correspondiente.",
               "order": 6,
               "streamType": "DOWNSTREAM",
+              "statusCategory": "DONE",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": true,
+              "isBuffer": false,
               "hasReadySignal": false
             }
           ]
@@ -389,8 +484,10 @@
               "description": "Especificación técnica en proceso de especificación (propose, specify)",
               "order": 1,
               "streamType": "UPSTREAM",
+              "statusCategory": "TODO",
               "isBeforeCommitmentPoint": true,
               "isPosDeliveryPoint": false,
+              "isBuffer": false,
               "wipLimit": 8,
               "hasReadySignal": true
             },
@@ -400,8 +497,10 @@
               "description": "Análisis, Diseño, Plan y tasking de la especificación técnica",
               "order": 2,
               "streamType": "DOWNSTREAM",
+              "statusCategory": "IN_PROGRESS",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
+              "isBuffer": false,
               "wipLimit": 5,
               "hasReadySignal": true
             },
@@ -411,8 +510,10 @@
               "description": "Implementación de la especificación técnica",
               "order": 3,
               "streamType": "DOWNSTREAM",
+              "statusCategory": "IN_PROGRESS",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
+              "isBuffer": false,
               "hasReadySignal": true
             },
             {
@@ -421,8 +522,10 @@
               "description": "Validación de la especificación técnica",
               "order": 4,
               "streamType": "DOWNSTREAM",
+              "statusCategory": "IN_PROGRESS",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
+              "isBuffer": false,
               "hasReadySignal": true
             },
             {
@@ -431,8 +534,10 @@
               "description": "Especificación técnica completada, archivada y cerrada",
               "order": 5,
               "streamType": "DOWNSTREAM",
+              "statusCategory": "DONE",
               "isBeforeCommitmentPoint": false,
-              "isPosDeliveryPoint": true
+              "isPosDeliveryPoint": true,
+              "isBuffer": false
             }
           ]
         }
