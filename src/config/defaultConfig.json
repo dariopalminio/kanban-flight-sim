@@ -159,7 +159,7 @@
       }
     },
     {
-      "name": "SDF workflows",
+      "name": "SDDF workflows",
       "initialReleaseCount": 1,
       "advanceProbability": 0.5,
       "childrenPerParent": 3,

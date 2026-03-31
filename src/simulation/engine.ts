@@ -26,6 +26,9 @@ const allAtDelivery = (wf: Workflow, items: Workitem[]): boolean =>
 const anyInDownstream = (wf: Workflow, items: Workitem[]): boolean =>
   items.some((w) => wf.statuses.find((s) => s.id === w.statusId)?.streamType === "DOWNSTREAM");
 
+const anyAtOrPastOrder = (wf: Workflow, items: Workitem[], order: number): boolean =>
+  items.some((w) => (wf.statuses.find((s) => s.id === w.statusId)?.order ?? 0) >= order);
+
 // Mutable WIP tracker: initialized from current items snapshot.
 // Each approved transition increments the target count so within-step
 // collisions are prevented.
@@ -69,21 +72,31 @@ type WfKeys = {
   commitmentOrder: number;
   firstDownstreamId: string;
   firstDownstreamOrder: number;
+  secondDownstreamId: string;
+  secondDownstreamOrder: number;
   deliveryOrder: number;
 };
 
 const getWfKeys = (wf: Workflow): WfKeys => {
   const commitment = wf.statuses.find((s) => s.isBeforeCommitmentPoint);
-  const firstDownstream = wf.statuses.find((s) => s.streamType === "DOWNSTREAM");
+  const downstreamStatuses = wf.statuses
+    .filter((s) => s.streamType === "DOWNSTREAM")
+    .sort((a, b) => a.order - b.order);
+  const firstDownstream = downstreamStatuses[0];
+  const secondDownstream = downstreamStatuses[1];
   const delivery = wf.statuses.find((s) => s.isPosDeliveryPoint);
-  if (!commitment || !firstDownstream || !delivery) {
-    throw new Error(`Workflow "${wf.id}" is missing commitment, firstDownstream, or delivery status`);
+  if (!commitment || !firstDownstream || !secondDownstream || !delivery) {
+    throw new Error(
+      `Workflow "${wf.id}" is missing commitment, firstDownstream, secondDownstream, or delivery status`
+    );
   }
   return {
     commitmentId: commitment.id,
     commitmentOrder: commitment.order,
     firstDownstreamId: firstDownstream.id,
     firstDownstreamOrder: firstDownstream.order,
+    secondDownstreamId: secondDownstream.id,
+    secondDownstreamOrder: secondDownstream.order,
     deliveryOrder: delivery.order,
   };
 };
@@ -171,10 +184,21 @@ export const tick = (state: SimState, config: Config): SimState => {
 
     if (order === keysL1.firstDownstreamOrder) {
       const myL0 = childrenOf([...items, ...newL0Children], w.id);
+      if (anyAtOrPastOrder(wfL0, myL0, keysL0.secondDownstreamOrder)) {
+        if (!wipL1(w.statusId, keysL1.secondDownstreamId)) return w;
+        return { ...w, statusId: keysL1.secondDownstreamId };
+      }
+      return w;
+    }
+
+    if (order === keysL1.secondDownstreamOrder) {
+      const myL0 = childrenOf([...items, ...newL0Children], w.id);
       if (allAtDelivery(wfL0, myL0)) {
+        if (!w.isReady) return { ...w, isReady: true };
+        if (!maybe(advanceProbability)) return w;
         const next = getNextStatusId(wfL1, w.statusId);
         if (!wipL1(w.statusId, next)) return w;
-        return { ...w, statusId: next };
+        return { ...w, statusId: next, isReady: undefined };
       }
       return w;
     }
@@ -225,10 +249,21 @@ export const tick = (state: SimState, config: Config): SimState => {
 
     if (order === keysL2.firstDownstreamOrder) {
       const myL1 = childrenOf([...items, ...newL1Children], w.id);
+      if (anyAtOrPastOrder(wfL1, myL1, keysL1.secondDownstreamOrder)) {
+        if (!wipL2(w.statusId, keysL2.secondDownstreamId)) return w;
+        return { ...w, statusId: keysL2.secondDownstreamId };
+      }
+      return w;
+    }
+
+    if (order === keysL2.secondDownstreamOrder) {
+      const myL1 = childrenOf([...items, ...newL1Children], w.id);
       if (allAtDelivery(wfL1, myL1)) {
+        if (!w.isReady) return { ...w, isReady: true };
+        if (!maybe(advanceProbability)) return w;
         const next = getNextStatusId(wfL2, w.statusId);
         if (!wipL2(w.statusId, next)) return w;
-        return { ...w, statusId: next };
+        return { ...w, statusId: next, isReady: undefined };
       }
       return w;
     }
@@ -279,10 +314,21 @@ export const tick = (state: SimState, config: Config): SimState => {
 
     if (order === keysL3.firstDownstreamOrder) {
       const myL2 = childrenOf([...items, ...newL2Children], w.id);
+      if (anyAtOrPastOrder(wfL2, myL2, keysL2.secondDownstreamOrder)) {
+        if (!wipL3(w.statusId, keysL3.secondDownstreamId)) return w;
+        return { ...w, statusId: keysL3.secondDownstreamId };
+      }
+      return w;
+    }
+
+    if (order === keysL3.secondDownstreamOrder) {
+      const myL2 = childrenOf([...items, ...newL2Children], w.id);
       if (allAtDelivery(wfL2, myL2)) {
+        if (!w.isReady) return { ...w, isReady: true };
+        if (!maybe(advanceProbability)) return w;
         const next = getNextStatusId(wfL3, w.statusId);
         if (!wipL3(w.statusId, next)) return w;
-        return { ...w, statusId: next };
+        return { ...w, statusId: next, isReady: undefined };
       }
       return w;
     }

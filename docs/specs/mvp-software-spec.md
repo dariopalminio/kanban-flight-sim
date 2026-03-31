@@ -94,6 +94,7 @@ La configuración de la simulación "Simplified" es:
 | L1    | Story    | Funcionalidad del sistema    | Táctico           |
 | L0    | Subtask  | Unidad implementable         | Operativo         |
 
+
 ---
 
 ### 3.2 Workitems
@@ -304,7 +305,7 @@ Los colores representativos de STATUS-CATEGORY son: TODO=gris, IN-PROGRESS=azul,
 
 ### 5.10 Punto de Compromiso (commitment-status)
 
-El estado marcado con `isBeforeCommitmentPoint: true` es el estado en que el equipo se compromete formalmente a ejecutar el workitem y se crean sus hijos. Ejemplos en la simulación "SDF workflows":
+El estado marcado con `isBeforeCommitmentPoint: true` es el estado previo al que el equipo se compromete formalmente a ejecutar el workitem. Ejemplos en la simulación "SDF workflows":
 
 | Nivel | Nombre  | Estado con `isBeforeCommitmentPoint` | Significado                                    |
 | ----- | ------- | ------------------------------------ | ---------------------------------------------- |
