@@ -242,7 +242,8 @@
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
               "isBuffer": true,
-              "description": "Iniciativa entra al embudo del portafolio y captura de ideas brutas."
+              "description": "Iniciativa entra al embudo del portafolio y captura de ideas brutas.",
+              "wipLimit": 3
             },
             {
               "id": "initiative-define-discovery",

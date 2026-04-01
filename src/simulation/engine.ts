@@ -175,19 +175,15 @@ export const tick = (state: SimState, config: Config): SimState => {
 
   // --- PASO 1: Advance L0 autonomously (FIFO per column) ---
   const wipL0 = makeWipTracker(wfL0, items);
-  // Build front-of-queue set for all L0 columns
-  const l0Columns = new Set(items.filter((w) => w.level === "L0").map((w) => w.statusId));
-  const l0Fronts = new Set<string>();
+  // Walk right-to-left: process columns in descending order so freed WIP slots are visible immediately
+  const l0Columns = [...new Set(items.filter((w) => w.level === "L0").map((w) => w.statusId))]
+    .sort((a, b) => getOrder(wfL0, b) - getOrder(wfL0, a));
   for (const sid of l0Columns) {
+    if (getOrder(wfL0, sid) >= keysL0.deliveryOrder) continue;
     const fid = frontOfQueue(items.filter((w) => w.level === "L0"), sid);
-    if (fid) l0Fronts.add(fid);
+    if (!fid) continue;
+    items = items.map((w) => w.id !== fid ? w : advanceOrSignal(w, wfL0, wipL0, advanceProbability, currentTick));
   }
-  items = items.map((w) => {
-    if (w.level !== "L0") return w;
-    if (getOrder(wfL0, w.statusId) >= keysL0.deliveryOrder) return w;
-    if (!l0Fronts.has(w.id)) return w; // FIFO: not the front of queue
-    return advanceOrSignal(w, wfL0, wipL0, advanceProbability, currentTick);
-  });
 
   // --- PASO 2: Push L1 to first downstream when any L0 child enters downstream ---
   const wipL1 = makeWipTracker(wfL1, items);
@@ -201,30 +197,14 @@ export const tick = (state: SimState, config: Config): SimState => {
     return w;
   });
 
-  // --- PASO 3: Advance L1 with rules (FIFO for general advancement) ---
+  // --- PASO 3: Advance L1 with rules ---
   const newL0Children: Workitem[] = [];
-  // Front-of-queue for L1 general block: all items not at firstDownstream, secondDownstream, or delivery
-  const l1GeneralItems = items.filter((w) => {
-    if (w.level !== "L1") return false;
-    const o = getOrder(wfL1, w.statusId);
-    return o < keysL1.deliveryOrder
-      && o !== keysL1.firstDownstreamOrder
-      && o !== keysL1.secondDownstreamOrder;
-  });
-  const l1GeneralColumns = new Set(l1GeneralItems.map((w) => w.statusId));
-  const l1GeneralFronts = new Set<string>();
-  for (const sid of l1GeneralColumns) {
-    const fid = frontOfQueue(l1GeneralItems, sid);
-    if (fid) l1GeneralFronts.add(fid);
-  }
 
+  // firstDownstream and secondDownstream: hierarchical rules, parallel
   items = items.map((w) => {
     if (w.level !== "L1") return w;
-
     const order = getOrder(wfL1, w.statusId);
-
     if (order >= keysL1.deliveryOrder) return w;
-
     if (order === keysL1.firstDownstreamOrder) {
       const myL0 = childrenOf([...items, ...newL0Children], w.id);
       if (anyAtOrPastOrder(wfL0, myL0, keysL0.secondDownstreamOrder)) {
@@ -233,7 +213,6 @@ export const tick = (state: SimState, config: Config): SimState => {
       }
       return w;
     }
-
     if (order === keysL1.secondDownstreamOrder) {
       const myL0 = childrenOf([...items, ...newL0Children], w.id);
       if (allAtDelivery(wfL0, myL0)) {
@@ -245,29 +224,42 @@ export const tick = (state: SimState, config: Config): SimState => {
       }
       return w;
     }
+    return w;
+  });
 
-    // General advancement (past secondDownstream): FIFO
-    if (!l1GeneralFronts.has(w.id)) return w;
-
-    const status = wfL1.statuses.find((s) => s.id === w.statusId);
-    if (status?.hasReadySignal && !w.isReady) {
-      return maybe(advanceProbability) ? { ...w, isReady: true } : w;
-    }
-    if (!maybe(advanceProbability)) return w;
-    const next = getNextStatusId(wfL1, w.statusId);
-    if (!wipL1(w.statusId, next)) return w;
-    if (w.statusId === keysL1.commitmentId) {
-      const hasChildren = items.some((x) => x.parentId === w.id && x.level === "L0");
-      if (!hasChildren) {
-        for (let i = 0; i < childrenPerParent; i++) {
-          const [id, newCounters] = nextId(counters, "L0", wfL0.workitemName, w.id);
-          counters = newCounters;
-          newL0Children.push({ id, level: "L0", statusId: wfL0.statuses[0].id, parentId: w.id, enteredAt: currentTick, color: w.color });
+  // General L1 advancement: walk right-to-left
+  const l1GeneralColumns = [...new Set(
+    items.filter((w) => {
+      if (w.level !== "L1") return false;
+      const o = getOrder(wfL1, w.statusId);
+      return o < keysL1.deliveryOrder && o !== keysL1.firstDownstreamOrder && o !== keysL1.secondDownstreamOrder;
+    }).map((w) => w.statusId)
+  )].sort((a, b) => getOrder(wfL1, b) - getOrder(wfL1, a));
+  for (const sid of l1GeneralColumns) {
+    const fid = frontOfQueue(items.filter((w) => w.level === "L1"), sid);
+    if (!fid) continue;
+    items = items.map((w) => {
+      if (w.id !== fid) return w;
+      const status = wfL1.statuses.find((s) => s.id === w.statusId);
+      if (status?.hasReadySignal && !w.isReady) {
+        return maybe(advanceProbability) ? { ...w, isReady: true } : w;
+      }
+      if (!maybe(advanceProbability)) return w;
+      const next = getNextStatusId(wfL1, w.statusId);
+      if (!wipL1(w.statusId, next)) return w;
+      if (w.statusId === keysL1.commitmentId) {
+        const hasChildren = items.some((x) => x.parentId === w.id && x.level === "L0");
+        if (!hasChildren) {
+          for (let i = 0; i < childrenPerParent; i++) {
+            const [id, newCounters] = nextId(counters, "L0", wfL0.workitemName, w.id);
+            counters = newCounters;
+            newL0Children.push({ id, level: "L0", statusId: wfL0.statuses[0].id, parentId: w.id, enteredAt: currentTick, color: w.color });
+          }
         }
       }
-    }
-    return { ...w, statusId: next, isReady: undefined, enteredAt: currentTick };
-  });
+      return { ...w, statusId: next, isReady: undefined, enteredAt: currentTick };
+    });
+  }
 
   items = [...items, ...newL0Children];
 
@@ -283,29 +275,14 @@ export const tick = (state: SimState, config: Config): SimState => {
     return w;
   });
 
-  // --- PASO 5: Advance L2 with rules (FIFO for general advancement) ---
+  // --- PASO 5: Advance L2 with rules ---
   const newL1Children: Workitem[] = [];
-  const l2GeneralItems = items.filter((w) => {
-    if (w.level !== "L2") return false;
-    const o = getOrder(wfL2, w.statusId);
-    return o < keysL2.deliveryOrder
-      && o !== keysL2.firstDownstreamOrder
-      && o !== keysL2.secondDownstreamOrder;
-  });
-  const l2GeneralColumns = new Set(l2GeneralItems.map((w) => w.statusId));
-  const l2GeneralFronts = new Set<string>();
-  for (const sid of l2GeneralColumns) {
-    const fid = frontOfQueue(l2GeneralItems, sid);
-    if (fid) l2GeneralFronts.add(fid);
-  }
 
+  // firstDownstream and secondDownstream: hierarchical rules, parallel
   items = items.map((w) => {
     if (w.level !== "L2") return w;
-
     const order = getOrder(wfL2, w.statusId);
-
     if (order >= keysL2.deliveryOrder) return w;
-
     if (order === keysL2.firstDownstreamOrder) {
       const myL1 = childrenOf([...items, ...newL1Children], w.id);
       if (anyAtOrPastOrder(wfL1, myL1, keysL1.secondDownstreamOrder)) {
@@ -314,7 +291,6 @@ export const tick = (state: SimState, config: Config): SimState => {
       }
       return w;
     }
-
     if (order === keysL2.secondDownstreamOrder) {
       const myL1 = childrenOf([...items, ...newL1Children], w.id);
       if (allAtDelivery(wfL1, myL1)) {
@@ -326,29 +302,42 @@ export const tick = (state: SimState, config: Config): SimState => {
       }
       return w;
     }
+    return w;
+  });
 
-    // General advancement (past secondDownstream): FIFO
-    if (!l2GeneralFronts.has(w.id)) return w;
-
-    const status = wfL2.statuses.find((s) => s.id === w.statusId);
-    if (status?.hasReadySignal && !w.isReady) {
-      return maybe(advanceProbability) ? { ...w, isReady: true } : w;
-    }
-    if (!maybe(advanceProbability)) return w;
-    const next = getNextStatusId(wfL2, w.statusId);
-    if (!wipL2(w.statusId, next)) return w;
-    if (w.statusId === keysL2.commitmentId) {
-      const hasChildren = items.some((x) => x.parentId === w.id && x.level === "L1");
-      if (!hasChildren) {
-        for (let i = 0; i < childrenPerParent; i++) {
-          const [id, newCounters] = nextId(counters, "L1", wfL1.workitemName, w.id);
-          counters = newCounters;
-          newL1Children.push({ id, level: "L1", statusId: wfL1.statuses[0].id, parentId: w.id, enteredAt: currentTick, color: w.color });
+  // General L2 advancement: walk right-to-left
+  const l2GeneralColumns = [...new Set(
+    items.filter((w) => {
+      if (w.level !== "L2") return false;
+      const o = getOrder(wfL2, w.statusId);
+      return o < keysL2.deliveryOrder && o !== keysL2.firstDownstreamOrder && o !== keysL2.secondDownstreamOrder;
+    }).map((w) => w.statusId)
+  )].sort((a, b) => getOrder(wfL2, b) - getOrder(wfL2, a));
+  for (const sid of l2GeneralColumns) {
+    const fid = frontOfQueue(items.filter((w) => w.level === "L2"), sid);
+    if (!fid) continue;
+    items = items.map((w) => {
+      if (w.id !== fid) return w;
+      const status = wfL2.statuses.find((s) => s.id === w.statusId);
+      if (status?.hasReadySignal && !w.isReady) {
+        return maybe(advanceProbability) ? { ...w, isReady: true } : w;
+      }
+      if (!maybe(advanceProbability)) return w;
+      const next = getNextStatusId(wfL2, w.statusId);
+      if (!wipL2(w.statusId, next)) return w;
+      if (w.statusId === keysL2.commitmentId) {
+        const hasChildren = items.some((x) => x.parentId === w.id && x.level === "L1");
+        if (!hasChildren) {
+          for (let i = 0; i < childrenPerParent; i++) {
+            const [id, newCounters] = nextId(counters, "L1", wfL1.workitemName, w.id);
+            counters = newCounters;
+            newL1Children.push({ id, level: "L1", statusId: wfL1.statuses[0].id, parentId: w.id, enteredAt: currentTick, color: w.color });
+          }
         }
       }
-    }
-    return { ...w, statusId: next, isReady: undefined, enteredAt: currentTick };
-  });
+      return { ...w, statusId: next, isReady: undefined, enteredAt: currentTick };
+    });
+  }
 
   items = [...items, ...newL1Children];
 
@@ -364,29 +353,14 @@ export const tick = (state: SimState, config: Config): SimState => {
     return w;
   });
 
-  // --- PASO 7: Advance L3 with rules (FIFO for general advancement) ---
+  // --- PASO 7: Advance L3 with rules ---
   const newL2Children: Workitem[] = [];
-  const l3GeneralItems = items.filter((w) => {
-    if (w.level !== "L3") return false;
-    const o = getOrder(wfL3, w.statusId);
-    return o < keysL3.deliveryOrder
-      && o !== keysL3.firstDownstreamOrder
-      && o !== keysL3.secondDownstreamOrder;
-  });
-  const l3GeneralColumns = new Set(l3GeneralItems.map((w) => w.statusId));
-  const l3GeneralFronts = new Set<string>();
-  for (const sid of l3GeneralColumns) {
-    const fid = frontOfQueue(l3GeneralItems, sid);
-    if (fid) l3GeneralFronts.add(fid);
-  }
 
+  // firstDownstream and secondDownstream: hierarchical rules, parallel
   items = items.map((w) => {
     if (w.level !== "L3") return w;
-
     const order = getOrder(wfL3, w.statusId);
-
     if (order >= keysL3.deliveryOrder) return w;
-
     if (order === keysL3.firstDownstreamOrder) {
       const myL2 = childrenOf([...items, ...newL2Children], w.id);
       if (anyAtOrPastOrder(wfL2, myL2, keysL2.secondDownstreamOrder)) {
@@ -395,7 +369,6 @@ export const tick = (state: SimState, config: Config): SimState => {
       }
       return w;
     }
-
     if (order === keysL3.secondDownstreamOrder) {
       const myL2 = childrenOf([...items, ...newL2Children], w.id);
       if (allAtDelivery(wfL2, myL2)) {
@@ -407,29 +380,42 @@ export const tick = (state: SimState, config: Config): SimState => {
       }
       return w;
     }
+    return w;
+  });
 
-    // General advancement (past secondDownstream): FIFO
-    if (!l3GeneralFronts.has(w.id)) return w;
-
-    const status = wfL3.statuses.find((s) => s.id === w.statusId);
-    if (status?.hasReadySignal && !w.isReady) {
-      return maybe(advanceProbability) ? { ...w, isReady: true } : w;
-    }
-    if (!maybe(advanceProbability)) return w;
-    const next = getNextStatusId(wfL3, w.statusId);
-    if (!wipL3(w.statusId, next)) return w;
-    if (w.statusId === keysL3.commitmentId) {
-      const hasChildren = items.some((x) => x.parentId === w.id && x.level === "L2");
-      if (!hasChildren) {
-        for (let i = 0; i < childrenPerParent; i++) {
-          const [id, newCounters] = nextId(counters, "L2", wfL2.workitemName, w.id);
-          counters = newCounters;
-          newL2Children.push({ id, level: "L2", statusId: wfL2.statuses[0].id, parentId: w.id, enteredAt: currentTick, color: w.color });
+  // General L3 advancement: walk right-to-left
+  const l3GeneralColumns = [...new Set(
+    items.filter((w) => {
+      if (w.level !== "L3") return false;
+      const o = getOrder(wfL3, w.statusId);
+      return o < keysL3.deliveryOrder && o !== keysL3.firstDownstreamOrder && o !== keysL3.secondDownstreamOrder;
+    }).map((w) => w.statusId)
+  )].sort((a, b) => getOrder(wfL3, b) - getOrder(wfL3, a));
+  for (const sid of l3GeneralColumns) {
+    const fid = frontOfQueue(items.filter((w) => w.level === "L3"), sid);
+    if (!fid) continue;
+    items = items.map((w) => {
+      if (w.id !== fid) return w;
+      const status = wfL3.statuses.find((s) => s.id === w.statusId);
+      if (status?.hasReadySignal && !w.isReady) {
+        return maybe(advanceProbability) ? { ...w, isReady: true } : w;
+      }
+      if (!maybe(advanceProbability)) return w;
+      const next = getNextStatusId(wfL3, w.statusId);
+      if (!wipL3(w.statusId, next)) return w;
+      if (w.statusId === keysL3.commitmentId) {
+        const hasChildren = items.some((x) => x.parentId === w.id && x.level === "L2");
+        if (!hasChildren) {
+          for (let i = 0; i < childrenPerParent; i++) {
+            const [id, newCounters] = nextId(counters, "L2", wfL2.workitemName, w.id);
+            counters = newCounters;
+            newL2Children.push({ id, level: "L2", statusId: wfL2.statuses[0].id, parentId: w.id, enteredAt: currentTick, color: w.color });
+          }
         }
       }
-    }
-    return { ...w, statusId: next, isReady: undefined, enteredAt: currentTick };
-  });
+      return { ...w, statusId: next, isReady: undefined, enteredAt: currentTick };
+    });
+  }
 
   items = [...items, ...newL2Children];
 
