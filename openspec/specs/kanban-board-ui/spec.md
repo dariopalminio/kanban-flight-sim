@@ -108,3 +108,20 @@ After each tick (manual or autoplay), all boards SHALL re-render with the update
 #### Scenario: Card moves to next column after tick
 - **WHEN** a tick advances an L0 item from status A to status B
 - **THEN** the card appears in column B and not in column A in the next render
+
+---
+
+### Requirement: FIFO card display order within columns
+Cards within each column SHALL be rendered sorted by `enteredAt` ascending (oldest entry at top, newest at bottom). The sort SHALL be stable: items with equal `enteredAt` values retain their relative order from the source array. Items newly arrived in a column (highest `enteredAt`) SHALL appear at the bottom of the column.
+
+#### Scenario: Oldest item appears at top of column
+- **WHEN** a column contains items with different `enteredAt` values
+- **THEN** the item with the lowest `enteredAt` is rendered first (topmost) in the column
+
+#### Scenario: Newly arrived item appears at bottom of column
+- **WHEN** a workitem transitions into a column in the current tick
+- **THEN** that item renders at the bottom of the column (after all items with a lower `enteredAt`)
+
+#### Scenario: Stable sort for equal enteredAt
+- **WHEN** two or more items in the same column share the same `enteredAt` value
+- **THEN** their relative render order matches their relative order in the source workitems array

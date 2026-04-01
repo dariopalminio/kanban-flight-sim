@@ -23,7 +23,8 @@
               "isBeforeCommitmentPoint": true,
               "isPosDeliveryPoint": false,
               "isBuffer": true,
-              "description": "Ideas de Project, sin análisis detallado"
+              "description": "Ideas de Project, sin análisis detallado",
+              "wipLimit": 3
             },
             {
               "id": "project-selected",

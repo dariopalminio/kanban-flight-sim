@@ -1,5 +1,10 @@
 import type { Config, SimState, Workitem, Workflow } from "../domain/types";
 
+const WORKITEM_PALETTE: string[] = [
+  "#0972b8", "#9b59b6", "#e91e63", "#116874", "#ff9800",
+  "#e74c3c", "#e67e22", "#f1c40f", "#086830", "#1abc9c",
+];
+
 // =====================
 // HELPERS
 // =====================
@@ -29,6 +34,17 @@ const anyInDownstream = (wf: Workflow, items: Workitem[]): boolean =>
 const anyAtOrPastOrder = (wf: Workflow, items: Workitem[], order: number): boolean =>
   items.some((w) => (wf.statuses.find((s) => s.id === w.statusId)?.order ?? 0) >= order);
 
+// Returns the id of the front-of-queue item in the given column.
+// Tie-break: earliest position in the items array.
+const frontOfQueue = (items: Workitem[], statusId: string): string | undefined => {
+  let front: Workitem | undefined;
+  for (const w of items) {
+    if (w.statusId !== statusId) continue;
+    if (!front || w.enteredAt < front.enteredAt) front = w;
+  }
+  return front?.id;
+};
+
 // Mutable WIP tracker: initialized from current items snapshot.
 // Each approved transition increments the target count so within-step
 // collisions are prevented.
@@ -49,11 +65,13 @@ const makeWipTracker = (wf: Workflow, items: Workitem[]) => {
 //   Phase 1: !isReady → mark isReady:true (stays in same status)
 //   Phase 2:  isReady → advance to next status (clears isReady)
 // For statuses without hasReadySignal: advances normally in one step.
+// currentTick is used to stamp enteredAt on the new status.
 const advanceOrSignal = (
   item: Workitem,
   wf: Workflow,
   wipFn: (from: string, to: string) => boolean,
-  prob: number
+  prob: number,
+  currentTick: number
 ): Workitem => {
   const status = wf.statuses.find((s) => s.id === item.statusId);
   if (status?.hasReadySignal && !item.isReady) {
@@ -63,7 +81,7 @@ const advanceOrSignal = (
   if (!maybe(prob)) return item;
   const next = getNextStatusId(wf, item.statusId);
   if (!wipFn(item.statusId, next)) return item;
-  return { ...item, statusId: next, isReady: undefined };
+  return { ...item, statusId: next, isReady: undefined, enteredAt: currentTick };
 };
 
 // Structural key status IDs derived from workflow properties
@@ -129,6 +147,8 @@ export const buildInitialState = (config: Config): SimState => {
       id: `${prefix}-${i + 1}`,
       level: "L3" as const,
       statusId: config.workflows.L3.statuses[0].id,
+      enteredAt: 0,
+      color: WORKITEM_PALETTE[i % WORKITEM_PALETTE.length],
     })),
   };
 };
@@ -151,13 +171,22 @@ export const tick = (state: SimState, config: Config): SimState => {
 
   let items = state.workitems.map((w) => ({ ...w }));
   let counters = { ...state.idCounters };
+  const currentTick = state.tick + 1;
 
-  // --- PASO 1: Advance L0 autonomously ---
+  // --- PASO 1: Advance L0 autonomously (FIFO per column) ---
   const wipL0 = makeWipTracker(wfL0, items);
+  // Build front-of-queue set for all L0 columns
+  const l0Columns = new Set(items.filter((w) => w.level === "L0").map((w) => w.statusId));
+  const l0Fronts = new Set<string>();
+  for (const sid of l0Columns) {
+    const fid = frontOfQueue(items.filter((w) => w.level === "L0"), sid);
+    if (fid) l0Fronts.add(fid);
+  }
   items = items.map((w) => {
     if (w.level !== "L0") return w;
     if (getOrder(wfL0, w.statusId) >= keysL0.deliveryOrder) return w;
-    return advanceOrSignal(w, wfL0, wipL0, advanceProbability);
+    if (!l0Fronts.has(w.id)) return w; // FIFO: not the front of queue
+    return advanceOrSignal(w, wfL0, wipL0, advanceProbability, currentTick);
   });
 
   // --- PASO 2: Push L1 to first downstream when any L0 child enters downstream ---
@@ -167,13 +196,27 @@ export const tick = (state: SimState, config: Config): SimState => {
     if (getOrder(wfL1, w.statusId) >= keysL1.firstDownstreamOrder) return w;
     if (anyInDownstream(wfL0, childrenOf(items, w.id))) {
       if (!wipL1(w.statusId, keysL1.firstDownstreamId)) return w;
-      return { ...w, statusId: keysL1.firstDownstreamId };
+      return { ...w, statusId: keysL1.firstDownstreamId, enteredAt: currentTick };
     }
     return w;
   });
 
-  // --- PASO 3: Advance L1 with rules ---
+  // --- PASO 3: Advance L1 with rules (FIFO for general advancement) ---
   const newL0Children: Workitem[] = [];
+  // Front-of-queue for L1 general block: all items not at firstDownstream, secondDownstream, or delivery
+  const l1GeneralItems = items.filter((w) => {
+    if (w.level !== "L1") return false;
+    const o = getOrder(wfL1, w.statusId);
+    return o < keysL1.deliveryOrder
+      && o !== keysL1.firstDownstreamOrder
+      && o !== keysL1.secondDownstreamOrder;
+  });
+  const l1GeneralColumns = new Set(l1GeneralItems.map((w) => w.statusId));
+  const l1GeneralFronts = new Set<string>();
+  for (const sid of l1GeneralColumns) {
+    const fid = frontOfQueue(l1GeneralItems, sid);
+    if (fid) l1GeneralFronts.add(fid);
+  }
 
   items = items.map((w) => {
     if (w.level !== "L1") return w;
@@ -186,7 +229,7 @@ export const tick = (state: SimState, config: Config): SimState => {
       const myL0 = childrenOf([...items, ...newL0Children], w.id);
       if (anyAtOrPastOrder(wfL0, myL0, keysL0.secondDownstreamOrder)) {
         if (!wipL1(w.statusId, keysL1.secondDownstreamId)) return w;
-        return { ...w, statusId: keysL1.secondDownstreamId };
+        return { ...w, statusId: keysL1.secondDownstreamId, enteredAt: currentTick };
       }
       return w;
     }
@@ -198,10 +241,13 @@ export const tick = (state: SimState, config: Config): SimState => {
         if (!maybe(advanceProbability)) return w;
         const next = getNextStatusId(wfL1, w.statusId);
         if (!wipL1(w.statusId, next)) return w;
-        return { ...w, statusId: next, isReady: undefined };
+        return { ...w, statusId: next, isReady: undefined, enteredAt: currentTick };
       }
       return w;
     }
+
+    // General advancement (past secondDownstream): FIFO
+    if (!l1GeneralFronts.has(w.id)) return w;
 
     const status = wfL1.statuses.find((s) => s.id === w.statusId);
     if (status?.hasReadySignal && !w.isReady) {
@@ -216,11 +262,11 @@ export const tick = (state: SimState, config: Config): SimState => {
         for (let i = 0; i < childrenPerParent; i++) {
           const [id, newCounters] = nextId(counters, "L0", wfL0.workitemName, w.id);
           counters = newCounters;
-          newL0Children.push({ id, level: "L0", statusId: wfL0.statuses[0].id, parentId: w.id });
+          newL0Children.push({ id, level: "L0", statusId: wfL0.statuses[0].id, parentId: w.id, enteredAt: currentTick, color: w.color });
         }
       }
     }
-    return { ...w, statusId: next, isReady: undefined };
+    return { ...w, statusId: next, isReady: undefined, enteredAt: currentTick };
   });
 
   items = [...items, ...newL0Children];
@@ -232,13 +278,26 @@ export const tick = (state: SimState, config: Config): SimState => {
     if (getOrder(wfL2, w.statusId) >= keysL2.firstDownstreamOrder) return w;
     if (anyInDownstream(wfL1, childrenOf(items, w.id))) {
       if (!wipL2(w.statusId, keysL2.firstDownstreamId)) return w;
-      return { ...w, statusId: keysL2.firstDownstreamId };
+      return { ...w, statusId: keysL2.firstDownstreamId, enteredAt: currentTick };
     }
     return w;
   });
 
-  // --- PASO 5: Advance L2 with rules ---
+  // --- PASO 5: Advance L2 with rules (FIFO for general advancement) ---
   const newL1Children: Workitem[] = [];
+  const l2GeneralItems = items.filter((w) => {
+    if (w.level !== "L2") return false;
+    const o = getOrder(wfL2, w.statusId);
+    return o < keysL2.deliveryOrder
+      && o !== keysL2.firstDownstreamOrder
+      && o !== keysL2.secondDownstreamOrder;
+  });
+  const l2GeneralColumns = new Set(l2GeneralItems.map((w) => w.statusId));
+  const l2GeneralFronts = new Set<string>();
+  for (const sid of l2GeneralColumns) {
+    const fid = frontOfQueue(l2GeneralItems, sid);
+    if (fid) l2GeneralFronts.add(fid);
+  }
 
   items = items.map((w) => {
     if (w.level !== "L2") return w;
@@ -251,7 +310,7 @@ export const tick = (state: SimState, config: Config): SimState => {
       const myL1 = childrenOf([...items, ...newL1Children], w.id);
       if (anyAtOrPastOrder(wfL1, myL1, keysL1.secondDownstreamOrder)) {
         if (!wipL2(w.statusId, keysL2.secondDownstreamId)) return w;
-        return { ...w, statusId: keysL2.secondDownstreamId };
+        return { ...w, statusId: keysL2.secondDownstreamId, enteredAt: currentTick };
       }
       return w;
     }
@@ -263,10 +322,13 @@ export const tick = (state: SimState, config: Config): SimState => {
         if (!maybe(advanceProbability)) return w;
         const next = getNextStatusId(wfL2, w.statusId);
         if (!wipL2(w.statusId, next)) return w;
-        return { ...w, statusId: next, isReady: undefined };
+        return { ...w, statusId: next, isReady: undefined, enteredAt: currentTick };
       }
       return w;
     }
+
+    // General advancement (past secondDownstream): FIFO
+    if (!l2GeneralFronts.has(w.id)) return w;
 
     const status = wfL2.statuses.find((s) => s.id === w.statusId);
     if (status?.hasReadySignal && !w.isReady) {
@@ -281,11 +343,11 @@ export const tick = (state: SimState, config: Config): SimState => {
         for (let i = 0; i < childrenPerParent; i++) {
           const [id, newCounters] = nextId(counters, "L1", wfL1.workitemName, w.id);
           counters = newCounters;
-          newL1Children.push({ id, level: "L1", statusId: wfL1.statuses[0].id, parentId: w.id });
+          newL1Children.push({ id, level: "L1", statusId: wfL1.statuses[0].id, parentId: w.id, enteredAt: currentTick, color: w.color });
         }
       }
     }
-    return { ...w, statusId: next, isReady: undefined };
+    return { ...w, statusId: next, isReady: undefined, enteredAt: currentTick };
   });
 
   items = [...items, ...newL1Children];
@@ -297,13 +359,26 @@ export const tick = (state: SimState, config: Config): SimState => {
     if (getOrder(wfL3, w.statusId) >= keysL3.firstDownstreamOrder) return w;
     if (anyInDownstream(wfL2, childrenOf(items, w.id))) {
       if (!wipL3(w.statusId, keysL3.firstDownstreamId)) return w;
-      return { ...w, statusId: keysL3.firstDownstreamId };
+      return { ...w, statusId: keysL3.firstDownstreamId, enteredAt: currentTick };
     }
     return w;
   });
 
-  // --- PASO 7: Advance L3 with rules ---
+  // --- PASO 7: Advance L3 with rules (FIFO for general advancement) ---
   const newL2Children: Workitem[] = [];
+  const l3GeneralItems = items.filter((w) => {
+    if (w.level !== "L3") return false;
+    const o = getOrder(wfL3, w.statusId);
+    return o < keysL3.deliveryOrder
+      && o !== keysL3.firstDownstreamOrder
+      && o !== keysL3.secondDownstreamOrder;
+  });
+  const l3GeneralColumns = new Set(l3GeneralItems.map((w) => w.statusId));
+  const l3GeneralFronts = new Set<string>();
+  for (const sid of l3GeneralColumns) {
+    const fid = frontOfQueue(l3GeneralItems, sid);
+    if (fid) l3GeneralFronts.add(fid);
+  }
 
   items = items.map((w) => {
     if (w.level !== "L3") return w;
@@ -316,7 +391,7 @@ export const tick = (state: SimState, config: Config): SimState => {
       const myL2 = childrenOf([...items, ...newL2Children], w.id);
       if (anyAtOrPastOrder(wfL2, myL2, keysL2.secondDownstreamOrder)) {
         if (!wipL3(w.statusId, keysL3.secondDownstreamId)) return w;
-        return { ...w, statusId: keysL3.secondDownstreamId };
+        return { ...w, statusId: keysL3.secondDownstreamId, enteredAt: currentTick };
       }
       return w;
     }
@@ -328,10 +403,13 @@ export const tick = (state: SimState, config: Config): SimState => {
         if (!maybe(advanceProbability)) return w;
         const next = getNextStatusId(wfL3, w.statusId);
         if (!wipL3(w.statusId, next)) return w;
-        return { ...w, statusId: next, isReady: undefined };
+        return { ...w, statusId: next, isReady: undefined, enteredAt: currentTick };
       }
       return w;
     }
+
+    // General advancement (past secondDownstream): FIFO
+    if (!l3GeneralFronts.has(w.id)) return w;
 
     const status = wfL3.statuses.find((s) => s.id === w.statusId);
     if (status?.hasReadySignal && !w.isReady) {
@@ -346,25 +424,28 @@ export const tick = (state: SimState, config: Config): SimState => {
         for (let i = 0; i < childrenPerParent; i++) {
           const [id, newCounters] = nextId(counters, "L2", wfL2.workitemName, w.id);
           counters = newCounters;
-          newL2Children.push({ id, level: "L2", statusId: wfL2.statuses[0].id, parentId: w.id });
+          newL2Children.push({ id, level: "L2", statusId: wfL2.statuses[0].id, parentId: w.id, enteredAt: currentTick, color: w.color });
         }
       }
     }
-    return { ...w, statusId: next, isReady: undefined };
+    return { ...w, statusId: next, isReady: undefined, enteredAt: currentTick };
   });
 
   items = [...items, ...newL2Children];
 
-  // --- PASO 8: Inject new L3 demand item ---
-  const nextTick = state.tick + 1;
-  if (demandInterval > 0 && nextTick % demandInterval === 0) {
-    const [id, newCounters] = nextId(counters, "L3", wfL3.workitemName);
-    counters = newCounters;
-    items = [...items, { id, level: "L3" as const, statusId: wfL3.statuses[0].id }];
+  // --- PASO 8: Inject new L3 demand item (respects wipLimit of first status) ---
+  if (demandInterval > 0 && currentTick % demandInterval === 0) {
+    const firstStatus = wfL3.statuses[0];
+    const currentCount = items.filter((w) => w.statusId === firstStatus.id).length;
+    if (firstStatus.wipLimit == null || currentCount < firstStatus.wipLimit) {
+      const [id, newCounters] = nextId(counters, "L3", wfL3.workitemName);
+      counters = newCounters;
+      items = [...items, { id, level: "L3" as const, statusId: firstStatus.id, enteredAt: currentTick, color: WORKITEM_PALETTE[(newCounters.L3 - 1) % WORKITEM_PALETTE.length] }];
+    }
   }
 
   return {
-    tick: nextTick,
+    tick: currentTick,
     idCounters: counters,
     workitems: items,
   };

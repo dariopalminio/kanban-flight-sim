@@ -1,12 +1,5 @@
 import type { Workitem } from "../domain/types";
 
-const LEVEL_COLORS: Record<string, string> = {
-  L3: "#7c3aed",
-  L2: "#1d4ed8",
-  L1: "#1f6e79",
-  L0: "#ea580c",
-};
-
 type Props = { item: Workitem; isBuffer?: boolean };
 
 export function Card({ item, isBuffer }: Props) {
@@ -15,7 +8,7 @@ export function Card({ item, isBuffer }: Props) {
     <div
       style={{
         position: "relative",
-        background: LEVEL_COLORS[item.level] ?? "#334155",
+        background: item.color,
         color: "white",
         fontSize: 9,
         fontWeight: 600,

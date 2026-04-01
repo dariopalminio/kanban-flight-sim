@@ -12,8 +12,8 @@ const getBg = (status: Status, mode: HighlightMode): string => {
     return status.streamType === "UPSTREAM" ? "#e5b532" : "#2c85de";
   }
   if (mode === "category") {
-    if (status.category === "TODO") return "#374151";
-    if (status.category === "IN_PROGRESS") return "#1d4ed8";
+    if (status.statusCategory === "TODO") return "#374151";
+    if (status.statusCategory === "IN_PROGRESS") return "#1d4ed8";
     return "#166534";
   }
   if (mode === "commitment" && status.isBeforeCommitmentPoint) return "#ddb121";
@@ -27,6 +27,7 @@ const getBorder = (status: Status, mode: HighlightMode): string => {
 };
 
 export function Column({ status, items, highlightMode }: Props) {
+  const sortedItems = [...items].sort((a, b) => a.enteredAt - b.enteredAt);
   return (
     <div
       style={{
@@ -43,7 +44,7 @@ export function Column({ status, items, highlightMode }: Props) {
       <div title={status.description || undefined} style={{ fontSize: 9, color: "white", fontWeight: 600, lineHeight: "13px", marginBottom: 1, textDecoration: status.isBeforeCommitmentPoint ? "underline" : "none" }}>
         {status.name}{status.wipLimit != null ? ` [${items.length}/${status.wipLimit}]` : ""}{status.isBuffer && <span style={{ color: "#22c55e", marginLeft: 2 }}>✓</span>}
       </div>
-      {items.map((item) => (
+      {sortedItems.map((item) => (
         <Card key={item.id} item={item} isBuffer={status.isBuffer} />
       ))}
     </div>

@@ -38,7 +38,7 @@ const buildWorkflow = (wf: RawWorkflow) => ({
   name: wf.name,
   level: wf.level as WorkitemLevel,
   workitemName: wf.workitemName,
-  statuses: wf.statuses.map(({ statusCategory, ...s }) => ({ ...s, category: statusCategory })),
+  statuses: wf.statuses.map((s) => ({ ...s })),
 });
 
 const buildConfig = (sim: RawSimulation): Config => ({

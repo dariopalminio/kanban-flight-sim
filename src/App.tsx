@@ -35,7 +35,7 @@ export default function App() {
   const [simState, setSimState] = useState<SimState>(buildInitialState(config));
   const [isPlaying, setIsPlaying] = useState(false);
   const [highlightMode, setHighlightMode] = useState<HighlightMode>("none");
-  const [viewMode, setViewMode] = useState<ViewMode>("portafolio");
+  const [viewMode, setViewMode] = useState<ViewMode>("delivery");
 
   // Autoplay
   useEffect(() => {
