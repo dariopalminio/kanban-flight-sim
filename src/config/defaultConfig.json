@@ -225,7 +225,7 @@
       "initialReleaseCount": 1,
       "advanceProbability": 0.5,
       "childrenPerParent": 3,
-      "demandInterval": 0,
+      "demandInterval": 5,
       "workflows": {
         "L3": {
           "id": "wf-initiative",

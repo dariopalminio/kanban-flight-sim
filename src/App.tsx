@@ -175,6 +175,7 @@ export default function App() {
           workflow={workflows.L3}
           items={workitems.filter((w) => w.level === "L3")}
           highlightMode={highlightMode}
+          currentTick={simState.tick}
         />
       )}
       {visibleLevels.includes(2) && (
@@ -182,6 +183,7 @@ export default function App() {
           workflow={workflows.L2}
           items={workitems.filter((w) => w.level === "L2")}
           highlightMode={highlightMode}
+          currentTick={simState.tick}
         />
       )}
       {visibleLevels.includes(1) && (
@@ -189,6 +191,7 @@ export default function App() {
           workflow={workflows.L1}
           items={workitems.filter((w) => w.level === "L1")}
           highlightMode={highlightMode}
+          currentTick={simState.tick}
         />
       )}
       {visibleLevels.includes(0) && (
@@ -196,6 +199,7 @@ export default function App() {
           workflow={workflows.L0}
           items={workitems.filter((w) => w.level === "L0")}
           highlightMode={highlightMode}
+          currentTick={simState.tick}
         />
       )}
     </div>

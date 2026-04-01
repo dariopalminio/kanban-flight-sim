@@ -12,9 +12,10 @@ type Props = {
   workflow: Workflow;
   items: Workitem[];
   highlightMode: HighlightMode;
+  currentTick: number;
 };
 
-export function Board({ workflow, items, highlightMode }: Props) {
+export function Board({ workflow, items, highlightMode, currentTick }: Props) {
   return (
     <div style={{ marginBottom: 3 }}>
       <div
@@ -39,6 +40,7 @@ export function Board({ workflow, items, highlightMode }: Props) {
             status={status}
             items={items.filter((w) => w.statusId === status.id)}
             highlightMode={highlightMode}
+            currentTick={currentTick}
           />
         ))}
       </div>

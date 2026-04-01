@@ -5,6 +5,7 @@ type Props = {
   status: Status;
   items: Workitem[];
   highlightMode: HighlightMode;
+  currentTick: number;
 };
 
 const getBg = (status: Status, mode: HighlightMode): string => {
@@ -26,7 +27,7 @@ const getBorder = (status: Status, mode: HighlightMode): string => {
   return "1px solid #334155";
 };
 
-export function Column({ status, items, highlightMode }: Props) {
+export function Column({ status, items, highlightMode, currentTick }: Props) {
   const sortedItems = [...items].sort((a, b) => a.enteredAt - b.enteredAt);
   return (
     <div
@@ -45,7 +46,7 @@ export function Column({ status, items, highlightMode }: Props) {
         {status.name}{status.wipLimit != null ? ` [${items.length}/${status.wipLimit}]` : ""}{status.isBuffer && <span style={{ color: "#22c55e", marginLeft: 2 }}>✓</span>}
       </div>
       {sortedItems.map((item) => (
-        <Card key={item.id} item={item} isBuffer={status.isBuffer} />
+        <Card key={item.id} item={item} isBuffer={status.isBuffer} currentTick={currentTick} />
       ))}
     </div>
   );

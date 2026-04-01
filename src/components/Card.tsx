@@ -1,9 +1,10 @@
 import type { Workitem } from "../domain/types";
 
-type Props = { item: Workitem; isBuffer?: boolean };
+type Props = { item: Workitem; isBuffer?: boolean; currentTick: number };
 
-export function Card({ item, isBuffer }: Props) {
+export function Card({ item, isBuffer, currentTick }: Props) {
   const showReady = item.isReady && !isBuffer;
+  const justMoved = item.enteredAt === currentTick;
   return (
     <div
       style={{
@@ -19,6 +20,7 @@ export function Card({ item, isBuffer }: Props) {
         textAlign: "center",
         borderLeft: showReady ? "3px solid #22c55e" : "3px solid transparent",
         boxShadow: showReady ? "0 0 5px #22c55e88" : "none",
+        animation: justMoved ? "tick-flash 0.6s ease-out" : "none",
       }}
     >
       {item.id}
