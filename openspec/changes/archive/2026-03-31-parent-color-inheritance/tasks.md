@@ -19,4 +19,4 @@
 ## 4. Verificación
 
 - [x] 4.1 Compilar el proyecto (`npm run build`) sin errores de TypeScript.
-- [ ] 4.2 Verificar en el navegador que cada árbol familiar comparte el mismo color de tarjeta en todos los niveles.
+- [x] 4.2 Verificar en el navegador que cada árbol familiar comparte el mismo color de tarjeta en todos los niveles.
