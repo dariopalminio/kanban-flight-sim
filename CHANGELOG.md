@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v1.0.4] — 2026-04-01
+
+### Added
+- **Control de velocidad del Tick (ms)** — Autoplay ahora permite ajustar la cadencia en runtime desde el header con botones **Slower** y **Faster**. Se muestra el valor activo como `Tick ms: <n>` y se aplica con límites para evitar valores extremos:
+  - mínimo: `100 ms`
+  - máximo: `5000 ms`
+  - paso: `100 ms`
+- **Flash visual al avanzar de estado** (`tick-flash`) — Las tarjetas que avanzan en el tick actual muestran una animación breve de borde/glow verde (`#22c55e`) durante ~0.6s, usando el keyframe global `@keyframes tick-flash` definido en `index.html`.
+
+### Changed
+- **Autoplay configurable** — El intervalo dejó de ser fijo (1 segundo) y ahora usa el valor seleccionado por el usuario en cada ciclo de `setInterval`, incluyendo cambios en caliente mientras la simulación está corriendo.
+- **Threading de tick actual en componentes** — `currentTick` se propaga `App → Board → Column → Card` para habilitar comportamientos visuales dependientes del tick actual.
+- **Reset y cambio de simulación restablecen velocidad por defecto** — Al presionar Reset o cambiar de simulación, la velocidad vuelve a `1000 ms` para mantener un estado inicial predecible.
+
 ## [v1.0.3] — 2026-03-19
 
 ### Added
