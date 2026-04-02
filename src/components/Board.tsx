@@ -31,7 +31,7 @@ export function Board({ workflow, items, highlightMode, currentTick }: Props) {
           display: "inline-block",
         }}
       >
-        {workflow.level} — {workflow.name}
+       BOARD:  {workflow.level} — {workflow.name}
       </div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 4, width: "100%" }}>
         {workflow.statuses.map((status) => (

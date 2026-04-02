@@ -39,7 +39,7 @@ export function Column({ status, items, highlightMode, currentTick }: Props) {
         border: getBorder(status, highlightMode),
         borderRadius: 3,
         padding: "2px 4px",
-        borderTop: status.isBuffer ? "2px solid #22c55e" : undefined,
+        borderTop: status.isBuffer ? "2px solid #8f9290" : undefined,
       }}
     >
       <div title={status.description || undefined} style={{ fontSize: 9, color: "white", fontWeight: 600, lineHeight: "13px", marginBottom: 1, textDecoration: status.isBeforeCommitmentPoint ? "underline" : "none" }}>
