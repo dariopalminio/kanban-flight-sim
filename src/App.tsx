@@ -9,7 +9,10 @@ import {
 import type { HighlightMode, SimState, ViewMode } from "./domain/types";
 import { buildInitialState, tick } from "./simulation/engine";
 
-const AUTOPLAY_INTERVAL_MS = 1000;
+const AUTOPLAY_INTERVAL_MIN_MS = 100;
+const AUTOPLAY_INTERVAL_MAX_MS = 5000;
+const AUTOPLAY_INTERVAL_STEP_MS = 100;
+const AUTOPLAY_INTERVAL_DEFAULT_MS = 1000;
 
 const BTN_STYLE: React.CSSProperties = {
   padding: "4px 10px",
@@ -34,6 +37,9 @@ export default function App() {
 
   const [simState, setSimState] = useState<SimState>(buildInitialState(config));
   const [isPlaying, setIsPlaying] = useState(false);
+  const [autoplayIntervalMs, setAutoplayIntervalMs] = useState(
+    AUTOPLAY_INTERVAL_DEFAULT_MS
+  );
   const [highlightMode, setHighlightMode] = useState<HighlightMode>("none");
   const [viewMode, setViewMode] = useState<ViewMode>("delivery");
 
@@ -42,15 +48,22 @@ export default function App() {
     if (!isPlaying) return;
     const id = setInterval(
       () => setSimState((s) => tick(s, config)),
-      AUTOPLAY_INTERVAL_MS
+      autoplayIntervalMs
     );
     return () => clearInterval(id);
-  }, [isPlaying, config]);
+  }, [isPlaying, config, autoplayIntervalMs]);
+
+  const clampAutoplayInterval = (value: number) =>
+    Math.min(
+      AUTOPLAY_INTERVAL_MAX_MS,
+      Math.max(AUTOPLAY_INTERVAL_MIN_MS, value)
+    );
 
   const handleSimChange = (name: string) => {
     setSelectedSim(name);
     setSimState(buildInitialState(loadSimulation(name)));
     setIsPlaying(false);
+    setAutoplayIntervalMs(AUTOPLAY_INTERVAL_DEFAULT_MS);
   };
 
   const handleStep = () => setSimState((s) => tick(s, config));
@@ -58,7 +71,18 @@ export default function App() {
   const handleReset = () => {
     setSimState(buildInitialState(config));
     setIsPlaying(false);
+    setAutoplayIntervalMs(AUTOPLAY_INTERVAL_DEFAULT_MS);
   };
+
+  const handleSlower = () =>
+    setAutoplayIntervalMs((ms) =>
+      clampAutoplayInterval(ms + AUTOPLAY_INTERVAL_STEP_MS)
+    );
+
+  const handleFaster = () =>
+    setAutoplayIntervalMs((ms) =>
+      clampAutoplayInterval(ms - AUTOPLAY_INTERVAL_STEP_MS)
+    );
 
   const toggleView = (mode: HighlightMode) =>
     setHighlightMode((prev) => (prev === mode ? "none" : mode));
@@ -105,6 +129,10 @@ export default function App() {
           Tick: {tickCount}
         </span>
 
+        <span style={{ color: "#94a3b8", fontSize: 11, fontWeight: 600 }}>
+          Tick ms: {autoplayIntervalMs}
+        </span>
+
         {/* Simulation controls */}
         <button style={BTN_STYLE} onClick={handleStep} disabled={isPlaying}>
           Step
@@ -117,6 +145,20 @@ export default function App() {
         </button>
         <button style={BTN_STYLE} onClick={handleReset}>
           Reset
+        </button>
+        <button
+          style={BTN_STYLE}
+          onClick={handleSlower}
+          disabled={autoplayIntervalMs >= AUTOPLAY_INTERVAL_MAX_MS}
+        >
+          Slower
+        </button>
+        <button
+          style={BTN_STYLE}
+          onClick={handleFaster}
+          disabled={autoplayIntervalMs <= AUTOPLAY_INTERVAL_MIN_MS}
+        >
+          Faster
         </button>
 
         <span style={{ color: "#475569", fontSize: 11, marginLeft: 4 }}>|</span>
