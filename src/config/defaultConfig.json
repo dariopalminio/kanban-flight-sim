@@ -259,17 +259,17 @@
               "hasReadySignal": true
             },
             {
-              "id": "initiative-selected",
-              "name": "Seleccionada",
+              "id": "initiative-planning",
+              "name": "Planeación",
               "order": 3,
               "streamType": "DOWNSTREAM",
-              "statusCategory": "TODO",
+              "statusCategory": "IN_PROGRESS",
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
-              "isBuffer": true,
-              "description": "Buffer. Iniciativas aprobadas, priorizadas, esperando capacidad.",
-              "wipLimit": 2,
-              "hasReadySignal": false
+              "isBuffer": false,
+              "description": "Iniciativas aprobadas, priorizadas, asignada, comprometida y en planeación. Se detallan entregables, roadmap, dependencias, riesgos, hitos de revisión.",
+              "wipLimit": 1,
+              "hasReadySignal": true
             },
             {
               "id": "initiative-in-development",
