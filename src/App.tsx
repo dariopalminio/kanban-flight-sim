@@ -109,6 +109,9 @@ export default function App() {
         <h1 style={{ margin: 0, color: "#e2e8f0", fontSize: 18, fontWeight: 700, lineHeight: 1 }}>
           Kanba-Flight-Sim
         </h1>
+        <h1 style={{ margin: 0, color: "#63a1f1", fontSize: 18, fontWeight: 500, lineHeight: 1 }}>
+          Simulador de Vuelo Kanban
+        </h1>
       </div>
 
       {configLoadResult.error && (
