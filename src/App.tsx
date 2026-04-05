@@ -3,6 +3,7 @@ import { Board } from "./components/Board";
 import { KanbanSignalSelector } from "./components/KanbanSignalSelector";
 import { SimulationControls } from "./components/SimulationControls";
 import { SimulationSelector } from "./components/SimulationSelector";
+import logoUrl from "./assets/logo-kanban-flight-sim.svg";
 import {
   configLoadResult,
   defaultSimulationName,
@@ -97,6 +98,19 @@ export default function App() {
 
   return (
     <div style={{ background: "#0f172a", minHeight: "100vh", padding: "6px 8px", boxSizing: "border-box" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "4px 0 6px 0" }}>
+        <img
+          src={logoUrl}
+          alt="Kanba-Flight-Sim logo"
+          height={28}
+          width={28}
+          style={{ display: "block" }}
+        />
+        <h1 style={{ margin: 0, color: "#e2e8f0", fontSize: 18, fontWeight: 700, lineHeight: 1 }}>
+          Kanba-Flight-Sim
+        </h1>
+      </div>
+
       {configLoadResult.error && (
         <div style={{ background: "#854d0e", color: "#fef08a", padding: "8px 12px", borderRadius: 4, marginBottom: 8, fontSize: 12, fontWeight: 600 }}>
           ⚠ {configLoadResult.error}
