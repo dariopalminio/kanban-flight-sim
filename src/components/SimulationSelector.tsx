@@ -15,8 +15,12 @@ export function SimulationSelector({
   onSimChange,
   onViewModeChange,
 }: SimulationSelectorProps) {
+
+  const viewModeOptions: ViewMode[] = ["portafolio", "delivery", "full", "L3", "L2", "L1"];
+  
   return (
     <>
+      {/* Selección de Workflow a mostrar y simular */}
       <span style={{ color: "#94a3b8", fontSize: 11, fontWeight: 600 }}>Simulations:</span>
       <select
         value={selectedSim}
@@ -36,7 +40,7 @@ export function SimulationSelector({
           <option key={name} value={name}>{name}</option>
         ))}
       </select>
-
+      {/* Selección del modo de vista de tableros */}
       <span style={{ color: "#94a3b8", fontSize: 11, fontWeight: 600 }}>View:</span>
       <select
         value={viewMode}
@@ -52,7 +56,7 @@ export function SimulationSelector({
           cursor: "pointer",
         }}
       >
-        {(["portafolio", "delivery", "full"] as ViewMode[]).map((mode) => (
+        {viewModeOptions.map((mode) => (
           <option key={mode} value={mode}>
             {mode.charAt(0).toUpperCase() + mode.slice(1)}
           </option>

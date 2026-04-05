@@ -1,4 +1,4 @@
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: View mode selector
 The UI SHALL display a `<select>` dropdown with exactly six options: **Portafolio**, **Delivery**, **Full**, **L3**, **L2**, **L1**. Only one option can be selected at a time. The default selection on load SHALL be **Delivery**.
@@ -19,55 +19,7 @@ The UI SHALL display a `<select>` dropdown with exactly six options: **Portafoli
 - **WHEN** the user selects the "L1" option
 - **THEN** the "L1" option becomes selected and all other options are deselected
 
----
-
-### Requirement: Portafolio mode shows L3 and L2 boards only
-When the active view mode is **Portafolio**, the UI SHALL render the L3 and L2 boards and SHALL NOT render the L1 or L0 boards.
-
-#### Scenario: L3 and L2 visible in Portafolio mode
-- **WHEN** view mode is "Portafolio"
-- **THEN** the L3 board and L2 board are present in the DOM
-
-#### Scenario: L1 and L0 hidden in Portafolio mode
-- **WHEN** view mode is "Portafolio"
-- **THEN** the L1 board and L0 board are NOT present in the DOM
-
----
-
-### Requirement: Delivery mode shows L2, L1, and L0 boards only
-When the active view mode is **Delivery**, the UI SHALL render the L2, L1, and L0 boards and SHALL NOT render the L3 board.
-
-#### Scenario: L2, L1, L0 visible in Delivery mode
-- **WHEN** view mode is "Delivery"
-- **THEN** the L2 board, L1 board, and L0 board are present in the DOM
-
-#### Scenario: L3 hidden in Delivery mode
-- **WHEN** view mode is "Delivery"
-- **THEN** the L3 board is NOT present in the DOM
-
----
-
-### Requirement: View mode change does not reset simulation state
-Switching between view modes SHALL NOT reset or alter the current simulation state (tick count, workitem positions, or configuration).
-
-#### Scenario: Simulation state preserved after view mode change
-- **WHEN** the simulation is at tick 5 and the user switches view mode
-- **THEN** the tick count and workitem positions remain unchanged after the mode switch
-
----
-
-### Requirement: Full mode shows all four boards
-When the active view mode is **Full**, the UI SHALL render all four boards (L3, L2, L1, L0) simultaneously.
-
-#### Scenario: All boards visible in Full mode
-- **WHEN** view mode is "Full"
-- **THEN** the L3, L2, L1, and L0 boards are all present in the DOM
-
-#### Scenario: No boards hidden in Full mode
-- **WHEN** view mode is "Full"
-- **THEN** no board is absent from the render tree
-
----
+## ADDED Requirements
 
 ### Requirement: L3 mode shows only the L3 board
 When the active view mode is **L3**, the UI SHALL render only the L3 board and SHALL NOT render the L2, L1, or L0 boards.
@@ -77,8 +29,6 @@ When the active view mode is **L3**, the UI SHALL render only the L3 board and S
 - **THEN** the L3 board SHALL be present in the DOM
 - **AND** the L2, L1, and L0 boards SHALL NOT be present in the DOM
 
----
-
 ### Requirement: L2 mode shows only the L2 board
 When the active view mode is **L2**, the UI SHALL render only the L2 board and SHALL NOT render the L3, L1, or L0 boards.
 
@@ -87,8 +37,6 @@ When the active view mode is **L2**, the UI SHALL render only the L2 board and S
 - **THEN** the L2 board SHALL be present in the DOM
 - **AND** the L3, L1, and L0 boards SHALL NOT be present in the DOM
 
----
-
 ### Requirement: L1 mode shows only the L1 board
 When the active view mode is **L1**, the UI SHALL render only the L1 board and SHALL NOT render the L3, L2, or L0 boards.
 
@@ -96,8 +44,6 @@ When the active view mode is **L1**, the UI SHALL render only the L1 board and S
 - **WHEN** view mode is "L1"
 - **THEN** the L1 board SHALL be present in the DOM
 - **AND** the L3, L2, and L0 boards SHALL NOT be present in the DOM
-
----
 
 ### Requirement: View mode change does not reset simulation state (single-level modes)
 Switching to or from any single-level view mode (L3, L2, L1) SHALL NOT reset or alter the current simulation state.

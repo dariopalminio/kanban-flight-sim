@@ -75,12 +75,15 @@ export default function App() {
 
   const { workflows } = config;
   const { workitems, tick: tickCount } = simState;
-  const visibleLevels =
-    viewMode === "portafolio"
-      ? [3, 2]
-      : viewMode === "delivery"
-      ? [2, 1, 0]
-      : [3, 2, 1, 0];
+  const VISIBLE_LEVELS: Record<ViewMode, number[]> = {
+    portafolio: [3, 2],
+    delivery: [2, 1, 0],
+    full: [3, 2, 1, 0],
+    L3: [3],
+    L2: [2],
+    L1: [1],
+  };
+  const visibleLevels = VISIBLE_LEVELS[viewMode];
 
   return (
     <div style={{ background: "#0f172a", minHeight: "100vh", padding: "6px 8px", boxSizing: "border-box" }}>
