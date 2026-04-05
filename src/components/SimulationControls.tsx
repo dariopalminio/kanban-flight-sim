@@ -1,3 +1,7 @@
+import { ChevronRight, ChevronsLeft, ChevronsRight, Pause, Play, RotateCcw } from "lucide-react";
+
+const ICON_STYLE: React.CSSProperties = { verticalAlign: "middle", marginRight: 3 };
+
 interface SimulationControlsProps {
   tickCount: number;
   autoplayIntervalMs: number;
@@ -49,22 +53,22 @@ export function SimulationControls({
         Tick ms: {autoplayIntervalMs}
       </span>
       <button style={BTN_STYLE} onClick={onSlower} disabled={!canSlower}>
-        Slower
+        <ChevronsLeft size={12} style={ICON_STYLE} />Slower
       </button>
       <button style={BTN_STYLE} onClick={onFaster} disabled={!canFaster}>
-        Faster
+        <ChevronsRight size={12} style={ICON_STYLE} />Faster
       </button>
       <button style={BTN_STYLE} onClick={onStep} disabled={isPlaying}>
-        Step
+        <ChevronRight size={12} style={ICON_STYLE} />Step
       </button>
       <button
         style={isPlaying ? BTN_ACTIVE_STYLE : BTN_STYLE}
         onClick={onTogglePlay}
       >
-        {isPlaying ? "Pause" : "Autoplay"}
+        {isPlaying ? <><Pause size={12} style={ICON_STYLE} />Pause</> : <><Play size={12} style={ICON_STYLE} />Autoplay</>}
       </button>
       <button style={BTN_STYLE} onClick={onReset}>
-        Reset
+        <RotateCcw size={12} style={ICON_STYLE} />Reset
       </button>
     </>
   );

@@ -1,7 +1,7 @@
 ## ADDED Requirements
 
 ### Requirement: SimulationControls component renders playback buttons
-The system SHALL provide a `SimulationControls` React component at `src/components/SimulationControls.tsx` that renders: Step, Autoplay/Pause, Reset, Slower, and Faster buttons.
+The system SHALL provide a `SimulationControls` React component at `src/components/SimulationControls.tsx` that renders: Step, Autoplay/Pause, Reset, Slower, and Faster buttons. Each button SHALL display a `lucide-react` icon alongside its text label.
 
 #### Scenario: Step button calls onStep
 - **WHEN** the user clicks the "Step" button
@@ -11,11 +11,11 @@ The system SHALL provide a `SimulationControls` React component at `src/componen
 - **WHEN** `isPlaying` is `true`
 - **THEN** the "Step" button SHALL be rendered as `disabled`
 
-#### Scenario: Autoplay button toggles label
+#### Scenario: Autoplay button toggles label and icon
 - **WHEN** `isPlaying` is `false`
-- **THEN** the toggle button SHALL display "Autoplay"
+- **THEN** the toggle button SHALL display "Autoplay" with a Play icon
 - **WHEN** `isPlaying` is `true`
-- **THEN** the toggle button SHALL display "Pause"
+- **THEN** the toggle button SHALL display "Pause" with a Pause icon
 
 #### Scenario: Autoplay button calls onTogglePlay
 - **WHEN** the user clicks the Autoplay/Pause button
@@ -32,6 +32,12 @@ The system SHALL provide a `SimulationControls` React component at `src/componen
 #### Scenario: Faster button is disabled at min interval
 - **WHEN** `canFaster` is `false`
 - **THEN** the "Faster" button SHALL be rendered as `disabled`
+
+#### Scenario: Each button renders its assigned icon
+- **THEN** the "Step" button SHALL display a `ChevronRight` icon
+- **THEN** the "Reset" button SHALL display a `RotateCcw` icon
+- **THEN** the "Slower" button SHALL display a `ChevronsLeft` icon
+- **THEN** the "Faster" button SHALL display a `ChevronsRight` icon
 
 ### Requirement: SimulationControls displays tick and interval info
 The component SHALL render two read-only labels: one showing the current tick count (`Tick: <n>`) and one showing the current autoplay interval in milliseconds (`Tick ms: <n>`).
