@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { Board } from "./components/Board";
+import { KanbanSignalSelector } from "./components/KanbanSignalSelector";
+import { SimulationControls } from "./components/SimulationControls";
+import { SimulationSelector } from "./components/SimulationSelector";
 import {
   configLoadResult,
   defaultSimulationName,
@@ -13,23 +16,6 @@ const AUTOPLAY_INTERVAL_MIN_MS = 100;
 const AUTOPLAY_INTERVAL_MAX_MS = 5000;
 const AUTOPLAY_INTERVAL_STEP_MS = 100;
 const AUTOPLAY_INTERVAL_DEFAULT_MS = 1000;
-
-const BTN_STYLE: React.CSSProperties = {
-  padding: "4px 10px",
-  fontSize: 11,
-  fontWeight: 600,
-  borderRadius: 4,
-  border: "1px solid #475569",
-  cursor: "pointer",
-  background: "#1e293b",
-  color: "white",
-};
-
-const BTN_ACTIVE_STYLE: React.CSSProperties = {
-  ...BTN_STYLE,
-  background: "#334155",
-  borderColor: "#94a3b8",
-};
 
 export default function App() {
   const [selectedSim, setSelectedSim] = useState(defaultSimulationName);
@@ -89,7 +75,12 @@ export default function App() {
 
   const { workflows } = config;
   const { workitems, tick: tickCount } = simState;
-  const visibleLevels = viewMode === "portafolio" ? [3, 2] : viewMode === "delivery" ? [2, 1, 0] : [3, 2, 1, 0];
+  const visibleLevels =
+    viewMode === "portafolio"
+      ? [3, 2]
+      : viewMode === "delivery"
+      ? [2, 1, 0]
+      : [3, 2, 1, 0];
 
   return (
     <div style={{ background: "#0f172a", minHeight: "100vh", padding: "6px 8px", boxSizing: "border-box" }}>
@@ -100,115 +91,35 @@ export default function App() {
       )}
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
-        {/* Simulation selector */}
-                <span style={{ color: "#94a3b8", fontSize: 11, fontWeight: 600 }}>
-          Simulations:
-        </span>
-        <select
-          value={selectedSim}
-          onChange={(e) => handleSimChange(e.target.value)}
-          style={{
-            padding: "3px 6px",
-            fontSize: 11,
-            fontWeight: 600,
-            borderRadius: 4,
-            border: "1px solid #475569",
-            background: "#0f172a",
-            color: "white",
-            cursor: "pointer",
-          }}
-        >
-          {simulationNames.map((name) => (
-            <option key={name} value={name}>{name}</option>
-          ))}
-        </select>
+        <SimulationSelector
+          selectedSim={selectedSim}
+          simulationNames={simulationNames}
+          viewMode={viewMode}
+          onSimChange={handleSimChange}
+          onViewModeChange={setViewMode}
+        />
 
         <span style={{ color: "#475569", fontSize: 11 }}>|</span>
 
-        <span style={{ color: "#94a3b8", fontSize: 11, fontWeight: 600 }}>
-          Tick: {tickCount}
-        </span>
-
-        <span style={{ color: "#94a3b8", fontSize: 11, fontWeight: 600 }}>
-          Tick ms: {autoplayIntervalMs}
-        </span>
-
-        {/* Simulation controls */}
-        <button style={BTN_STYLE} onClick={handleStep} disabled={isPlaying}>
-          Step
-        </button>
-        <button
-          style={isPlaying ? BTN_ACTIVE_STYLE : BTN_STYLE}
-          onClick={() => setIsPlaying((p) => !p)}
-        >
-          {isPlaying ? "Pause" : "Autoplay"}
-        </button>
-        <button style={BTN_STYLE} onClick={handleReset}>
-          Reset
-        </button>
-        <button
-          style={BTN_STYLE}
-          onClick={handleSlower}
-          disabled={autoplayIntervalMs >= AUTOPLAY_INTERVAL_MAX_MS}
-        >
-          Slower
-        </button>
-        <button
-          style={BTN_STYLE}
-          onClick={handleFaster}
-          disabled={autoplayIntervalMs <= AUTOPLAY_INTERVAL_MIN_MS}
-        >
-          Faster
-        </button>
+        <SimulationControls
+          tickCount={tickCount}
+          autoplayIntervalMs={autoplayIntervalMs}
+          isPlaying={isPlaying}
+          canSlower={autoplayIntervalMs < AUTOPLAY_INTERVAL_MAX_MS}
+          canFaster={autoplayIntervalMs > AUTOPLAY_INTERVAL_MIN_MS}
+          onStep={handleStep}
+          onTogglePlay={() => setIsPlaying((p) => !p)}
+          onReset={handleReset}
+          onSlower={handleSlower}
+          onFaster={handleFaster}
+        />
 
         <span style={{ color: "#475569", fontSize: 11, marginLeft: 4 }}>|</span>
 
-        {/* Board view mode selector */}
-        <span style={{ color: "#94a3b8", fontSize: 11, fontWeight: 600 }}>View:</span>
-        {(["portafolio", "delivery", "full"] as ViewMode[]).map((mode) => (
-          <label
-            key={mode}
-            style={{ display: "flex", alignItems: "center", gap: 4, cursor: "pointer", color: "white", fontSize: 11, fontWeight: 600 }}
-          >
-            <input
-              type="radio"
-              name="viewMode"
-              value={mode}
-              checked={viewMode === mode}
-              onChange={() => setViewMode(mode)}
-              style={{ cursor: "pointer", accentColor: "#94a3b8" }}
-            />
-            {mode.charAt(0).toUpperCase() + mode.slice(1)}
-          </label>
-        ))}
-
-        <span style={{ color: "#475569", fontSize: 11, marginLeft: 4 }}>|</span>
-
-        {/* View toggles (mutually exclusive) */}
-        <button
-          style={highlightMode === "stream" ? BTN_ACTIVE_STYLE : BTN_STYLE}
-          onClick={() => toggleView("stream")}
-        >
-          Upstream / Downstream
-        </button>
-        <button
-          style={highlightMode === "category" ? BTN_ACTIVE_STYLE : BTN_STYLE}
-          onClick={() => toggleView("category")}
-        >
-          Status Category
-        </button>
-        <button
-          style={highlightMode === "commitment" ? BTN_ACTIVE_STYLE : BTN_STYLE}
-          onClick={() => toggleView("commitment")}
-        >
-          Before Commitment Point
-        </button>
-        <button
-          style={highlightMode === "delivery" ? BTN_ACTIVE_STYLE : BTN_STYLE}
-          onClick={() => toggleView("delivery")}
-        >
-          Pos Delivery Point
-        </button>
+        <KanbanSignalSelector
+          highlightMode={highlightMode}
+          onToggle={toggleView}
+        />
       </div>
 
       {/* Boards — L3 arriba, L0 abajo */}
