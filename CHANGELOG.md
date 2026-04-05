@@ -4,7 +4,23 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## [v1.0.4] — 2026-04-01
+## [v1.0.1] Released - Caminando el tablero y DODs — 2026-04-05
+
+### Added
+- **Header de la aplicación** — El header superior muestra el logo SVG de la aplicación (`logo-kanban-flight-sim.svg`) y el título "Kanba-Flight-Sim" como identidad visual persistente en la parte superior de la UI.
+- **Iconos en controles de simulación** — Los botones Step, Autoplay/Pause, Reset, Slower y Faster incluyen ahora iconos de `lucide-react` para mayor claridad visual en el toolbar.
+- **Modos de vista de nivel único** — El selector de modo de tablero incorpora tres nuevas opciones: `L3`, `L2` y `L1` para enfocar la vista en un único nivel jerárquico, reduciendo el ruido visual.
+- **Modo "Sin L0"** (`without-l0`) — Nuevo toggle en `SimulationSelector` para ejecutar la simulación sin nivel L0. En este modo L1 avanza de forma autónoma sin spawn ni bloqueo por hijos L0. Al activar o desactivar el toggle la simulación se reinicia automáticamente.
+- **Scroll en columnas Done** — Las columnas `DONE` que superen `DONE_COLUMN_SCROLL_THRESHOLD = 5` tarjetas muestran scroll interno con altura máxima proporcional (`CARD_HEIGHT_PX = 18`). El scroll se posiciona automáticamente al final para mostrar siempre los ítems más recientes. Todas las columnas muestran el conteo de ítems en el encabezado (`[count: N]` o `[wip: N / limit: M]`).
+- **Botón DoD en columnas** — Los estados que tengan el campo `definitionOfDone` en la configuración muestran un botón "DoD" en el encabezado de la columna. Al hacer click se despliega un panel overlay con el texto completo de la Definition of Done, posicionado absolutamente dentro de la columna. El panel es colapsable con un segundo click.
+
+### Changed
+- **Refactor de componentes del toolbar** — Los controles de UI se extrajeron de `App.tsx` en tres componentes independientes: `SimulationSelector.tsx`, `SimulationControls.tsx` y `KanbanSignalSelector.tsx`. `App.tsx` es ahora un orchestrator ligero sin cambios de comportamiento.
+- **Tipo `Status`** — Campo opcional `definitionOfDone?: string` agregado al tipo de dominio para soportar el texto de Definition of Done por estado de configuración.
+
+---
+
+## [v1.0.1d] no released  — 2026-04-01
 
 ### Added
 - **Control de velocidad del Tick (ms)** — Autoplay ahora permite ajustar la cadencia en runtime desde el header con botones **Slower** y **Faster**. Se muestra el valor activo como `Tick ms: <n>` y se aplica con límites para evitar valores extremos:
@@ -12,13 +28,14 @@ All notable changes to this project will be documented in this file.
   - máximo: `5000 ms`
   - paso: `100 ms`
 - **Flash visual al avanzar de estado** (`tick-flash`) — Las tarjetas que avanzan en el tick actual muestran una animación breve de borde/glow verde (`#22c55e`) durante ~0.6s, usando el keyframe global `@keyframes tick-flash` definido en `index.html`.
+- **Walk the Board (pull sequencing)** — El avance de ítems en cada nivel cambia de paralelo a secuencial de derecha a izquierda, emulando la práctica Lean de "caminar el tablero". Cada columna ve el estado actualizado de su vecina derecha en el mismo tick, de modo que un espacio liberado puede ser ocupado en ese mismo tick por la columna de la izquierda. El FIFO existente (`enteredAt`) se preserva sin cambios.
 
 ### Changed
 - **Autoplay configurable** — El intervalo dejó de ser fijo (1 segundo) y ahora usa el valor seleccionado por el usuario en cada ciclo de `setInterval`, incluyendo cambios en caliente mientras la simulación está corriendo.
 - **Threading de tick actual en componentes** — `currentTick` se propaga `App → Board → Column → Card` para habilitar comportamientos visuales dependientes del tick actual.
 - **Reset y cambio de simulación restablecen velocidad por defecto** — Al presionar Reset o cambiar de simulación, la velocidad vuelve a `1000 ms` para mantener un estado inicial predecible.
 
-## [v1.0.3] — 2026-03-19
+## [v1.0.1c] no released — 2026-03-19
 
 ### Added
 - **Columnas buffer** (`isBuffer`) — Un status marcado `"isBuffer": true` es un buffer de entrada por naturaleza: todos los ítems en él están implícitamente listos para ser jalados. La columna muestra un `✓` verde (`#22c55e`) en el encabezado y un borde superior verde de 2px. Las tarjetas dentro de la columna **no** muestran el badge individual (el check de la columna reemplaza al check de tarjeta). Configurado en los buffers de ambas simulaciones:
@@ -31,7 +48,7 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## [v1.0.2] — 2026-03-19
+## [v1.0.1b] no released  — 2026-03-19
 
 ### Added
 - **Selector de vista de tableros** — Grupo de radio buttons ("Portafolio", "Delivery", "Full") en el panel de controles que filtra qué tableros se muestran:
@@ -45,7 +62,7 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## [v1.0.1] — 2026-03-19
+## [v1.0.1a] no released  — 2026-03-19
 
 ### Fixed
 - **Premature child spawn** — Los workitems hijos ya no se crean mientras el padre está bloqueado por WIP limit en el commitment point. El spawn es ahora atómico con la transición: si el padre no puede cruzar (WIP o probabilidad), no se crean hijos. Corrige una violación del principio *last responsible moment*.
