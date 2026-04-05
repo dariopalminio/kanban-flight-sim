@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { HighlightMode, Status, Workitem } from "../domain/types";
 import { Card } from "./Card";
 
@@ -34,6 +34,7 @@ const getBorder = (status: Status, mode: HighlightMode): string => {
 export function Column({ status, items, highlightMode, currentTick }: Props) {
   const sortedItems = [...items].sort((a, b) => a.enteredAt - b.enteredAt);
   const cardsContainerRef = useRef<HTMLDivElement>(null);
+  const [dodOpen, setDodOpen] = useState(false);
 
   useEffect(() => {
     if (status.statusCategory === "DONE" && sortedItems.length > DONE_COLUMN_SCROLL_THRESHOLD && cardsContainerRef.current) {
@@ -46,6 +47,7 @@ export function Column({ status, items, highlightMode, currentTick }: Props) {
         flex: 1,
         minWidth: 60,
         minHeight: 60,
+        position: "relative",
         background: getBg(status, highlightMode),
         border: getBorder(status, highlightMode),
         borderRadius: 3,
@@ -54,8 +56,16 @@ export function Column({ status, items, highlightMode, currentTick }: Props) {
       }}
     >
       <div title={status.description || undefined} style={{ fontSize: 9, color: "white", fontWeight: 600, lineHeight: "13px", marginBottom: 1, textDecoration: status.isBeforeCommitmentPoint ? "underline" : "none" }}>
-        {status.name} {status.wipLimit != null ? ` [ wip: ${items.length}/ limit: ${status.wipLimit}]` : ` [count: ${items.length}]`}{status.isBuffer && <span style={{ color: "#22c55e", marginLeft: 2 }}>✓</span>}
+        {status.name} {status.wipLimit != null ? ` [ w: ${items.length}/ l: ${status.wipLimit}]` : ` [c: ${items.length}]`}{status.isBuffer && <span style={{ color: "#22c55e", marginLeft: 2 }}>✓</span>}
+        {status.definitionOfDone && (
+          <button onClick={() => setDodOpen(v => !v)} style={{ marginLeft: 4, fontSize: 7, padding: "0 3px", background: "#334155", color: "#94a3b8", border: "1px solid #475569", borderRadius: 2, cursor: "pointer", lineHeight: "11px" }}>DoD</button>
+        )}
       </div>
+      {dodOpen && status.definitionOfDone && (
+        <div style={{ position: "absolute", zIndex: 10, top: 14, left: 0, right: 0, background: "#0f172a", border: "1px solid #475569", borderRadius: 3, padding: "4px 6px", color: "#e2e8f0", fontSize: 9, whiteSpace: "pre-wrap", lineHeight: "13px" }}>
+          {status.definitionOfDone}
+        </div>
+      )}
       <div
         ref={cardsContainerRef}
         style={{

@@ -16,6 +16,7 @@ export type Status = {
   hasReadySignal?: boolean; //Si tiene señal de ready significa que es una columna de procesamiento que solo puede avanzar workitems que estén listos (isReady = true).
   isBuffer?: boolean; // Si es un buffer, es una columna de cola de espera entre dos estados.
   description?: string; //Propósito del estado.
+  definitionOfDone?: string; //Definición de Done del estado.
 };
 
 export type Workflow = {

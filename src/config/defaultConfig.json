@@ -243,7 +243,8 @@
               "isPosDeliveryPoint": false,
               "isBuffer": true,
               "description": "Iniciativa entra al embudo del portafolio y captura de ideas brutas.",
-              "wipLimit": 3
+              "wipLimit": 3,
+              "definitionOfDone": "Definition of Done: Idea registrada en el sistema, con descripción inicial y responsable asignado. No se ha realizado análisis detallado."
             },
             {
               "id": "initiative-define-discovery",
@@ -254,9 +255,10 @@
               "isBeforeCommitmentPoint": true,
               "isPosDeliveryPoint": false,
               "isBuffer": false,
-              "description": "Análisis profundo: Lean Business Case, descubrimiento, definición de MVP, hipótesis de valor, OKRs, recursos estimados.",
+              "description": "Análisis profundo: Lean Business Case, descubrimiento, definición de MVP, hipótesis de valor, Medida de Éxito (OKRs/LVT), recursos estimados.",
               "wipLimit": 3,
-              "hasReadySignal": true
+              "hasReadySignal": true,
+              "definitionOfDone": "Definition of Done: Intención de la iniciativa (o proyecto) definida. Descubrimiento (Discovery) realizado. Especificación de Requerimientos definida. Medida de éxito definida. Decisión de avanzar con la iniciativa tomada (aprobada). Hay capacidad para ser desarrollada (equipo asignado)."
             },
             {
               "id": "initiative-planning",
@@ -269,7 +271,8 @@
               "isBuffer": false,
               "description": "Iniciativas aprobadas, priorizadas, asignada, comprometida y en planeación. Se detallan entregables, roadmap, dependencias, riesgos, hitos de revisión.",
               "wipLimit": 1,
-              "hasReadySignal": true
+              "hasReadySignal": true,
+              "definitionOfDone": "Definition of Done: Iniciativa detallada en entregables (features, releases). Roadmap definido. Dependencias identificadas y mitigaciones planificadas. Riesgos identificados y mitigaciones planificadas. Hitos de revisión definidos."
             },
             {
               "id": "initiative-in-development",
@@ -282,7 +285,8 @@
               "isBuffer": false,
               "description": "Construcción técnica. Incluye hitos de revisión (MVP Review) para perseverar/pivotar/detener.",
               "wipLimit": 1,
-              "hasReadySignal": true
+              "hasReadySignal": true,
+              "definitionOfDone": "Definition of Done: Iniciativa desarrollada e implementada. MVP entregado y validado. Hitos de revisión alcanzados y decisiones tomadas (perseverar, pivotar, detener)."
             },
             {
               "id": "initiative-measuring",
@@ -293,8 +297,9 @@
               "isBeforeCommitmentPoint": false,
               "isPosDeliveryPoint": false,
               "isBuffer": false,
-              "description": "Período de monitoreo post-lanzamiento con timebox definido. Se recolectan datos de adopción, ROI, OKRs.",
-              "hasReadySignal": true
+              "description": "Período de monitoreo post-lanzamiento con timebox definido. Se recolectan datos de la Medida de Éxito (OKRs, LVT, ROI, etc.).",
+              "hasReadySignal": true,
+              "definitionOfDone": "Definition of Done: Período de monitoreo post-lanzamiento completado. Datos de adopción recolectados. Medida de Éxito (OKRs/LVTs/ROI, etc.) evaluada. Se ha tomado una decisión informada sobre el futuro de la iniciativa (escalado, mantenimiento, descontinuación)."
             },
             {
               "id": "initiative-finished",
