@@ -28,16 +28,19 @@ export default function App() {
   );
   const [highlightMode, setHighlightMode] = useState<HighlightMode>("none");
   const [viewMode, setViewMode] = useState<ViewMode>("delivery");
+  const [withoutL0, setWithoutL0] = useState(false);
+
+  const effectiveConfig = { ...config, withoutL0 };
 
   // Autoplay
   useEffect(() => {
     if (!isPlaying) return;
     const id = setInterval(
-      () => setSimState((s) => tick(s, config)),
+      () => setSimState((s) => tick(s, effectiveConfig)),
       autoplayIntervalMs
     );
     return () => clearInterval(id);
-  }, [isPlaying, config, autoplayIntervalMs]);
+  }, [isPlaying, effectiveConfig, autoplayIntervalMs]);
 
   const clampAutoplayInterval = (value: number) =>
     Math.min(
@@ -52,10 +55,17 @@ export default function App() {
     setAutoplayIntervalMs(AUTOPLAY_INTERVAL_DEFAULT_MS);
   };
 
-  const handleStep = () => setSimState((s) => tick(s, config));
+  const handleStep = () => setSimState((s) => tick(s, effectiveConfig));
 
   const handleReset = () => {
-    setSimState(buildInitialState(config));
+    setSimState(buildInitialState(effectiveConfig));
+    setIsPlaying(false);
+    setAutoplayIntervalMs(AUTOPLAY_INTERVAL_DEFAULT_MS);
+  };
+
+  const handleWithoutL0Change = (v: boolean) => {
+    setWithoutL0(v);
+    setSimState(buildInitialState({ ...config, withoutL0: v }));
     setIsPlaying(false);
     setAutoplayIntervalMs(AUTOPLAY_INTERVAL_DEFAULT_MS);
   };
@@ -83,7 +93,7 @@ export default function App() {
     L2: [2],
     L1: [1],
   };
-  const visibleLevels = VISIBLE_LEVELS[viewMode];
+  const visibleLevels = VISIBLE_LEVELS[viewMode].filter((l) => !(withoutL0 && l === 0));
 
   return (
     <div style={{ background: "#0f172a", minHeight: "100vh", padding: "6px 8px", boxSizing: "border-box" }}>
@@ -98,8 +108,10 @@ export default function App() {
           selectedSim={selectedSim}
           simulationNames={simulationNames}
           viewMode={viewMode}
+          withoutL0={withoutL0}
           onSimChange={handleSimChange}
           onViewModeChange={setViewMode}
+          onWithoutL0Change={handleWithoutL0Change}
         />
 
         <span style={{ color: "#475569", fontSize: 11 }}>|</span>

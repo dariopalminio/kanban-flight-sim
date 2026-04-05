@@ -50,4 +50,5 @@ export type Config = {
   advanceProbability: number;
   childrenPerParent: number;
   demandInterval: number;
+  withoutL0?: boolean;
 };

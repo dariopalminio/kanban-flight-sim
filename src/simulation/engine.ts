@@ -159,6 +159,7 @@ export const buildInitialState = (config: Config): SimState => {
 
 export const tick = (state: SimState, config: Config): SimState => {
   const { workflows, advanceProbability, childrenPerParent, demandInterval } = config;
+  const withoutL0 = config.withoutL0 ?? false;
   const wfL3 = workflows.L3;
   const wfL2 = workflows.L2;
   const wfL1 = workflows.L1;
@@ -175,27 +176,31 @@ export const tick = (state: SimState, config: Config): SimState => {
 
   // --- PASO 1: Advance L0 autonomously (FIFO per column) ---
   const wipL0 = makeWipTracker(wfL0, items);
-  // Walk right-to-left: process columns in descending order so freed WIP slots are visible immediately
-  const l0Columns = [...new Set(items.filter((w) => w.level === "L0").map((w) => w.statusId))]
-    .sort((a, b) => getOrder(wfL0, b) - getOrder(wfL0, a));
-  for (const sid of l0Columns) {
-    if (getOrder(wfL0, sid) >= keysL0.deliveryOrder) continue;
-    const fid = frontOfQueue(items.filter((w) => w.level === "L0"), sid);
-    if (!fid) continue;
-    items = items.map((w) => w.id !== fid ? w : advanceOrSignal(w, wfL0, wipL0, advanceProbability, currentTick));
+  if (!withoutL0) {
+    // Walk right-to-left: process columns in descending order so freed WIP slots are visible immediately
+    const l0Columns = [...new Set(items.filter((w) => w.level === "L0").map((w) => w.statusId))]
+      .sort((a, b) => getOrder(wfL0, b) - getOrder(wfL0, a));
+    for (const sid of l0Columns) {
+      if (getOrder(wfL0, sid) >= keysL0.deliveryOrder) continue;
+      const fid = frontOfQueue(items.filter((w) => w.level === "L0"), sid);
+      if (!fid) continue;
+      items = items.map((w) => w.id !== fid ? w : advanceOrSignal(w, wfL0, wipL0, advanceProbability, currentTick));
+    }
   }
 
   // --- PASO 2: Push L1 to first downstream when any L0 child enters downstream ---
   const wipL1 = makeWipTracker(wfL1, items);
-  items = items.map((w) => {
-    if (w.level !== "L1") return w;
-    if (getOrder(wfL1, w.statusId) >= keysL1.firstDownstreamOrder) return w;
-    if (anyInDownstream(wfL0, childrenOf(items, w.id))) {
-      if (!wipL1(w.statusId, keysL1.firstDownstreamId)) return w;
-      return { ...w, statusId: keysL1.firstDownstreamId, enteredAt: currentTick };
-    }
-    return w;
-  });
+  if (!withoutL0) {
+    items = items.map((w) => {
+      if (w.level !== "L1") return w;
+      if (getOrder(wfL1, w.statusId) >= keysL1.firstDownstreamOrder) return w;
+      if (anyInDownstream(wfL0, childrenOf(items, w.id))) {
+        if (!wipL1(w.statusId, keysL1.firstDownstreamId)) return w;
+        return { ...w, statusId: keysL1.firstDownstreamId, enteredAt: currentTick };
+      }
+      return w;
+    });
+  }
 
   // --- PASO 3: Advance L1 with rules ---
   const newL0Children: Workitem[] = [];
@@ -206,6 +211,7 @@ export const tick = (state: SimState, config: Config): SimState => {
     const order = getOrder(wfL1, w.statusId);
     if (order >= keysL1.deliveryOrder) return w;
     if (order === keysL1.firstDownstreamOrder) {
+      if (withoutL0) return w; // falls through to general pool
       const myL0 = childrenOf([...items, ...newL0Children], w.id);
       if (anyAtOrPastOrder(wfL0, myL0, keysL0.secondDownstreamOrder)) {
         if (!wipL1(w.statusId, keysL1.secondDownstreamId)) return w;
@@ -214,6 +220,7 @@ export const tick = (state: SimState, config: Config): SimState => {
       return w;
     }
     if (order === keysL1.secondDownstreamOrder) {
+      if (withoutL0) return w; // falls through to general pool
       const myL0 = childrenOf([...items, ...newL0Children], w.id);
       if (allAtDelivery(wfL0, myL0)) {
         if (!w.isReady) return { ...w, isReady: true };
@@ -228,11 +235,14 @@ export const tick = (state: SimState, config: Config): SimState => {
   });
 
   // General L1 advancement: walk right-to-left
+  // When withoutL0, firstDownstream and secondDownstream join the general pool
   const l1GeneralColumns = [...new Set(
     items.filter((w) => {
       if (w.level !== "L1") return false;
       const o = getOrder(wfL1, w.statusId);
-      return o < keysL1.deliveryOrder && o !== keysL1.firstDownstreamOrder && o !== keysL1.secondDownstreamOrder;
+      if (o >= keysL1.deliveryOrder) return false;
+      if (!withoutL0 && (o === keysL1.firstDownstreamOrder || o === keysL1.secondDownstreamOrder)) return false;
+      return true;
     }).map((w) => w.statusId)
   )].sort((a, b) => getOrder(wfL1, b) - getOrder(wfL1, a));
   for (const sid of l1GeneralColumns) {
@@ -247,7 +257,7 @@ export const tick = (state: SimState, config: Config): SimState => {
       if (!maybe(advanceProbability)) return w;
       const next = getNextStatusId(wfL1, w.statusId);
       if (!wipL1(w.statusId, next)) return w;
-      if (w.statusId === keysL1.commitmentId) {
+      if (!withoutL0 && w.statusId === keysL1.commitmentId) {
         const hasChildren = items.some((x) => x.parentId === w.id && x.level === "L0");
         if (!hasChildren) {
           for (let i = 0; i < childrenPerParent; i++) {
