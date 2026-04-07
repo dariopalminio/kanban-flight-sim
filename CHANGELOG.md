@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+
+---
+## [v1.0.2] Released — WIP Limits Editable — 2026-04-06
+
+### Added
+- **Editable WIP limits** — El encabezado de cada columna con WIP limit muestra un `<input type="number">` que permite editar el límite en runtime. El nuevo valor se aplica al perder foco (`onBlur`) o al presionar Enter, y se cancela con Escape. Los cambios se reflejan inmediatamente en la UI y se preservan al cambiar de simulación o resetear.  
+
+Ahora los usuarios pueden ajustar dinámicamente los WIP limits para experimentar con diferentes configuraciones sin modificar el JSON de configuración ni recargar la página, facilitando la exploración de escenarios y el aprendizaje interactivo.
+
 ---
 
 ## [v1.0.1] Released - Caminando el tablero y DODs — 2026-04-05
