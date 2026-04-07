@@ -348,7 +348,7 @@
             },
             {
               "id": "release-develop",
-              "name": "Desarrollando-Release",
+              "name": "Desarrollando",
               "description": "Las Features del Release están siendo desarrolladas. El Release avanza a medida que las Features se completan.",
               "order": 3,
               "streamType": "DOWNSTREAM",
