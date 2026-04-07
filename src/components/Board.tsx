@@ -13,9 +13,10 @@ type Props = {
   items: Workitem[];
   highlightMode: HighlightMode;
   currentTick: number;
+  onWipLimitChange: (statusId: string, value: number) => void;
 };
 
-export function Board({ workflow, items, highlightMode, currentTick }: Props) {
+export function Board({ workflow, items, highlightMode, currentTick, onWipLimitChange }: Props) {
   return (
     <div style={{ marginBottom: 3 }}>
       <div
@@ -41,6 +42,7 @@ export function Board({ workflow, items, highlightMode, currentTick }: Props) {
             items={items.filter((w) => w.statusId === status.id)}
             highlightMode={highlightMode}
             currentTick={currentTick}
+            onWipLimitChange={onWipLimitChange}
           />
         ))}
       </div>

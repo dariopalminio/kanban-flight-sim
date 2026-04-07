@@ -10,6 +10,7 @@ type Props = {
   items: Workitem[];
   highlightMode: HighlightMode;
   currentTick: number;
+  onWipLimitChange: (statusId: string, value: number) => void;
 };
 
 const getBg = (status: Status, mode: HighlightMode): string => {
@@ -31,16 +32,40 @@ const getBorder = (status: Status, mode: HighlightMode): string => {
   return "1px solid #334155";
 };
 
-export function Column({ status, items, highlightMode, currentTick }: Props) {
+export function Column({ status, items, highlightMode, currentTick, onWipLimitChange }: Props) {
   const sortedItems = [...items].sort((a, b) => a.enteredAt - b.enteredAt);
   const cardsContainerRef = useRef<HTMLDivElement>(null);
   const [dodOpen, setDodOpen] = useState(false);
+  const [draftWipLimit, setDraftWipLimit] = useState(status.wipLimit?.toString() ?? "");
+
+  useEffect(() => {
+    setDraftWipLimit(status.wipLimit?.toString() ?? "");
+  }, [status.wipLimit]);
 
   useEffect(() => {
     if (status.statusCategory === "DONE" && sortedItems.length > DONE_COLUMN_SCROLL_THRESHOLD && cardsContainerRef.current) {
       cardsContainerRef.current.scrollTop = cardsContainerRef.current.scrollHeight;
     }
   }, [sortedItems.length, status.statusCategory]);
+
+  const commitWipLimit = () => {
+    const parsed = parseInt(draftWipLimit, 10);
+    if (!isNaN(parsed) && parsed >= 1) {
+      onWipLimitChange(status.id, parsed);
+    } else {
+      setDraftWipLimit(status.wipLimit?.toString() ?? "");
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.currentTarget.blur();
+    } else if (e.key === "Escape") {
+      setDraftWipLimit(status.wipLimit?.toString() ?? "");
+      e.currentTarget.blur();
+    }
+  };
+
   return (
     <div
       style={{
@@ -56,7 +81,32 @@ export function Column({ status, items, highlightMode, currentTick }: Props) {
       }}
     >
       <div title={status.description || undefined} style={{ fontSize: 9, color: "white", fontWeight: 600, lineHeight: "13px", marginBottom: 1, textDecoration: status.isBeforeCommitmentPoint ? "underline" : "none" }}>
-        {status.name} {status.wipLimit != null ? ` [ w: ${items.length}/ l: ${status.wipLimit}]` : ` [c: ${items.length}]`}{status.isBuffer && <span style={{ color: "#22c55e", marginLeft: 2 }}>✓</span>}
+        {status.wipLimit != null ? (
+          <>
+            {status.name}{" "}[ w: {items.length}/ l:{" "}
+            <input
+              type="number"
+              min={1}
+              value={draftWipLimit}
+              onChange={(e) => setDraftWipLimit(e.target.value)}
+              onBlur={commitWipLimit}
+              onKeyDown={handleKeyDown}
+              style={{
+                fontSize: 9,
+                width: 28,
+                background: "#0f172a",
+                color: "white",
+                border: "none",
+                fontWeight: 600,
+                padding: 0,
+                lineHeight: "13px",
+              }}
+            />]
+          </>
+        ) : (
+          <>{status.name} [c: {items.length}]</>
+        )}
+        {status.isBuffer && <span style={{ color: "#22c55e", marginLeft: 2 }}>✓</span>}
         {status.definitionOfDone && (
           <button onClick={() => setDodOpen(v => !v)} style={{ marginLeft: 4, fontSize: 7, padding: "0 3px", background: "#334155", color: "#94a3b8", border: "1px solid #475569", borderRadius: 2, cursor: "pointer", lineHeight: "11px" }}>DoD</button>
         )}

@@ -30,8 +30,20 @@ export default function App() {
   const [highlightMode, setHighlightMode] = useState<HighlightMode>("none");
   const [viewMode, setViewMode] = useState<ViewMode>("delivery");
   const [withoutL0, setWithoutL0] = useState(false);
+  const [wipLimitOverrides, setWipLimitOverrides] = useState<Record<string, number>>({});
 
-  const effectiveConfig = { ...config, withoutL0 };
+  const patchWorkflowWipLimits = (wf: typeof config.workflows) => {
+    const patch = (statuses: typeof wf.L0.statuses) =>
+      statuses.map((s) => (s.id in wipLimitOverrides ? { ...s, wipLimit: wipLimitOverrides[s.id] } : s));
+    return {
+      L3: { ...wf.L3, statuses: patch(wf.L3.statuses) },
+      L2: { ...wf.L2, statuses: patch(wf.L2.statuses) },
+      L1: { ...wf.L1, statuses: patch(wf.L1.statuses) },
+      L0: { ...wf.L0, statuses: patch(wf.L0.statuses) },
+    };
+  };
+
+  const effectiveConfig = { ...config, withoutL0, workflows: patchWorkflowWipLimits(config.workflows) };
 
   // Autoplay
   useEffect(() => {
@@ -49,11 +61,16 @@ export default function App() {
       Math.max(AUTOPLAY_INTERVAL_MIN_MS, value)
     );
 
+  const handleWipLimitChange = (statusId: string, value: number) => {
+    setWipLimitOverrides((prev) => ({ ...prev, [statusId]: value }));
+  };
+
   const handleSimChange = (name: string) => {
     setSelectedSim(name);
     setSimState(buildInitialState(loadSimulation(name)));
     setIsPlaying(false);
     setAutoplayIntervalMs(AUTOPLAY_INTERVAL_DEFAULT_MS);
+    setWipLimitOverrides({});
   };
 
   const handleStep = () => setSimState((s) => tick(s, effectiveConfig));
@@ -62,6 +79,7 @@ export default function App() {
     setSimState(buildInitialState(effectiveConfig));
     setIsPlaying(false);
     setAutoplayIntervalMs(AUTOPLAY_INTERVAL_DEFAULT_MS);
+    setWipLimitOverrides({});
   };
 
   const handleWithoutL0Change = (v: boolean) => {
@@ -84,7 +102,7 @@ export default function App() {
   const toggleView = (mode: HighlightMode) =>
     setHighlightMode((prev) => (prev === mode ? "none" : mode));
 
-  const { workflows } = config;
+  const { workflows } = effectiveConfig;
   const { workitems, tick: tickCount } = simState;
   const VISIBLE_LEVELS: Record<ViewMode, number[]> = {
     portafolio: [3, 2],
@@ -161,6 +179,7 @@ export default function App() {
           items={workitems.filter((w) => w.level === "L3")}
           highlightMode={highlightMode}
           currentTick={simState.tick}
+          onWipLimitChange={handleWipLimitChange}
         />
       )}
       {visibleLevels.includes(2) && (
@@ -169,6 +188,7 @@ export default function App() {
           items={workitems.filter((w) => w.level === "L2")}
           highlightMode={highlightMode}
           currentTick={simState.tick}
+          onWipLimitChange={handleWipLimitChange}
         />
       )}
       {visibleLevels.includes(1) && (
@@ -177,6 +197,7 @@ export default function App() {
           items={workitems.filter((w) => w.level === "L1")}
           highlightMode={highlightMode}
           currentTick={simState.tick}
+          onWipLimitChange={handleWipLimitChange}
         />
       )}
       {visibleLevels.includes(0) && (
@@ -185,6 +206,7 @@ export default function App() {
           items={workitems.filter((w) => w.level === "L0")}
           highlightMode={highlightMode}
           currentTick={simState.tick}
+          onWipLimitChange={handleWipLimitChange}
         />
       )}
     </div>
