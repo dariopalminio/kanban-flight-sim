@@ -549,6 +549,314 @@
           ]
         }
       }
+    },
+    {
+      "name": "SAFe FL workflows",
+      "initialReleaseCount": 1,
+      "advanceProbability": 0.5,
+      "childrenPerParent": 3,
+      "demandInterval": 5,
+      "workflows": {
+        "L3": {
+          "id": "wf-portfolio",
+          "name": "Portfolio",
+          "level": "L3",
+          "workitemName": "Epic",
+          "statuses": [
+            {
+              "id": "safe-l3-funnel",
+              "name": "Funnel",
+              "order": 1,
+              "streamType": "UPSTREAM",
+              "statusCategory": "TODO",
+              "isBeforeCommitmentPoint": true,
+              "isPosDeliveryPoint": false,
+              "isBuffer": true,
+              "description": "Ideas no evaluadas, entrada inicial",
+              "wipLimit": 3
+            },
+            {
+              "id": "safe-l3-review",
+              "name": "Review",
+              "order": 2,
+              "streamType": "UPSTREAM",
+              "statusCategory": "TODO",
+              "isBeforeCommitmentPoint": true,
+              "isPosDeliveryPoint": false,
+              "isBuffer": false,
+              "description": "Evaluación de viabilidad y alineación estratégica",
+              "wipLimit": 3
+            },
+            {
+              "id": "safe-l3-analysis",
+              "name": "Analysis",
+              "order": 3,
+              "streamType": "UPSTREAM",
+              "statusCategory": "TODO",
+              "isBeforeCommitmentPoint": true,
+              "isPosDeliveryPoint": false,
+              "isBuffer": false,
+              "description": "Análisis detallado de negocio y arquitectura",
+              "wipLimit": 3
+            },
+            {
+              "id": "safe-l3-portfolio-backlog",
+              "name": "Portfolio-Backlog",
+              "order": 4,
+              "streamType": "DOWNSTREAM",
+              "statusCategory": "TODO",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false,
+              "isBuffer": true,
+              "description": "Comprometido, listo para implementación",
+              "wipLimit": 2,
+              "hasReadySignal": true
+            },
+            {
+              "id": "safe-l3-implementing",
+              "name": "Implementing",
+              "order": 5,
+              "streamType": "DOWNSTREAM",
+              "statusCategory": "IN_PROGRESS",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false,
+              "isBuffer": false,
+              "description": "Ejecución del epic a nivel portfolio",
+              "wipLimit": 3,
+              "hasReadySignal": true
+            },
+            {
+              "id": "safe-l3-done",
+              "name": "Done",
+              "order": 6,
+              "streamType": "DOWNSTREAM",
+              "statusCategory": "DONE",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": true,
+              "isBuffer": false,
+              "description": "Entregado y validado"
+            }
+          ]
+        },
+        "L2": {
+          "id": "safe-l2-wf-solution",
+          "name": "Solution",
+          "level": "L2",
+          "workitemName": "Capability",
+          "statuses": [
+            {
+              "id": "safe-l2-backlog",
+              "name": "Backlog",
+              "order": 1,
+              "streamType": "UPSTREAM",
+              "statusCategory": "TODO",
+              "isBeforeCommitmentPoint": true,
+              "isPosDeliveryPoint": false,
+              "isBuffer": true,
+              "description": "Ideas de capacidades sin refinar",
+              "wipLimit": 3
+            },
+            {
+              "id": "safe-l2-ready-for-dev",
+              "name": "Ready-for-Dev",
+              "order": 2,
+              "streamType": "DOWNSTREAM",
+              "statusCategory": "TODO",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false,
+              "isBuffer": true,
+              "description": "Comprometido, refinado y estimado",
+              "wipLimit": 5,
+              "hasReadySignal": true
+            },
+            {
+              "id": "safe-l2-implementing",
+              "name": "Implementing",
+              "order": 3,
+              "streamType": "DOWNSTREAM",
+              "statusCategory": "IN_PROGRESS",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false,
+              "isBuffer": false,
+              "description": "Construcción de la capacidad",
+              "wipLimit": 3,
+              "hasReadySignal": true
+            },
+            {
+              "id": "safe-l2-verification",
+              "name": "Verification",
+              "order": 4,
+              "streamType": "DOWNSTREAM",
+              "statusCategory": "IN_PROGRESS",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false,
+              "isBuffer": false,
+              "description": "Pruebas de integración y no funcionales",
+              "wipLimit": 3
+            },
+            {
+              "id": "safe-l2-ready-for-release",
+              "name": "Ready-for-Release",
+              "order": 5,
+              "streamType": "DOWNSTREAM",
+              "statusCategory": "IN_PROGRESS",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false,
+              "isBuffer": true,
+              "description": "Pendiente de despliegue",
+              "wipLimit": 5
+            },
+            {
+              "id": "safe-l2-done",
+              "name": "Done",
+              "order": 6,
+              "streamType": "DOWNSTREAM",
+              "statusCategory": "DONE",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": true,
+              "isBuffer": false,
+              "description": "Liberado a entorno productivo"
+            }
+          ]
+        },
+        "L1": {
+          "id": "safe-l1-wf-team",
+          "name": "Team",
+          "level": "L1",
+          "workitemName": "Story",
+          "statuses": [
+            {
+              "id": "safe-l1-backlog",
+              "name": "Backlog",
+              "order": 1,
+              "streamType": "UPSTREAM",
+              "statusCategory": "TODO",
+              "isBeforeCommitmentPoint": true,
+              "isPosDeliveryPoint": false,
+              "isBuffer": true,
+              "description": "Historias no comprometidas",
+              "wipLimit": 3
+            },
+            {
+              "id": "safe-l1-selected",
+              "name": "Selected",
+              "order": 2,
+              "streamType": "DOWNSTREAM",
+              "statusCategory": "TODO",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false,
+              "isBuffer": true,
+              "description": "Comprometida para el sprint",
+              "wipLimit": 4,
+              "hasReadySignal": true
+            },
+            {
+              "id": "safe-l1-develop",
+              "name": "Develop",
+              "order": 3,
+              "streamType": "DOWNSTREAM",
+              "statusCategory": "IN_PROGRESS",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false,
+              "isBuffer": false,
+              "description": "Implementación activa",
+              "wipLimit": 3,
+              "hasReadySignal": true
+            },
+            {
+              "id": "safe-l1-peer-review",
+              "name": "Peer-Review",
+              "order": 4,
+              "streamType": "DOWNSTREAM",
+              "statusCategory": "IN_PROGRESS",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false,
+              "isBuffer": false,
+              "description": "Revisión de código por pares",
+              "wipLimit": 3
+            },
+            {
+              "id": "safe-l1-test-verify",
+              "name": "Test-Verify",
+              "order": 5,
+              "streamType": "DOWNSTREAM",
+              "statusCategory": "IN_PROGRESS",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false,
+              "isBuffer": false,
+              "description": "Pruebas automatizadas y validación",
+              "wipLimit": 3
+            },
+            {
+              "id": "safe-l1-accepted",
+              "name": "Accepted",
+              "order": 6,
+              "streamType": "DOWNSTREAM",
+              "statusCategory": "IN_PROGRESS",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false,
+              "isBuffer": true,
+              "description": "Aceptada por el Product Owner",
+              "wipLimit": 5
+            },
+            {
+              "id": "safe-l1-done",
+              "name": "Done",
+              "order": 7,
+              "streamType": "DOWNSTREAM",
+              "statusCategory": "DONE",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": true,
+              "isBuffer": false,
+              "description": "Historia terminada y desplegada"
+            }
+          ]
+        },
+        "L0": {
+          "id": "safe-l0-wf-task",
+          "name": "Subtask",
+          "level": "L0",
+          "workitemName": "Task",
+          "statuses": [
+            {
+              "id": "safe-l0-todo",
+              "name": "To Do",
+              "order": 1,
+              "streamType": "UPSTREAM",
+              "statusCategory": "TODO",
+              "isBeforeCommitmentPoint": true,
+              "isPosDeliveryPoint": false,
+              "isBuffer": true,
+              "description": "Tarea técnica identificada, sin comenzar",
+              "wipLimit": 3
+            },
+            {
+              "id": "safe-l0-in-progress",
+              "name": "In-Progress",
+              "order": 2,
+              "streamType": "DOWNSTREAM",
+              "statusCategory": "IN_PROGRESS",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": false,
+              "isBuffer": false,
+              "description": "Tarea en ejecución activa",
+              "wipLimit": 4,
+              "hasReadySignal": true
+            },
+            {
+              "id": "safe-l0-done",
+              "name": "Done",
+              "order": 3,
+              "streamType": "DOWNSTREAM",
+              "statusCategory": "DONE",
+              "isBeforeCommitmentPoint": false,
+              "isPosDeliveryPoint": true,
+              "isBuffer": false,
+              "description": "Tarea completada"
+            }
+          ]
+        }
+      }
     }
   ]
 }

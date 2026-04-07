@@ -260,10 +260,15 @@ export const tick = (state: SimState, config: Config): SimState => {
       if (!withoutL0 && w.statusId === keysL1.commitmentId) {
         const hasChildren = items.some((x) => x.parentId === w.id && x.level === "L0");
         if (!hasChildren) {
+          const l0FirstStatus = wfL0.statuses[0];
           for (let i = 0; i < childrenPerParent; i++) {
+            if (l0FirstStatus.wipLimit != null) {
+              const count = items.filter((x) => x.statusId === l0FirstStatus.id).length + newL0Children.filter((x) => x.statusId === l0FirstStatus.id).length;
+              if (count >= l0FirstStatus.wipLimit) break;
+            }
             const [id, newCounters] = nextId(counters, "L0", wfL0.workitemName, w.id);
             counters = newCounters;
-            newL0Children.push({ id, level: "L0", statusId: wfL0.statuses[0].id, parentId: w.id, enteredAt: currentTick, color: w.color });
+            newL0Children.push({ id, level: "L0", statusId: l0FirstStatus.id, parentId: w.id, enteredAt: currentTick, color: w.color });
           }
         }
       }
@@ -338,10 +343,15 @@ export const tick = (state: SimState, config: Config): SimState => {
       if (w.statusId === keysL2.commitmentId) {
         const hasChildren = items.some((x) => x.parentId === w.id && x.level === "L1");
         if (!hasChildren) {
+          const l1FirstStatus = wfL1.statuses[0];
           for (let i = 0; i < childrenPerParent; i++) {
+            if (l1FirstStatus.wipLimit != null) {
+              const count = items.filter((x) => x.statusId === l1FirstStatus.id).length + newL1Children.filter((x) => x.statusId === l1FirstStatus.id).length;
+              if (count >= l1FirstStatus.wipLimit) break;
+            }
             const [id, newCounters] = nextId(counters, "L1", wfL1.workitemName, w.id);
             counters = newCounters;
-            newL1Children.push({ id, level: "L1", statusId: wfL1.statuses[0].id, parentId: w.id, enteredAt: currentTick, color: w.color });
+            newL1Children.push({ id, level: "L1", statusId: l1FirstStatus.id, parentId: w.id, enteredAt: currentTick, color: w.color });
           }
         }
       }
@@ -416,10 +426,15 @@ export const tick = (state: SimState, config: Config): SimState => {
       if (w.statusId === keysL3.commitmentId) {
         const hasChildren = items.some((x) => x.parentId === w.id && x.level === "L2");
         if (!hasChildren) {
+          const l2FirstStatus = wfL2.statuses[0];
           for (let i = 0; i < childrenPerParent; i++) {
+            if (l2FirstStatus.wipLimit != null) {
+              const count = items.filter((x) => x.statusId === l2FirstStatus.id).length + newL2Children.filter((x) => x.statusId === l2FirstStatus.id).length;
+              if (count >= l2FirstStatus.wipLimit) break;
+            }
             const [id, newCounters] = nextId(counters, "L2", wfL2.workitemName, w.id);
             counters = newCounters;
-            newL2Children.push({ id, level: "L2", statusId: wfL2.statuses[0].id, parentId: w.id, enteredAt: currentTick, color: w.color });
+            newL2Children.push({ id, level: "L2", statusId: l2FirstStatus.id, parentId: w.id, enteredAt: currentTick, color: w.color });
           }
         }
       }

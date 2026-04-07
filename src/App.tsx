@@ -16,7 +16,7 @@ import { buildInitialState, tick } from "./simulation/engine";
 const AUTOPLAY_INTERVAL_MIN_MS = 100;
 const AUTOPLAY_INTERVAL_MAX_MS = 5000;
 const AUTOPLAY_INTERVAL_STEP_MS = 100;
-const AUTOPLAY_INTERVAL_DEFAULT_MS = 1000;
+const AUTOPLAY_INTERVAL_DEFAULT_MS = 500;
 
 export default function App() {
   const [selectedSim, setSelectedSim] = useState(defaultSimulationName);
@@ -28,7 +28,7 @@ export default function App() {
     AUTOPLAY_INTERVAL_DEFAULT_MS
   );
   const [highlightMode, setHighlightMode] = useState<HighlightMode>("none");
-  const [viewMode, setViewMode] = useState<ViewMode>("delivery");
+  const [viewMode, setViewMode] = useState<ViewMode>("full");
   const [withoutL0, setWithoutL0] = useState(false);
   const [wipLimitOverrides, setWipLimitOverrides] = useState<Record<string, number>>({});
 

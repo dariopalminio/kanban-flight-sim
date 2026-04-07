@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 
 ---
+## [Unreleased] — 2026-04-07
+
+### Added
+- **Simulación "SAFe FL workflows"** — Nuevo modelo de simulación con cuatro niveles jerárquicos (L3: Epic, L2: Capability, L1: Story, L0: Task) que representa el flujo de Portfolio Kanban de SAFe. Incluye estados de Portfolio Backlog, solución, team y tareas técnicas con WIP limits configurados.
+- **Configuración GCP Cloud Run** — Archivos `Dockerfile` (build multi-stage Node 22 + nginx), `nginx.conf` (SPA fallback + cache de assets), `.dockerignore` y `cloudbuild.yaml` para CI/CD con Artifact Registry y despliegue automático en Cloud Run.
+
+### Fixed
+- **WIP limit en primera columna al inyectar hijos** — Al cruzar el commitment point, el motor de simulación ahora respeta el `wipLimit` de `statuses[0]` al crear ítems hijo en L0, L1 y L2. Anteriormente los hijos se insertaban incondicionalmente, desbordando el límite. Afectaba a cualquier simulación con `wipLimit` definido en la primera columna (SDDF y SAFe FL).
+
+---
 ## [v1.0.2] Released — WIP Limits Editable — 2026-04-06
 
 ### Added
