@@ -228,13 +228,13 @@
       "demandInterval": 5,
       "workflows": {
         "L3": {
-          "id": "wf-initiative",
+          "id": "wf-initiative-project",
           "name": "Initiative",
           "level": "L3",
           "workitemName": "Initiative",
           "statuses": [
             {
-              "id": "initiative-funnel",
+              "id": "initiative-project-funnel",
               "name": "Embudo",
               "order": 1,
               "streamType": "UPSTREAM",
@@ -247,7 +247,7 @@
               "definitionOfDone": "Definition of Done: Idea registrada en el sistema, con descripción inicial y responsable asignado. No se ha realizado análisis detallado."
             },
             {
-              "id": "initiative-define-discovery",
+              "id": "initiative-project-define-discovery",
               "name": "Definir&Descubrir",
               "order": 2,
               "streamType": "UPSTREAM",
@@ -261,7 +261,7 @@
               "definitionOfDone": "Definition of Done: Intención de la iniciativa (o proyecto) definida. Descubrimiento (Discovery) realizado. Especificación de Requerimientos definida. Medida de éxito definida. Decisión de avanzar con la iniciativa tomada (aprobada). Hay capacidad para ser desarrollada (equipo asignado)."
             },
             {
-              "id": "initiative-planning",
+              "id": "initiative-project-planning",
               "name": "Planeación",
               "order": 3,
               "streamType": "DOWNSTREAM",
@@ -275,7 +275,7 @@
               "definitionOfDone": "Definition of Done: Iniciativa detallada en entregables (features, releases). Roadmap definido. Dependencias identificadas y mitigaciones planificadas. Riesgos identificados y mitigaciones planificadas. Hitos de revisión definidos."
             },
             {
-              "id": "initiative-in-development",
+              "id": "initiative-project-in-development",
               "name": "En-Desarrollo",
               "order": 4,
               "streamType": "DOWNSTREAM",
@@ -289,7 +289,7 @@
               "definitionOfDone": "Definition of Done: Iniciativa desarrollada e implementada. MVP entregado y validado. Hitos de revisión alcanzados y decisiones tomadas (perseverar, pivotar, detener)."
             },
             {
-              "id": "initiative-measuring",
+              "id": "initiative-project-measuring",
               "name": "Midiendo-Valor",
               "order": 5,
               "streamType": "DOWNSTREAM",
@@ -299,10 +299,10 @@
               "isBuffer": false,
               "description": "Período de monitoreo post-lanzamiento con timebox definido. Se recolectan datos de la Medida de Éxito (OKRs, LVT, ROI, etc.).",
               "hasReadySignal": true,
-              "definitionOfDone": "Definition of Done: Período de monitoreo post-lanzamiento completado. Datos de adopción recolectados. Medida de Éxito (OKRs/LVTs/ROI, etc.) evaluada. Se ha tomado una decisión informada sobre el futuro de la iniciativa (escalado, mantenimiento, descontinuación)."
+              "definitionOfDone": "Definition of Done: Período de monitoreo post-lanzamiento completado. Datos de adopción recolectados. Medida de Éxito (OKRs/LVTs/ROI, etc.) evaluada (Deficiente, Sólida, Excepcional). Se ha tomado una decisión informada sobre el futuro de la iniciativa (escalado, mantenimiento, descontinuación)."
             },
             {
-              "id": "initiative-finished",
+              "id": "initiative-project-finished",
               "name": "Finalizada",
               "order": 6,
               "streamType": "DOWNSTREAM",
@@ -316,13 +316,13 @@
           ]
         },
         "L2": {
-          "id": "wf-release",
-          "name": "Release",
+          "id": "wf-epic-release",
+          "name": "Release-Epic",
           "level": "L2",
-          "workitemName": "Release",
+          "workitemName": "Epic-Release",
           "statuses": [
             {
-              "id": "release-definition",
+              "id": "epic-release-definition",
               "name": "Definición",
               "order": 1,
               "description": "Refinamiento del alcance: release propuesto, validar dependencias, priorizar Features, asegurar claridad de requisitos de negocio.",
@@ -334,7 +334,7 @@
               "hasReadySignal": true
             },
             {
-              "id": "release-ready",
+              "id": "epic-release-ready",
               "name": "Listo",
               "order": 2,
               "description": "Buffer. Release completamente definido, aprobado y con capacidad asignada. Espera inicio de desarrollo.",
@@ -347,7 +347,7 @@
               "hasReadySignal": false
             },
             {
-              "id": "release-develop",
+              "id": "epic-release-develop",
               "name": "Desarrollando",
               "description": "Las Features del Release están siendo desarrolladas. El Release avanza a medida que las Features se completan.",
               "order": 3,
@@ -360,7 +360,7 @@
               "hasReadySignal": true
             },
             {
-              "id": "release-validation",
+              "id": "epic-release-validation",
               "name": "En-Integración",
               "description": "Pruebas de integración end-to-end, regresión, y validación técnica. El Release está desplegado en entorno de integración/staging.",
               "order": 4,
@@ -372,7 +372,7 @@
               "hasReadySignal": true
             },
             {
-              "id": "release-in-acceptance",
+              "id": "epic-release-in-acceptance",
               "name": "En-Aceptación",
               "description": "Validación con stakeholders (negocio, producto, usuarios clave). Se confirma que el Release cumple con los criterios de aceptación y genera el valor esperado.",
               "order": 5,
@@ -384,7 +384,7 @@
               "hasReadySignal": true
             },
             {
-              "id": "release-released",
+              "id": "epic-release-released",
               "name": "Liberado",
               "description": "Release desplegado en producción y cerrado. Se verifica operatividad. Se archiva documentación.",
               "order": 6,
@@ -398,13 +398,13 @@
           ]
         },
         "L1": {
-          "id": "wf-feat",
-          "name": "Feat",
+          "id": "wf-story-feat",
+          "name": "Story",
           "level": "L1",
-          "workitemName": "Feat",
+          "workitemName": "Story",
           "statuses": [
             {
-              "id": "feat-refining",
+              "id": "story-refining",
               "name": "Refinamiento",
               "description": "Exploración de ideas, análisis de viabilidad, refinamiento de requisitos. Se refinan requisitos y se definen criterios de aceptación con negocio/PO.",
               "order": 1,
@@ -417,7 +417,7 @@
               "hasReadySignal": true
             },
             {
-              "id": "feat-ready-for-dev",
+              "id": "story-ready-for-dev",
               "name": "Listo-para-Desarrollo",
               "description": "Buffer. Story refinada, estimada, esperando capacidad de desarrollo.",
               "order": 2,
@@ -430,7 +430,7 @@
               "hasReadySignal": false
             },
             {
-              "id": "feat-developing",
+              "id": "story-developing",
               "name": "Desarrollo",
               "description": "Implementación técnica. Incluye codificación, pruebas unitarias, y revisión de código (si aplica como actividad dentro del estado).",
               "order": 3,
@@ -442,7 +442,7 @@
               "hasReadySignal": true
             },
             {
-              "id": "feat-qa-testing",
+              "id": "story-qa-testing",
               "name": "Pruebas-QA",
               "description": "Pruebas de QA, validación técnica, regresión.",
               "order": 4,
@@ -454,7 +454,7 @@
               "hasReadySignal": true
             },
             {
-              "id": "feat-acceptance",
+              "id": "story-acceptance",
               "name": "Aceptación",
               "description": "Validación de negocio con PO/stakeholders. Confirmación de que cumple criterios de aceptación y genera valor.",
               "order": 5,
@@ -466,7 +466,7 @@
               "hasReadySignal": true
             },
             {
-              "id": "feat-delivered",
+              "id": "story-delivered",
               "name": "Entregado",
               "description": "Story completada técnicamente y fusionada en rama release/. Lista para ser liberada con el Release correspondiente.",
               "order": 6,
