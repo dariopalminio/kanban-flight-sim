@@ -1,0 +1,330 @@
+{
+  "name": "SDDF workflows",
+  "initialReleaseCount": 1,
+  "advanceProbability": 0.5,
+  "childrenPerParent": 3,
+  "demandInterval": 5,
+  "workflows": {
+    "L3": {
+      "id": "wf-initiative-project",
+      "name": "Initiative",
+      "level": "L3",
+      "workitemName": "Initiative",
+      "statuses": [
+        {
+          "id": "initiative-project-funnel",
+          "name": "Embudo",
+          "order": 1,
+          "streamType": "UPSTREAM",
+          "statusCategory": "TODO",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": true,
+          "description": "Iniciativa entra al embudo del portafolio y captura de ideas brutas.",
+          "wipLimit": 3,
+          "definitionOfDone": "Definition of Done: Idea registrada en el sistema, con descripción inicial y responsable asignado. No se ha realizado análisis detallado."
+        },
+        {
+          "id": "initiative-project-define-discovery",
+          "name": "Definir&Descubrir",
+          "order": 2,
+          "streamType": "UPSTREAM",
+          "statusCategory": "IN_PROGRESS",
+          "isBeforeCommitmentPoint": true,
+          "isPosDeliveryPoint": false,
+          "isBuffer": false,
+          "description": "Análisis profundo: Lean Business Case, descubrimiento, definición de MVP, hipótesis de valor, Medida de Éxito (OKRs/LVT), recursos estimados.",
+          "wipLimit": 3,
+          "hasReadySignal": true,
+          "definitionOfDone": "Definition of Done: Intención de la iniciativa (o proyecto) definida. Descubrimiento (Discovery) realizado. Especificación de Requerimientos definida. Medida de éxito definida. Decisión de avanzar con la iniciativa tomada (aprobada). Hay capacidad para ser desarrollada (equipo asignado)."
+        },
+        {
+          "id": "initiative-project-planning",
+          "name": "Planeación",
+          "order": 3,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "IN_PROGRESS",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": false,
+          "description": "Iniciativas aprobadas, priorizadas, asignada, comprometida y en planeación. Se detallan entregables, roadmap, dependencias, riesgos, hitos de revisión.",
+          "wipLimit": 1,
+          "hasReadySignal": true,
+          "definitionOfDone": "Definition of Done: Iniciativa detallada en entregables (features, releases). Roadmap definido. Dependencias identificadas y mitigaciones planificadas. Riesgos identificados y mitigaciones planificadas. Hitos de revisión definidos."
+        },
+        {
+          "id": "initiative-project-in-development",
+          "name": "En-Desarrollo",
+          "order": 4,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "IN_PROGRESS",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": false,
+          "description": "Construcción técnica. Incluye hitos de revisión (MVP Review) para perseverar/pivotar/detener.",
+          "wipLimit": 1,
+          "hasReadySignal": true,
+          "definitionOfDone": "Definition of Done: Iniciativa desarrollada e implementada. MVP entregado y validado. Hitos de revisión alcanzados y decisiones tomadas (perseverar, pivotar, detener)."
+        },
+        {
+          "id": "initiative-project-measuring",
+          "name": "Midiendo-Valor",
+          "order": 5,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "IN_PROGRESS",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": false,
+          "description": "Período de monitoreo post-lanzamiento con timebox definido. Se recolectan datos de la Medida de Éxito (OKRs, LVT, ROI, etc.).",
+          "hasReadySignal": true,
+          "definitionOfDone": "Definition of Done: Período de monitoreo post-lanzamiento completado. Datos de adopción recolectados. Medida de Éxito (OKRs/LVTs/ROI, etc.) evaluada (Deficiente, Sólida, Excepcional). Se ha tomado una decisión informada sobre el futuro de la iniciativa (escalado, mantenimiento, descontinuación)."
+        },
+        {
+          "id": "initiative-project-finished",
+          "name": "Finalizada",
+          "order": 6,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "DONE",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": true,
+          "isBuffer": false,
+          "hasReadySignal": false,
+          "description": "Cierre formal. Se evalúa el desempeño contra la hipótesis inicial. Se clasifica la iniciativa: Deficiente / Sólida / Excepcional. Se documentan lecciones aprendidas."
+        }
+      ]
+    },
+    "L2": {
+      "id": "wf-epic-release",
+      "name": "Release-Epic",
+      "level": "L2",
+      "workitemName": "Epic-Release",
+      "statuses": [
+        {
+          "id": "epic-release-definition",
+          "name": "Definición",
+          "order": 1,
+          "description": "Refinamiento del alcance: release propuesto, validar dependencias, priorizar Features, asegurar claridad de requisitos de negocio.",
+          "streamType": "UPSTREAM",
+          "statusCategory": "TODO",
+          "isBeforeCommitmentPoint": true,
+          "isPosDeliveryPoint": false,
+          "wipLimit": 4,
+          "hasReadySignal": true
+        },
+        {
+          "id": "epic-release-ready",
+          "name": "Listo",
+          "order": 2,
+          "description": "Buffer. Release completamente definido, aprobado y con capacidad asignada. Espera inicio de desarrollo.",
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "TODO",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": true,
+          "wipLimit": 3,
+          "hasReadySignal": false
+        },
+        {
+          "id": "epic-release-develop",
+          "name": "Desarrollando",
+          "description": "Las Features del Release están siendo desarrolladas. El Release avanza a medida que las Features se completan.",
+          "order": 3,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "IN_PROGRESS",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": false,
+          "wipLimit": 1,
+          "hasReadySignal": true
+        },
+        {
+          "id": "epic-release-validation",
+          "name": "En-Integración",
+          "description": "Pruebas de integración end-to-end, regresión, y validación técnica. El Release está desplegado en entorno de integración/staging.",
+          "order": 4,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "IN_PROGRESS",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": false,
+          "hasReadySignal": true
+        },
+        {
+          "id": "epic-release-in-acceptance",
+          "name": "En-Aceptación",
+          "description": "Validación con stakeholders (negocio, producto, usuarios clave). Se confirma que el Release cumple con los criterios de aceptación y genera el valor esperado.",
+          "order": 5,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "IN_PROGRESS",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": false,
+          "hasReadySignal": true
+        },
+        {
+          "id": "epic-release-released",
+          "name": "Liberado",
+          "description": "Release desplegado en producción y cerrado. Se verifica operatividad. Se archiva documentación.",
+          "order": 6,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "DONE",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": true,
+          "isBuffer": false,
+          "hasReadySignal": false
+        }
+      ]
+    },
+    "L1": {
+      "id": "wf-story-feat",
+      "name": "Story",
+      "level": "L1",
+      "workitemName": "Story",
+      "statuses": [
+        {
+          "id": "story-refining",
+          "name": "Refinamiento",
+          "description": "Exploración de ideas, análisis de viabilidad, refinamiento de requisitos. Se refinan requisitos y se definen criterios de aceptación con negocio/PO.",
+          "order": 1,
+          "streamType": "UPSTREAM",
+          "statusCategory": "TODO",
+          "isBeforeCommitmentPoint": true,
+          "isPosDeliveryPoint": false,
+          "isBuffer": false,
+          "wipLimit": 5,
+          "hasReadySignal": true
+        },
+        {
+          "id": "story-ready-for-dev",
+          "name": "Listo-para-Desarrollo",
+          "description": "Buffer. Story refinada, estimada, esperando capacidad de desarrollo.",
+          "order": 2,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "TODO",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": true,
+          "wipLimit": 5,
+          "hasReadySignal": false
+        },
+        {
+          "id": "story-developing",
+          "name": "Desarrollo",
+          "description": "Implementación técnica. Incluye codificación, pruebas unitarias, y revisión de código (si aplica como actividad dentro del estado).",
+          "order": 3,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "IN_PROGRESS",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": false,
+          "hasReadySignal": true
+        },
+        {
+          "id": "story-qa-testing",
+          "name": "Pruebas-QA",
+          "description": "Pruebas de QA, validación técnica, regresión.",
+          "order": 4,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "IN_PROGRESS",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": false,
+          "hasReadySignal": true
+        },
+        {
+          "id": "story-acceptance",
+          "name": "Aceptación",
+          "description": "Validación de negocio con PO/stakeholders. Confirmación de que cumple criterios de aceptación y genera valor.",
+          "order": 5,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "IN_PROGRESS",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": false,
+          "hasReadySignal": true
+        },
+        {
+          "id": "story-delivered",
+          "name": "Entregado",
+          "description": "Story completada técnicamente y fusionada en rama release/. Lista para ser liberada con el Release correspondiente.",
+          "order": 6,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "DONE",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": true,
+          "isBuffer": false,
+          "hasReadySignal": false
+        }
+      ]
+    },
+    "L0": {
+      "id": "wf-spec",
+      "name": "Spec",
+      "level": "L0",
+      "workitemName": "Spec",
+      "statuses": [
+        {
+          "id": "spec-specify",
+          "name": "Specify",
+          "description": "Especificación técnica en proceso de especificación (propose, specify)",
+          "order": 1,
+          "streamType": "UPSTREAM",
+          "statusCategory": "TODO",
+          "isBeforeCommitmentPoint": true,
+          "isPosDeliveryPoint": false,
+          "isBuffer": false,
+          "wipLimit": 8,
+          "hasReadySignal": true
+        },
+        {
+          "id": "spec-designing",
+          "name": "Designing",
+          "description": "Análisis, Diseño, Plan y tasking de la especificación técnica",
+          "order": 2,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "IN_PROGRESS",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": false,
+          "wipLimit": 5,
+          "hasReadySignal": true
+        },
+        {
+          "id": "spec-implementing",
+          "name": "Implementing",
+          "description": "Implementación de la especificación técnica",
+          "order": 3,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "IN_PROGRESS",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": false,
+          "hasReadySignal": true
+        },
+        {
+          "id": "spec-validating",
+          "name": "Validating",
+          "description": "Validación de la especificación técnica",
+          "order": 4,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "IN_PROGRESS",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": false,
+          "hasReadySignal": true
+        },
+        {
+          "id": "spec-completed",
+          "name": "Completed",
+          "description": "Especificación técnica completada, archivada y cerrada",
+          "order": 5,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "DONE",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": true,
+          "isBuffer": false
+        }
+      ]
+    }
+  }
+}

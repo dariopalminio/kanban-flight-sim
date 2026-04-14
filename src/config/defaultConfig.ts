@@ -1,5 +1,5 @@
 import type { Config, Status, StatusCategory, WorkitemLevel } from "../domain/types";
-import rawString from "./defaultConfig.json?raw";
+import rootJson from "./defaultConfig.json";
 
 // =====================
 // CATEGORY HELPER
@@ -15,7 +15,7 @@ interface RawWorkflow {
   statuses: RawStatus[];
 }
 
-interface RawSimulation {
+interface RawModel {
   name: string;
   initialReleaseCount: number;
   advanceProbability: number;
@@ -24,13 +24,12 @@ interface RawSimulation {
   workflows: { L3: RawWorkflow; L2: RawWorkflow; L1: RawWorkflow; L0: RawWorkflow };
 }
 
-interface RawConfig {
-  defaultSimulation: string;
-  simulations: RawSimulation[];
+interface RawRootConfig {
+  defaultModel: string;
 }
 
 // =====================
-// BUILD CONFIG FROM SIMULATION
+// BUILD CONFIG FROM MODEL
 // =====================
 
 const buildWorkflow = (wf: RawWorkflow) => ({
@@ -41,57 +40,65 @@ const buildWorkflow = (wf: RawWorkflow) => ({
   statuses: wf.statuses.map((s) => ({ ...s })),
 });
 
-const buildConfig = (sim: RawSimulation): Config => ({
-  initialReleaseCount: sim.initialReleaseCount,
-  advanceProbability: sim.advanceProbability,
-  childrenPerParent: sim.childrenPerParent,
-  demandInterval: sim.demandInterval ?? 0,
+const buildConfig = (model: RawModel): Config => ({
+  initialReleaseCount: model.initialReleaseCount,
+  advanceProbability: model.advanceProbability,
+  childrenPerParent: model.childrenPerParent,
+  demandInterval: model.demandInterval ?? 0,
   workflows: {
-    L3: buildWorkflow(sim.workflows.L3),
-    L2: buildWorkflow(sim.workflows.L2),
-    L1: buildWorkflow(sim.workflows.L1),
-    L0: buildWorkflow(sim.workflows.L0),
+    L3: buildWorkflow(model.workflows.L3),
+    L2: buildWorkflow(model.workflows.L2),
+    L1: buildWorkflow(model.workflows.L1),
+    L0: buildWorkflow(model.workflows.L0),
   },
 });
 
 // =====================
-// PARSE JSON — never throw at module level; errors are deferred to loadSimulation()
-// which is called during React render and caught by ErrorBoundary.
+// LOAD ALL MODEL FILES VIA GLOB
+// Models are sorted alphabetically by filename for deterministic order.
 // =====================
 
-let _raw: RawConfig = { defaultSimulation: "", simulations: [] };
+const _root = rootJson as RawRootConfig;
+
+let _models: RawModel[] = [];
 let _parseError: string | undefined;
 
 try {
-  _raw = JSON.parse(rawString) as RawConfig;
+  const modules = import.meta.glob<{ default: RawModel }>("./models/*.json", { eager: true });
+  _models = Object.keys(modules)
+    .sort()
+    .map((key) => modules[key].default);
+  if (_models.length === 0) {
+    _parseError = "No se encontraron modelos en src/config/models/. Agrega al menos un archivo *.json.";
+  }
 } catch (e) {
-  _parseError = `defaultConfig.json tiene formato JSON inválido: ${(e as Error).message}`;
+  _parseError = `Error al cargar modelos de simulación: ${(e as Error).message}`;
 }
 
 // =====================
 // PUBLIC API
 // =====================
 
-export const simulationNames: string[] = _raw.simulations.map((s) => s.name);
-export const defaultSimulationName: string = _raw.defaultSimulation;
+export const simulationNames: string[] = _models.map((m) => m.name);
+export const defaultSimulationName: string = _root.defaultModel;
 
 export const loadSimulation = (name: string): Config => {
   if (_parseError) throw new Error(_parseError);
-  const sim = _raw.simulations.find((s) => s.name === name);
-  if (!sim) throw new Error(`Simulation "${name}" not found in defaultConfig.json`);
-  return buildConfig(sim);
+  const model = _models.find((m) => m.name === name);
+  if (!model) throw new Error(`Simulation "${name}" not found in src/config/models/`);
+  return buildConfig(model);
 };
 
 export const configLoadResult: { config: Config | null; error?: string } = (() => {
   if (_parseError) return { config: null, error: _parseError };
-  if (_raw.simulations.length === 0) {
-    return { config: null, error: "defaultConfig.json no contiene simulaciones." };
+  if (_models.length === 0) {
+    return { config: null, error: "No se encontraron modelos de simulación." };
   }
-  const first = _raw.simulations[0];
-  const target = _raw.simulations.find((s) => s.name === _raw.defaultSimulation) ?? first;
+  const first = _models[0];
+  const target = _models.find((m) => m.name === _root.defaultModel) ?? first;
   const error =
-    target === first && _raw.defaultSimulation !== first.name
-      ? `Simulation "${_raw.defaultSimulation}" not found; using "${first.name}" as fallback.`
+    target === first && _root.defaultModel !== first.name
+      ? `Simulation "${_root.defaultModel}" not found; using "${first.name}" as fallback.`
       : undefined;
   return { config: buildConfig(target), error };
 })();

@@ -1,0 +1,279 @@
+{
+  "name": "XP-FL Workflows",
+  "initialReleaseCount": 3,
+  "advanceProbability": 0.5,
+  "childrenPerParent": 3,
+  "demandInterval": 0,
+  "workflows": {
+    "L3": {
+      "id": "xp-initiative",
+      "name": "Initiative",
+      "level": "L3",
+      "workitemName": "Initiative",
+      "statuses": [
+        {
+          "id": "initiative-options",
+          "name": "Options",
+          "description": "Iniciativas candidatas siendo exploradas y evaluadas estratégicamente.",
+          "order": 1,
+          "streamType": "UPSTREAM",
+          "statusCategory": "TODO",
+          "isBeforeCommitmentPoint": true,
+          "isPosDeliveryPoint": false,
+          "isBuffer": false,
+          "hasReadySignal": true
+        },
+        {
+          "id": "initiative-exploration",
+          "name": "Exploration",
+          "description": "Iniciativa comprometida; se explora su viabilidad y se define el alcance inicial.",
+          "order": 2,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "IN_PROGRESS",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": true
+        },
+        {
+          "id": "initiative-active",
+          "name": "Active",
+          "description": "Iniciativa en ejecución activa; los equipos están entregando valor.",
+          "order": 3,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "IN_PROGRESS",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": false,
+          "wipLimit": 3
+        },
+        {
+          "id": "initiative-steering",
+          "name": "Steering",
+          "description": "Se ajusta la dirección con base en feedback y aprendizajes del mercado.",
+          "order": 4,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "IN_PROGRESS",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": false
+        },
+        {
+          "id": "initiative-measuring",
+          "name": "Measuring",
+          "description": "Se miden los outcomes de negocio para determinar si se sostiene o detiene la iniciativa.",
+          "order": 5,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "IN_PROGRESS",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": false
+        },
+        {
+          "id": "initiative-sustained-stopped",
+          "name": "Sustained/Stopped",
+          "description": "La iniciativa fue sostenida (sigue generando valor) o detenida tras medición.",
+          "order": 6,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "DONE",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": true,
+          "isBuffer": false
+        }
+      ]
+    },
+    "L2": {
+      "id": "xp-release-epic",
+      "name": "Release-Epic",
+      "level": "L2",
+      "workitemName": "Release",
+      "statuses": [
+        {
+          "id": "release-plan",
+          "name": "Release-Plan",
+          "description": "El release está siendo planificado: alcance, riesgos y capacidad del equipo.",
+          "order": 1,
+          "streamType": "UPSTREAM",
+          "statusCategory": "TODO",
+          "isBeforeCommitmentPoint": true,
+          "isPosDeliveryPoint": false,
+          "isBuffer": false,
+          "hasReadySignal": true
+        },
+        {
+          "id": "release-selected",
+          "name": "Selected",
+          "description": "Release comprometido y seleccionado para desarrollo; listo para comenzar iteraciones.",
+          "order": 2,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "IN_PROGRESS",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": true
+        },
+        {
+          "id": "release-in-progress",
+          "name": "In-Progress",
+          "description": "El equipo está entregando las user stories del release iteración por iteración.",
+          "order": 3,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "IN_PROGRESS",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": false,
+          "wipLimit": 2
+        },
+        {
+          "id": "release-validating",
+          "name": "Validating&Acceptance",
+          "description": "El release es validado por el cliente o stakeholder y se realizan pruebas de aceptación.",
+          "order": 4,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "IN_PROGRESS",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": false
+        },
+        {
+          "id": "release-released",
+          "name": "Released",
+          "description": "El release fue desplegado y aceptado en producción.",
+          "order": 5,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "DONE",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": true,
+          "isBuffer": false
+        }
+      ]
+    },
+    "L1": {
+      "id": "xp-user-story",
+      "name": "User-Story",
+      "level": "L1",
+      "workitemName": "Story",
+      "statuses": [
+        {
+          "id": "story-options",
+          "name": "Options",
+          "description": "Historias candidatas en el backlog del equipo, aún no refinadas.",
+          "order": 1,
+          "streamType": "UPSTREAM",
+          "statusCategory": "TODO",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": false
+        },
+        {
+          "id": "story-iteration-plan",
+          "name": "Iteration-Plan",
+          "description": "La historia fue seleccionada en la planificación de iteración; se estima y se clarifica.",
+          "order": 2,
+          "streamType": "UPSTREAM",
+          "statusCategory": "TODO",
+          "isBeforeCommitmentPoint": true,
+          "isPosDeliveryPoint": false,
+          "isBuffer": false,
+          "hasReadySignal": true
+        },
+        {
+          "id": "story-committed",
+          "name": "Committed",
+          "description": "Historia comprometida para la iteración actual; lista para ser tomada por el equipo.",
+          "order": 3,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "IN_PROGRESS",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": true
+        },
+        {
+          "id": "story-iteration-in-progress",
+          "name": "Iteration-In-Progress",
+          "description": "El equipo está implementando la historia dentro de la iteración.",
+          "order": 4,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "IN_PROGRESS",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": false,
+          "wipLimit": 5
+        },
+        {
+          "id": "story-acceptance",
+          "name": "Acceptance",
+          "description": "La historia fue implementada y está siendo validada contra los criterios de aceptación.",
+          "order": 5,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "IN_PROGRESS",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": false
+        },
+        {
+          "id": "story-done",
+          "name": "Done",
+          "description": "Historia completada y aceptada; cumple la Definition of Done de la iteración.",
+          "order": 6,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "DONE",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": true,
+          "isBuffer": false
+        }
+      ]
+    },
+    "L0": {
+      "id": "xp-task",
+      "name": "Task",
+      "level": "L0",
+      "workitemName": "Task",
+      "statuses": [
+        {
+          "id": "task-backlog",
+          "name": "Backlog",
+          "description": "Tareas técnicas identificadas, aún no comenzadas.",
+          "order": 1,
+          "streamType": "UPSTREAM",
+          "statusCategory": "TODO",
+          "isBeforeCommitmentPoint": true,
+          "isPosDeliveryPoint": false,
+          "isBuffer": false,
+          "wipLimit": 8
+        },
+        {
+          "id": "task-ready",
+          "name": "Ready",
+          "description": "Tarea lista para ser tomada por un desarrollador.",
+          "order": 2,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "IN_PROGRESS",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": true
+        },
+        {
+          "id": "task-in-progress",
+          "name": "In-Progress",
+          "description": "Tarea en ejecución activa.",
+          "order": 3,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "IN_PROGRESS",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": false
+        },
+        {
+          "id": "task-done",
+          "name": "Done",
+          "description": "Tarea completada y verificada.",
+          "order": 4,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "DONE",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": true,
+          "isBuffer": false
+        }
+      ]
+    }
+  }
+}

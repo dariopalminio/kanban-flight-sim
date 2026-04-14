@@ -1,0 +1,219 @@
+{
+  "name": "Essential Kanban FL",
+  "initialReleaseCount": 1,
+  "advanceProbability": 0.5,
+  "childrenPerParent": 3,
+  "demandInterval": 5,
+  "workflows": {
+    "L3": {
+      "id": "wf-project",
+      "name": "Project",
+      "level": "L3",
+      "workitemName": "Project",
+      "statuses": [
+        {
+          "id": "project-backlog",
+          "name": "Backlog",
+          "order": 1,
+          "streamType": "UPSTREAM",
+          "statusCategory": "TODO",
+          "isBeforeCommitmentPoint": true,
+          "isPosDeliveryPoint": false,
+          "isBuffer": true,
+          "description": "Ideas de Project, sin análisis detallado",
+          "wipLimit": 3
+        },
+        {
+          "id": "project-selected",
+          "name": "Selected",
+          "order": 2,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "TODO",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": true,
+          "description": "Projecto seleccionado para desarrollo",
+          "wipLimit": 1,
+          "hasReadySignal": false
+        },
+        {
+          "id": "project-in-progress",
+          "name": "In-Progress",
+          "order": 3,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "IN_PROGRESS",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": false,
+          "description": "Projecto en desarrollo activo",
+          "wipLimit": 1,
+          "hasReadySignal": true
+        },
+        {
+          "id": "project-done",
+          "name": "Done",
+          "order": 4,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "DONE",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": true,
+          "isBuffer": false,
+          "description": "Projecto terminado"
+        }
+      ]
+    },
+    "L2": {
+      "id": "wf-epic",
+      "name": "Epic",
+      "level": "L2",
+      "workitemName": "Epic",
+      "statuses": [
+        {
+          "id": "epic-backlog",
+          "name": "Backlog",
+          "order": 1,
+          "streamType": "UPSTREAM",
+          "statusCategory": "TODO",
+          "isBeforeCommitmentPoint": true,
+          "isPosDeliveryPoint": false,
+          "isBuffer": true,
+          "description": "Ideas de Epic, sin análisis detallado"
+        },
+        {
+          "id": "epic-selected",
+          "name": "Selected",
+          "order": 2,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "TODO",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": true,
+          "description": "Epic seleccionada para desarrollo",
+          "wipLimit": 1
+        },
+        {
+          "id": "epic-in-progress",
+          "name": "In-Progress",
+          "order": 3,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "IN_PROGRESS",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": false,
+          "description": "Epic en desarrollo activo",
+          "wipLimit": 1,
+          "hasReadySignal": true
+        },
+        {
+          "id": "epic-done",
+          "name": "Done",
+          "order": 4,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "DONE",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": true,
+          "isBuffer": false,
+          "description": "Epic liberado a producción"
+        }
+      ]
+    },
+    "L1": {
+      "id": "wf-story",
+      "name": "Story",
+      "level": "L1",
+      "workitemName": "Story",
+      "statuses": [
+        {
+          "id": "story-backlog",
+          "name": "Backlog",
+          "order": 1,
+          "streamType": "UPSTREAM",
+          "statusCategory": "TODO",
+          "isBeforeCommitmentPoint": true,
+          "isPosDeliveryPoint": false,
+          "isBuffer": true,
+          "description": "Feature priorizada, sin especificar"
+        },
+        {
+          "id": "story-selected",
+          "name": "Selected",
+          "order": 2,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "TODO",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": true,
+          "description": "Story seleccionada para desarrollo",
+          "wipLimit": 1
+        },
+        {
+          "id": "story-in-progress",
+          "name": "In-Progress",
+          "order": 3,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "IN_PROGRESS",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": false,
+          "description": "Story en implementación",
+          "wipLimit": 3,
+          "hasReadySignal": true
+        },
+        {
+          "id": "story-done",
+          "name": "Done",
+          "order": 4,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "DONE",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": true,
+          "isBuffer": false,
+          "description": "Story completada y validada"
+        }
+      ]
+    },
+    "L0": {
+      "id": "wf-subtask",
+      "name": "Subtask",
+      "level": "L0",
+      "workitemName": "Subtask",
+      "statuses": [
+        {
+          "id": "subtask-todo",
+          "name": "Todo",
+          "order": 1,
+          "streamType": "UPSTREAM",
+          "statusCategory": "TODO",
+          "isBeforeCommitmentPoint": true,
+          "isPosDeliveryPoint": false,
+          "isBuffer": true,
+          "description": "Subtask técnica identificada"
+        },
+        {
+          "id": "subtask-in-progress",
+          "name": "In-Progress",
+          "order": 2,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "IN_PROGRESS",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": false,
+          "description": "Subtask en codificación",
+          "wipLimit": 4,
+          "hasReadySignal": true
+        },
+        {
+          "id": "subtask-done",
+          "name": "Done",
+          "order": 3,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "DONE",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": true,
+          "isBuffer": false,
+          "description": "Subtask completada"
+        }
+      ]
+    }
+  }
+}

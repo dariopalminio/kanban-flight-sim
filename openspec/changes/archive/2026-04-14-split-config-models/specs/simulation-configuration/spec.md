@@ -1,4 +1,4 @@
-## ADDED Requirements
+## MODIFIED Requirements
 
 ### Requirement: JSON-driven multi-model configuration
 All simulation models SHALL be defined as individual files in `src/config/models/`. The root `defaultConfig.json` SHALL contain only `{ "defaultModel": "<name>" }` — a single string field naming the active model on startup. No code changes are required to add a new model.
@@ -17,7 +17,7 @@ All simulation models SHALL be defined as individual files in `src/config/models
 
 ---
 
-### Requirement: Model parameters
+### Requirement: Model parameters (unchanged)
 Each model file SHALL include the following top-level parameters:
 
 | Field | Type | Default | Description |
@@ -38,7 +38,7 @@ Each model file SHALL include the following top-level parameters:
 
 ---
 
-### Requirement: Workflow definition per level
+### Requirement: Workflow definition per level (unchanged)
 Each model file SHALL define four workflows under a `workflows` object with keys `L3`, `L2`, `L1`, `L0`. Each workflow has:
 
 | Field | Type | Description |
@@ -55,7 +55,7 @@ Each model file SHALL define four workflows under a `workflows` object with keys
 
 ---
 
-### Requirement: Status properties
+### Requirement: Status properties (unchanged)
 Each status in a workflow SHALL have the following fields:
 
 | Field | Type | Required | Description |
@@ -85,7 +85,7 @@ Exactly one status per workflow SHALL have `isBeforeCommitmentPoint: true`. Exac
 
 ---
 
-### Requirement: Automatic `category` derivation
+### Requirement: Automatic `category` derivation (unchanged)
 The `statusCategory` field SHALL be stored explicitly in each model JSON file for every status. The config loader (`defaultConfig.ts`) SHALL read this field directly and map it to the `category` field of the domain `Status` type.
 
 #### Scenario: statusCategory "TODO" is preserved
@@ -115,48 +115,15 @@ The default configuration SHALL include at least three pre-built models as indiv
 
 ---
 
-### Requirement: Optional hasReadySignal field on status definition
-Each status entry in a model file MAY include `"hasReadySignal": true`. When present and `true`, workitems in that status go through two-phase advancement as described in the `ready-signal` spec. The field is optional; omitting it preserves existing behavior exactly.
-
-#### Scenario: Status with hasReadySignal true is valid configuration
-- **WHEN** a status entry has `"hasReadySignal": true`
-- **THEN** the config loads without error and the status is recognized by the engine for two-phase advancement
-
-#### Scenario: Status without hasReadySignal loads as before
-- **WHEN** a status entry does not include `hasReadySignal`
-- **THEN** the loaded `Status` has no `hasReadySignal` field and advances in a single phase as before
-
----
-
-### Requirement: Optional isBuffer field on status definition
-Each status entry in a model file MAY include `"isBuffer": true`. When present, the column is treated as a ready buffer (all items implicitly ready to be pulled). The field is optional; omitting it preserves existing behavior exactly.
-
-#### Scenario: Status with isBuffer true is valid configuration
-- **WHEN** a status entry has `"isBuffer": true`
-- **THEN** the config loads without error and `status.isBuffer` is `true` in the loaded workflow
-
-#### Scenario: Status without isBuffer loads as before
-- **WHEN** a status entry does not include `isBuffer`
-- **THEN** the loaded `Status` has no `isBuffer` field and no visual or behavioral change occurs
-
----
-
-### Requirement: Status schema accepts optional definitionOfDone field
-The `Status` type in `domain/types.ts` SHALL include an optional `definitionOfDone?: string` field. The field is optional; omitting it is equivalent to having no DoD configured for that status. Model files MAY include `definitionOfDone` on any status.
-
-#### Scenario: Status with definitionOfDone field is valid configuration
-- **WHEN** a status object in a model file includes a `definitionOfDone` string field
-- **THEN** the application SHALL load and use that field without error
-
-#### Scenario: Status without definitionOfDone field is valid configuration
-- **WHEN** a status object in a model file omits the `definitionOfDone` field
-- **THEN** the application SHALL load that status normally with `definitionOfDone` equal to `undefined`
-
----
-
-### Requirement: Optional status fields preserved
+### Requirement: Optional status fields preserved (unchanged)
 Each status entry in a model file MAY include `"hasReadySignal": true`, `"isBuffer": true`, and/or `"definitionOfDone": string`. These optional fields are loaded and applied exactly as before.
 
 #### Scenario: Optional status fields load without error
 - **WHEN** a status entry in a model file includes `hasReadySignal`, `isBuffer`, or `definitionOfDone`
 - **THEN** the config loads without error and those fields are available on the loaded `Status` object
+
+## REMOVED Requirements
+
+### Requirement: Simulations array in defaultConfig.json
+**Reason:** Models are now stored as individual files under `src/config/models/`. The monolithic `simulations` array is replaced by per-file loading via `import.meta.glob`.
+**Migration:** Extract each element of the `simulations` array into `src/config/models/<slug>.json`. Remove the `simulations` key from `defaultConfig.json`. Rename `defaultSimulation` to `defaultModel`.
