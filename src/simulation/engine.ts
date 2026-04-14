@@ -255,6 +255,18 @@ export const tick = (state: SimState, config: Config): SimState => {
         return maybe(advanceProbability) ? { ...w, isReady: true } : w;
       }
       if (!maybe(advanceProbability)) return w;
+      if (!withoutL0 && w.statusId === keysL1.commitmentId) {
+        const hasChildrenGuard = items.some((x) => x.parentId === w.id && x.level === "L0");
+        if (!hasChildrenGuard) {
+          const l0First = wfL0.statuses[0];
+          if (l0First.wipLimit != null) {
+            const count =
+              items.filter((x) => x.statusId === l0First.id).length +
+              newL0Children.filter((x) => x.statusId === l0First.id).length;
+            if (count >= l0First.wipLimit) return w;
+          }
+        }
+      }
       const next = getNextStatusId(wfL1, w.statusId);
       if (!wipL1(w.statusId, next)) return w;
       if (!withoutL0 && w.statusId === keysL1.commitmentId) {
@@ -338,6 +350,18 @@ export const tick = (state: SimState, config: Config): SimState => {
         return maybe(advanceProbability) ? { ...w, isReady: true } : w;
       }
       if (!maybe(advanceProbability)) return w;
+      if (w.statusId === keysL2.commitmentId) {
+        const hasChildrenGuard = items.some((x) => x.parentId === w.id && x.level === "L1");
+        if (!hasChildrenGuard) {
+          const l1First = wfL1.statuses[0];
+          if (l1First.wipLimit != null) {
+            const count =
+              items.filter((x) => x.statusId === l1First.id).length +
+              newL1Children.filter((x) => x.statusId === l1First.id).length;
+            if (count >= l1First.wipLimit) return w;
+          }
+        }
+      }
       const next = getNextStatusId(wfL2, w.statusId);
       if (!wipL2(w.statusId, next)) return w;
       if (w.statusId === keysL2.commitmentId) {
@@ -421,6 +445,18 @@ export const tick = (state: SimState, config: Config): SimState => {
         return maybe(advanceProbability) ? { ...w, isReady: true } : w;
       }
       if (!maybe(advanceProbability)) return w;
+      if (w.statusId === keysL3.commitmentId) {
+        const hasChildrenGuard = items.some((x) => x.parentId === w.id && x.level === "L2");
+        if (!hasChildrenGuard) {
+          const l2First = wfL2.statuses[0];
+          if (l2First.wipLimit != null) {
+            const count =
+              items.filter((x) => x.statusId === l2First.id).length +
+              newL2Children.filter((x) => x.statusId === l2First.id).length;
+            if (count >= l2First.wipLimit) return w;
+          }
+        }
+      }
       const next = getNextStatusId(wfL3, w.statusId);
       if (!wipL3(w.statusId, next)) return w;
       if (w.statusId === keysL3.commitmentId) {
