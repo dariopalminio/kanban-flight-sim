@@ -8,18 +8,19 @@ interface KanbanSignalSelectorProps {
 const BTN_STYLE: React.CSSProperties = {
   padding: "4px 10px",
   fontSize: 11,
-  fontWeight: 600,
-  borderRadius: 4,
-  border: "1px solid #475569",
+  fontWeight: 700,
+  borderRadius: 8,
+  border: "1px solid var(--bd-blue-shine)",
   cursor: "pointer",
-  background: "#1e293b",
-  color: "white",
+  background: "var(--surface-panel-strong)",
+  color: "var(--bd-blue-primary)",
 };
 
 const BTN_ACTIVE_STYLE: React.CSSProperties = {
   ...BTN_STYLE,
-  background: "#334155",
-  borderColor: "#94a3b8",
+  background: "var(--bd-cyan)",
+  borderColor: "var(--bd-cyan)",
+  color: "var(--bd-black)",
 };
 
 const TOGGLES: { mode: HighlightMode; label: string }[] = [
@@ -37,6 +38,7 @@ export function KanbanSignalSelector({
     <>
       {TOGGLES.map(({ mode, label }) => (
         <button
+          className={`control-button ${highlightMode === mode ? "is-active" : ""}`}
           key={mode}
           style={highlightMode === mode ? BTN_ACTIVE_STYLE : BTN_STYLE}
           onClick={() => onToggle(mode)}

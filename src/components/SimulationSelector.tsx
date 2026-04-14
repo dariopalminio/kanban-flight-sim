@@ -3,18 +3,19 @@ import type { ViewMode } from "../domain/types";
 const BTN_STYLE: React.CSSProperties = {
   padding: "4px 10px",
   fontSize: 11,
-  fontWeight: 600,
-  borderRadius: 4,
-  border: "1px solid #475569",
+  fontWeight: 700,
+  borderRadius: 8,
+  border: "1px solid var(--bd-blue-shine)",
   cursor: "pointer",
-  background: "#1e293b",
-  color: "white",
+  background: "var(--surface-panel-strong)",
+  color: "var(--bd-blue-primary)",
 };
 
 const BTN_ACTIVE_STYLE: React.CSSProperties = {
   ...BTN_STYLE,
-  background: "#334155",
-  borderColor: "#94a3b8",
+  background: "var(--bd-cyan)",
+  borderColor: "var(--bd-cyan)",
+  color: "var(--bd-black)",
 };
 
 interface SimulationSelectorProps {
@@ -50,40 +51,22 @@ export function SimulationSelector({
   return (
     <>
       {/* Selección de Workflow a mostrar y simular */}
-      <span style={{ color: "#94a3b8", fontSize: 11, fontWeight: 600 }}>Simulations:</span>
+      <span className="control-label">Simulations:</span>
       <select
+        className="control-select"
         value={selectedSim}
         onChange={(e) => onSimChange(e.target.value)}
-        style={{
-          padding: "3px 6px",
-          fontSize: 11,
-          fontWeight: 600,
-          borderRadius: 4,
-          border: "1px solid #475569",
-          background: "#0f172a",
-          color: "white",
-          cursor: "pointer",
-        }}
       >
         {simulationNames.map((name) => (
           <option key={name} value={name}>{name}</option>
         ))}
       </select>
       {/* Selección del modo de vista de tableros */}
-      <span style={{ color: "#94a3b8", fontSize: 11, fontWeight: 600 }}>View:</span>
+      <span className="control-label">View:</span>
       <select
+        className="control-select"
         value={viewMode}
         onChange={(e) => onViewModeChange(e.target.value as ViewMode)}
-        style={{
-          background: "#1e293b",
-          color: "white",
-          border: "1px solid #475569",
-          borderRadius: 4,
-          fontSize: 11,
-          fontWeight: 600,
-          padding: "2px 4px",
-          cursor: "pointer",
-        }}
       >
         {viewModeOptions.map((mode) => (
           <option key={mode} value={mode}>
@@ -93,6 +76,7 @@ export function SimulationSelector({
       </select>
       {/* Toggle Without L0 */}
       <button
+        className={`control-button ${withoutL0 ? "is-active" : ""}`}
         style={withoutL0 ? BTN_ACTIVE_STYLE : BTN_STYLE}
         onClick={() => onWithoutL0Change(!withoutL0)}
       >

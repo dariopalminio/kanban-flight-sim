@@ -15,21 +15,21 @@ type Props = {
 
 const getBg = (status: Status, mode: HighlightMode): string => {
   if (mode === "stream") {
-    return status.streamType === "UPSTREAM" ? "#e5b532" : "#2c85de";
+    return status.streamType === "UPSTREAM" ? "var(--bd-orange)" : "var(--bd-cyan)";
   }
   if (mode === "category") {
-    if (status.statusCategory === "TODO") return "#374151";
-    if (status.statusCategory === "IN_PROGRESS") return "#1d4ed8";
-    return "#166534";
+    if (status.statusCategory === "TODO") return "var(--bd-blue-deep)";
+    if (status.statusCategory === "IN_PROGRESS") return "var(--bd-blue)";
+    return "var(--bd-cyan-dark)";
   }
-  if (mode === "commitment" && status.isBeforeCommitmentPoint) return "#ddb121";
-  if (mode === "delivery" && status.isPosDeliveryPoint) return "#14532d";
-  return "#1e293b";
+  if (mode === "commitment" && status.isBeforeCommitmentPoint) return "var(--bd-orange-go)";
+  if (mode === "delivery" && status.isPosDeliveryPoint) return "var(--bd-cyan-dark)";
+  return "var(--bd-blue-primary)";
 };
 
 const getBorder = (status: Status, mode: HighlightMode): string => {
-  if (mode === "delivery" && status.isPosDeliveryPoint) return "1px solid #4ade80";
-  return "1px solid #334155";
+  if (mode === "delivery" && status.isPosDeliveryPoint) return "1px solid var(--bd-cyan-bright)";
+  return "1px solid rgba(255, 255, 255, 0.45)";
 };
 
 export function Column({ status, items, highlightMode, currentTick, onWipLimitChange }: Props) {
@@ -67,56 +67,46 @@ export function Column({ status, items, highlightMode, currentTick, onWipLimitCh
   };
 
   return (
-    <div
-      style={{
-        flex: 1,
-        minWidth: 60,
-        minHeight: 60,
-        position: "relative",
-        background: getBg(status, highlightMode),
-        border: getBorder(status, highlightMode),
-        borderRadius: 3,
-        padding: "2px 4px",
-        borderTop: status.isBuffer ? "2px solid #8f9290" : undefined,
-      }}
-    >
-      <div title={status.description || undefined} style={{ fontSize: 9, color: "white", fontWeight: 600, lineHeight: "13px", marginBottom: 1, textDecoration: status.isBeforeCommitmentPoint ? "underline" : "none" }}>
+    <div className="kanban-column" style={{ border: getBorder(status, highlightMode) }}>
+      <div
+        className="column-header"
+        title={status.description || undefined}
+        style={{
+          background: getBg(status, highlightMode),
+          textDecoration: status.isBeforeCommitmentPoint ? "underline" : "none",
+          borderTop: status.isBuffer ? "2px solid var(--bd-cyan-easy)" : undefined,
+        }}
+      >
+        <div className="column-title">
         {status.wipLimit != null ? (
           <>
             {status.name}{" "}[ w: {items.length}/ l:{" "}
             <input
+              className="wip-input"
               type="number"
               min={1}
               value={draftWipLimit}
               onChange={(e) => setDraftWipLimit(e.target.value)}
               onBlur={commitWipLimit}
               onKeyDown={handleKeyDown}
-              style={{
-                fontSize: 9,
-                width: 28,
-                background: "#0f172a",
-                color: "white",
-                border: "none",
-                fontWeight: 600,
-                padding: 0,
-                lineHeight: "13px",
-              }}
             />]
           </>
         ) : (
           <>{status.name} [c: {items.length}]</>
         )}
-        {status.isBuffer && <span style={{ color: "#22c55e", marginLeft: 2 }}>✓</span>}
+        {status.isBuffer && <span className="buffer-mark">✓</span>}
         {status.definitionOfDone && (
-          <button onClick={() => setDodOpen(v => !v)} style={{ marginLeft: 4, fontSize: 7, padding: "0 3px", background: "#334155", color: "#94a3b8", border: "1px solid #475569", borderRadius: 2, cursor: "pointer", lineHeight: "11px" }}>DoD</button>
+          <button className="dod-button" onClick={() => setDodOpen(v => !v)}>DoD</button>
         )}
+        </div>
       </div>
       {dodOpen && status.definitionOfDone && (
-        <div style={{ position: "absolute", zIndex: 10, top: 14, left: 0, right: 0, background: "#0f172a", border: "1px solid #475569", borderRadius: 3, padding: "4px 6px", color: "#e2e8f0", fontSize: 9, whiteSpace: "pre-wrap", lineHeight: "13px" }}>
+        <div className="dod-popover">
           {status.definitionOfDone}
         </div>
       )}
       <div
+        className="column-body"
         ref={cardsContainerRef}
         style={{
           overflowY: status.statusCategory === "DONE" && sortedItems.length > DONE_COLUMN_SCROLL_THRESHOLD ? "auto" : undefined,

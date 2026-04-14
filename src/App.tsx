@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import "./App.css";
 import { Board } from "./components/Board";
 import { KanbanSignalSelector } from "./components/KanbanSignalSelector";
 import { SimulationControls } from "./components/SimulationControls";
@@ -115,100 +116,95 @@ export default function App() {
   const visibleLevels = VISIBLE_LEVELS[viewMode].filter((l) => !(withoutL0 && l === 0));
 
   return (
-    <div style={{ background: "#0f172a", minHeight: "100vh", padding: "6px 8px", boxSizing: "border-box" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "4px 0 6px 0" }}>
-        <img
-          src={logoUrl}
-          alt="Kanba-Flight-Sim logo"
-          height={28}
-          width={28}
-          style={{ display: "block" }}
-        />
-        <h1 style={{ margin: 0, color: "#e2e8f0", fontSize: 18, fontWeight: 700, lineHeight: 1 }}>
-          Kanba-Flight-Sim
-        </h1>
-        <h1 style={{ margin: 0, color: "#63a1f1", fontSize: 18, fontWeight: 500, lineHeight: 1 }}>
-          Simulador de Vuelo Kanban
-        </h1>
-      </div>
-
-      {configLoadResult.error && (
-        <div style={{ background: "#854d0e", color: "#fef08a", padding: "8px 12px", borderRadius: 4, marginBottom: 8, fontSize: 12, fontWeight: 600 }}>
-          ⚠ {configLoadResult.error}
+    <div className="app-shell">
+      <div className="app-panel">
+        <div className="app-titlebar">
+          <img
+            src={logoUrl}
+            alt="Kanba-Flight-Sim logo"
+            height={28}
+            width={28}
+            style={{ display: "block" }}
+          />
+          <h1 className="app-title">Kanba-Flight-Sim</h1>
+          <h2 className="app-subtitle">Simulador de Vuelo Kanban</h2>
         </div>
-      )}
-      {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
-        <SimulationSelector
-          selectedSim={selectedSim}
-          simulationNames={simulationNames}
-          viewMode={viewMode}
-          withoutL0={withoutL0}
-          onSimChange={handleSimChange}
-          onViewModeChange={setViewMode}
-          onWithoutL0Change={handleWithoutL0Change}
-        />
 
-        <span style={{ color: "#475569", fontSize: 11 }}>|</span>
+        {configLoadResult.error && (
+          <div className="app-error-banner">Error: {configLoadResult.error}</div>
+        )}
 
-        <SimulationControls
-          tickCount={tickCount}
-          autoplayIntervalMs={autoplayIntervalMs}
-          isPlaying={isPlaying}
-          canSlower={autoplayIntervalMs < AUTOPLAY_INTERVAL_MAX_MS}
-          canFaster={autoplayIntervalMs > AUTOPLAY_INTERVAL_MIN_MS}
-          onStep={handleStep}
-          onTogglePlay={() => setIsPlaying((p) => !p)}
-          onReset={handleReset}
-          onSlower={handleSlower}
-          onFaster={handleFaster}
-        />
+        <div className="app-toolbar">
+          <SimulationSelector
+            selectedSim={selectedSim}
+            simulationNames={simulationNames}
+            viewMode={viewMode}
+            withoutL0={withoutL0}
+            onSimChange={handleSimChange}
+            onViewModeChange={setViewMode}
+            onWithoutL0Change={handleWithoutL0Change}
+          />
 
-        <span style={{ color: "#475569", fontSize: 11, marginLeft: 4 }}>|</span>
+          <span className="toolbar-separator">|</span>
 
-        <KanbanSignalSelector
-          highlightMode={highlightMode}
-          onToggle={toggleView}
-        />
+          <SimulationControls
+            tickCount={tickCount}
+            autoplayIntervalMs={autoplayIntervalMs}
+            isPlaying={isPlaying}
+            canSlower={autoplayIntervalMs < AUTOPLAY_INTERVAL_MAX_MS}
+            canFaster={autoplayIntervalMs > AUTOPLAY_INTERVAL_MIN_MS}
+            onStep={handleStep}
+            onTogglePlay={() => setIsPlaying((p) => !p)}
+            onReset={handleReset}
+            onSlower={handleSlower}
+            onFaster={handleFaster}
+          />
+
+          <span className="toolbar-separator">|</span>
+
+          <KanbanSignalSelector
+            highlightMode={highlightMode}
+            onToggle={toggleView}
+          />
+        </div>
+
+        {visibleLevels.includes(3) && (
+          <Board
+            workflow={workflows.L3}
+            items={workitems.filter((w) => w.level === "L3")}
+            highlightMode={highlightMode}
+            currentTick={simState.tick}
+            onWipLimitChange={handleWipLimitChange}
+          />
+        )}
+        {visibleLevels.includes(2) && (
+          <Board
+            workflow={workflows.L2}
+            items={workitems.filter((w) => w.level === "L2")}
+            highlightMode={highlightMode}
+            currentTick={simState.tick}
+            onWipLimitChange={handleWipLimitChange}
+          />
+        )}
+        {visibleLevels.includes(1) && (
+          <Board
+            workflow={workflows.L1}
+            items={workitems.filter((w) => w.level === "L1")}
+            highlightMode={highlightMode}
+            currentTick={simState.tick}
+            onWipLimitChange={handleWipLimitChange}
+          />
+        )}
+        {visibleLevels.includes(0) && (
+          <Board
+            workflow={workflows.L0}
+            items={workitems.filter((w) => w.level === "L0")}
+            highlightMode={highlightMode}
+            currentTick={simState.tick}
+            onWipLimitChange={handleWipLimitChange}
+          />
+        )}
       </div>
-
-      {/* Boards — L3 arriba, L0 abajo */}
-      {visibleLevels.includes(3) && (
-        <Board
-          workflow={workflows.L3}
-          items={workitems.filter((w) => w.level === "L3")}
-          highlightMode={highlightMode}
-          currentTick={simState.tick}
-          onWipLimitChange={handleWipLimitChange}
-        />
-      )}
-      {visibleLevels.includes(2) && (
-        <Board
-          workflow={workflows.L2}
-          items={workitems.filter((w) => w.level === "L2")}
-          highlightMode={highlightMode}
-          currentTick={simState.tick}
-          onWipLimitChange={handleWipLimitChange}
-        />
-      )}
-      {visibleLevels.includes(1) && (
-        <Board
-          workflow={workflows.L1}
-          items={workitems.filter((w) => w.level === "L1")}
-          highlightMode={highlightMode}
-          currentTick={simState.tick}
-          onWipLimitChange={handleWipLimitChange}
-        />
-      )}
-      {visibleLevels.includes(0) && (
-        <Board
-          workflow={workflows.L0}
-          items={workitems.filter((w) => w.level === "L0")}
-          highlightMode={highlightMode}
-          currentTick={simState.tick}
-          onWipLimitChange={handleWipLimitChange}
-        />
-      )}
     </div>
   );
 }
