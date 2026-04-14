@@ -140,7 +140,7 @@
         {
           "id": "epic-release-validation",
           "name": "En-Integración",
-          "description": "Pruebas de integración end-to-end, regresión, y validación técnica. El Release está desplegado en entorno de integración/staging.",
+          "description": "Pruebas de integración end-to-end, regresión, y validación técnica en entorno de integración/staging.",
           "order": 4,
           "streamType": "DOWNSTREAM",
           "statusCategory": "IN_PROGRESS",
@@ -150,9 +150,9 @@
           "hasReadySignal": true
         },
         {
-          "id": "epic-release-in-acceptance",
-          "name": "En-Aceptación",
-          "description": "Validación con stakeholders (negocio, producto, usuarios clave). Se confirma que el Release cumple con los criterios de aceptación y genera el valor esperado.",
+          "id": "epic-release-in-liberation",
+          "name": "Liberación",
+          "description": "Se confirma que el Release cumple con los criterios de aceptación y genera el valor esperado y se libera a producción.",
           "order": 5,
           "streamType": "DOWNSTREAM",
           "statusCategory": "IN_PROGRESS",
@@ -221,7 +221,7 @@
         },
         {
           "id": "story-qa-testing",
-          "name": "Pruebas-QA",
+          "name": "Pruebas",
           "description": "Pruebas de QA, validación técnica, regresión.",
           "order": 4,
           "streamType": "DOWNSTREAM",
