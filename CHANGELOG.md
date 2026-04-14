@@ -4,14 +4,18 @@ All notable changes to this project will be documented in this file.
 
 
 ---
-## [Unreleased] — 2026-04-07
+## [Unreleased] — 2026-04-14
 
 ### Added
 - **Simulación "SAFe FL workflows"** — Nuevo modelo de simulación con cuatro niveles jerárquicos (L3: Epic, L2: Capability, L1: Story, L0: Task) que representa el flujo de Portfolio Kanban de SAFe. Incluye estados de Portfolio Backlog, solución, team y tareas técnicas con WIP limits configurados.
 - **Configuración GCP Cloud Run** — Archivos `Dockerfile` (build multi-stage Node 22 + nginx), `nginx.conf` (SPA fallback + cache de assets), `.dockerignore` y `cloudbuild.yaml` para CI/CD con Artifact Registry y despliegue automático en Cloud Run.
 
+### Changed
+- **Sistema de diseño "BlueDesign"** — Paleta de colores migrada a un sistema de tokens CSS coherente (`--bd-blue-*`, `--bd-cyan-*`, `--bd-orange-*`, `--bd-grey-*`). La tipografía principal cambia a **Barlow** con **JetBrains Mono** para código. Fondo de página con degradado azul-cyan, toolbar con gradiente suave, panel principal con efecto glass (`backdrop-filter: blur`). Afecta a `index.css`, `App.css` y todos los componentes (`Board`, `Card`, `Column`, `SimulationSelector`, `SimulationControls`, `KanbanSignalSelector`, `ErrorBoundary`).
+
 ### Fixed
 - **WIP limit en primera columna al inyectar hijos** — Al cruzar el commitment point, el motor de simulación ahora respeta el `wipLimit` de `statuses[0]` al crear ítems hijo en L0, L1 y L2. Anteriormente los hijos se insertaban incondicionalmente, desbordando el límite. Afectaba a cualquier simulación con `wipLimit` definido en la primera columna (SDDF y SAFe FL).
+- **Deadlock permanente en simulaciones SDDF y Essential Kanban FL** — El motor de simulación avanzaba un ítem desde su *commitment point* aunque el nivel hijo no pudiera recibir ningún hijo (primera columna al límite de WIP). El ítem llegaba a `firstDownstream` sin hijos, donde la condición `anyAtOrPastOrder` nunca se cumplía, causando un bloqueo eterno. Corregido en `engine.ts`: antes de consumir un slot de WIP, se verifica que la primera columna del nivel hijo tenga capacidad; si no la tiene, el ítem espera al siguiente tick. Aplica simétricamente a L1, L2 y L3.
 
 ---
 ## [v1.0.2] Released — WIP Limits Editable — 2026-04-06
