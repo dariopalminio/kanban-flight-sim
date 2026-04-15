@@ -112,10 +112,10 @@
           "hasReadySignal": true
         },
         {
-          "id": "epic-release-ready",
-          "name": "Listo",
+          "id": "epic-release-planned-ready",
+          "name": "Planificado",
           "order": 2,
-          "description": "Buffer. Release completamente definido, aprobado y con capacidad asignada. Espera inicio de desarrollo.",
+          "description": "Entregable o Release definido, aprobado, priorizado y planeado con capacidad asignada y espera inicio de desarrollo.",
           "streamType": "DOWNSTREAM",
           "statusCategory": "TODO",
           "isBeforeCommitmentPoint": false,
@@ -138,8 +138,8 @@
           "hasReadySignal": true
         },
         {
-          "id": "epic-release-validation",
-          "name": "En-Integración",
+          "id": "epic-release-integration",
+          "name": "Integración",
           "description": "Pruebas de integración end-to-end, regresión, y validación técnica en entorno de integración/staging.",
           "order": 4,
           "streamType": "DOWNSTREAM",
