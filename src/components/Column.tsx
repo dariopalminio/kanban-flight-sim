@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import type { HighlightMode, Status, Workitem } from "../domain/types";
 import { Card } from "./Card";
 
@@ -35,7 +36,10 @@ const getBorder = (status: Status, mode: HighlightMode): string => {
 export function Column({ status, items, highlightMode, currentTick, onWipLimitChange }: Props) {
   const sortedItems = [...items].sort((a, b) => a.enteredAt - b.enteredAt);
   const cardsContainerRef = useRef<HTMLDivElement>(null);
+  const dodButtonRef = useRef<HTMLButtonElement>(null);
+  const dodPopoverRef = useRef<HTMLDivElement>(null);
   const [dodOpen, setDodOpen] = useState(false);
+  const [dodPosition, setDodPosition] = useState<{ top: number; left: number } | null>(null);
   const [draftWipLimit, setDraftWipLimit] = useState(status.wipLimit?.toString() ?? "");
 
   useEffect(() => {
@@ -47,6 +51,21 @@ export function Column({ status, items, highlightMode, currentTick, onWipLimitCh
       cardsContainerRef.current.scrollTop = cardsContainerRef.current.scrollHeight;
     }
   }, [sortedItems.length, status.statusCategory]);
+
+  useEffect(() => {
+    if (!dodOpen) return;
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (
+        dodPopoverRef.current && !dodPopoverRef.current.contains(e.target as Node) &&
+        dodButtonRef.current && !dodButtonRef.current.contains(e.target as Node)
+      ) {
+        setDodOpen(false);
+        setDodPosition(null);
+      }
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, [dodOpen]);
 
   const commitWipLimit = () => {
     const parsed = parseInt(draftWipLimit, 10);
@@ -96,14 +115,32 @@ export function Column({ status, items, highlightMode, currentTick, onWipLimitCh
         )}
         {status.isBuffer && <span className="buffer-mark">✓</span>}
         {status.definitionOfDone && (
-          <button className="dod-button" onClick={() => setDodOpen(v => !v)}>DoD</button>
+          <button
+            ref={dodButtonRef}
+            className="dod-button"
+            onClick={() => {
+              if (dodOpen) {
+                setDodOpen(false);
+                setDodPosition(null);
+              } else {
+                const rect = dodButtonRef.current?.getBoundingClientRect();
+                if (rect) setDodPosition({ top: rect.bottom + 4, left: rect.left });
+                setDodOpen(true);
+              }
+            }}
+          >DoD</button>
         )}
         </div>
       </div>
-      {dodOpen && status.definitionOfDone && (
-        <div className="dod-popover">
+      {dodOpen && status.definitionOfDone && dodPosition && createPortal(
+        <div
+          ref={dodPopoverRef}
+          className="dod-popover"
+          style={{ top: dodPosition.top, left: dodPosition.left }}
+        >
           {status.definitionOfDone}
-        </div>
+        </div>,
+        document.body
       )}
       <div
         className="column-body"

@@ -131,7 +131,8 @@
           "statusCategory": "IN_PROGRESS",
           "isBeforeCommitmentPoint": false,
           "isPosDeliveryPoint": false,
-          "isBuffer": false
+          "isBuffer": false,
+          "definitionOfDone": "DoD de release:\n- Todas las historias del release están Done\n- Integración end‑to‑end\n- Pruebas de aceptación del release pasan\n- Pruebas de rendimiento y escalabilidad\n- Validación de Seguridad pasa\n- Plan de despliegue a producción\n- Plan de rollback\n- Release Notes y Changelog\n- El Product Owner validó el release"
         },
         {
           "id": "release-released",
@@ -207,7 +208,8 @@
           "statusCategory": "IN_PROGRESS",
           "isBeforeCommitmentPoint": false,
           "isPosDeliveryPoint": false,
-          "isBuffer": false
+          "isBuffer": false,
+          "definitionOfDone": "DoD de Story:\n- Código implementado y revisado\n- Pruebas unitarias y TDD\n- Cobertura de >85%\n- Integración continua\n- Pruebas de integración pasan.\n- Pruebas de Regresión de sistema automáticas pasan.\n- Pruebas de aceptación automatizadas (criterios de aceptación).\n- Documentación mínima\n- El Product Owner ha verificado criterios de aceptación."
         },
         {
           "id": "story-done",

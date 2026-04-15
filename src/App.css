@@ -224,11 +224,10 @@
 }
 
 .dod-popover {
-	position: absolute;
+	position: fixed;
 	z-index: 20;
-	top: 14px;
-	left: 0;
-	right: 0;
+	min-width: 220px;
+	max-width: 360px;
 	background: #ffffff;
 	border: 1px solid var(--bd-blue-shine);
 	border-radius: 6px;

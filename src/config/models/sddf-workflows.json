@@ -22,7 +22,7 @@
           "isBuffer": true,
           "description": "Iniciativa entra al embudo del portafolio y captura de ideas brutas.",
           "wipLimit": 3,
-          "definitionOfDone": "Definition of Done: Idea registrada en el sistema, con descripción inicial y responsable asignado. No se ha realizado análisis detallado."
+          "definitionOfDone": "Definition of Done:\n - Idea registrada en el sistema.\n - Con descripción inicial y responsable asignado.\n - No se ha realizado análisis detallado."
         },
         {
           "id": "initiative-project-define-discovery",
@@ -36,7 +36,7 @@
           "description": "Análisis profundo: Lean Business Case, descubrimiento, definición de MVP, hipótesis de valor, Medida de Éxito (OKRs/LVT), recursos estimados.",
           "wipLimit": 3,
           "hasReadySignal": true,
-          "definitionOfDone": "Definition of Done: Intención de la iniciativa (o proyecto) definida. Descubrimiento (Discovery) realizado. Especificación de Requerimientos definida. Medida de éxito definida. Decisión de avanzar con la iniciativa tomada (aprobada). Hay capacidad para ser desarrollada (equipo asignado)."
+          "definitionOfDone": "Definition of Done:\n - Intención de la iniciativa (o proyecto) definida.\n - Descubrimiento (Discovery) realizado.\n - Especificación de Requerimientos definida.\n - Medida de éxito definida.\n - Decisión de avanzar con la iniciativa tomada (aprobada).\n - Hay capacidad para ser desarrollada (equipo asignado)."
         },
         {
           "id": "initiative-project-planning",
@@ -50,7 +50,7 @@
           "description": "Iniciativas aprobadas, priorizadas, asignada, comprometida y en planeación. Se detallan entregables, roadmap, dependencias, riesgos, hitos de revisión.",
           "wipLimit": 1,
           "hasReadySignal": true,
-          "definitionOfDone": "Definition of Done: Iniciativa detallada en entregables (features, releases). Roadmap definido. Dependencias identificadas y mitigaciones planificadas. Riesgos identificados y mitigaciones planificadas. Hitos de revisión definidos."
+          "definitionOfDone": "Definition of Done:\n - Iniciativa detallada en entregables (features, releases).\n - Roadmap definido.\n - Dependencias identificadas y mitigaciones planificadas.\n - Riesgos identificados y mitigaciones planificadas.\n - Hitos de revisión definidos."
         },
         {
           "id": "initiative-project-in-development",
@@ -64,7 +64,7 @@
           "description": "Construcción técnica. Incluye hitos de revisión (MVP Review) para perseverar/pivotar/detener.",
           "wipLimit": 1,
           "hasReadySignal": true,
-          "definitionOfDone": "Definition of Done: Iniciativa desarrollada e implementada. MVP entregado y validado. Hitos de revisión alcanzados y decisiones tomadas (perseverar, pivotar, detener)."
+          "definitionOfDone": "Definition of Done:\n - Iniciativa desarrollada e implementada.\n - MVP entregado y validado.\n - Hitos de revisión alcanzados y decisiones tomadas (perseverar, pivotar, detener)."
         },
         {
           "id": "initiative-project-measuring",
@@ -77,7 +77,7 @@
           "isBuffer": false,
           "description": "Período de monitoreo post-lanzamiento con timebox definido. Se recolectan datos de la Medida de Éxito (OKRs, LVT, ROI, etc.).",
           "hasReadySignal": true,
-          "definitionOfDone": "Definition of Done: Período de monitoreo post-lanzamiento completado. Datos de adopción recolectados. Medida de Éxito (OKRs/LVTs/ROI, etc.) evaluada (Deficiente, Sólida, Excepcional). Se ha tomado una decisión informada sobre el futuro de la iniciativa (escalado, mantenimiento, descontinuación)."
+          "definitionOfDone": "Definition of Done:\n - Período de monitoreo post-lanzamiento completado.\n - Datos de adopción recolectados.\n - Medida de Éxito (OKRs/LVTs/ROI, etc.) evaluada (Deficiente, Sólida, Excepcional).\n - Se ha tomado una decisión informada sobre el futuro de la iniciativa (escalado, mantenimiento, descontinuación)."
         },
         {
           "id": "initiative-project-finished",
@@ -147,6 +147,7 @@
           "isBeforeCommitmentPoint": false,
           "isPosDeliveryPoint": false,
           "isBuffer": false,
+          "wipLimit": 1,
           "hasReadySignal": true
         },
         {
@@ -159,7 +160,9 @@
           "isBeforeCommitmentPoint": false,
           "isPosDeliveryPoint": false,
           "isBuffer": false,
-          "hasReadySignal": true
+          "wipLimit": 1,
+          "hasReadySignal": true,
+          "definitionOfDone": "DoD de release:\n- Todas las historias del release están Done\n- Integración end‑to‑end\n- Pruebas de aceptación del release pasan\n- Pruebas de rendimiento y escalabilidad\n- Validación de Seguridad pasa\n- Plan de despliegue a producción\n- Plan de rollback\n- Release Notes y Changelog\n- El Product Owner validó el release"
         },
         {
           "id": "epic-release-released",
@@ -217,6 +220,7 @@
           "isBeforeCommitmentPoint": false,
           "isPosDeliveryPoint": false,
           "isBuffer": false,
+          "wipLimit": 3,
           "hasReadySignal": true
         },
         {
@@ -229,6 +233,7 @@
           "isBeforeCommitmentPoint": false,
           "isPosDeliveryPoint": false,
           "isBuffer": false,
+          "wipLimit": 3,
           "hasReadySignal": true
         },
         {
@@ -241,7 +246,9 @@
           "isBeforeCommitmentPoint": false,
           "isPosDeliveryPoint": false,
           "isBuffer": false,
-          "hasReadySignal": true
+          "wipLimit": 5,
+          "hasReadySignal": true,
+          "definitionOfDone": "DoD de Story:\n- Código implementado y revisado\n- Pruebas unitarias con cobertura de >85%\n- Integración continua\n- Pruebas de integración pasan.\n- Pruebas de Regresión de sistema automáticas pasan.\n- Pruebas de aceptación automatizadas (criterios de aceptación).\n- Documentación mínima\n- El Product Owner ha verificado criterios de aceptación."
         },
         {
           "id": "story-delivered",
@@ -273,7 +280,7 @@
           "isBeforeCommitmentPoint": true,
           "isPosDeliveryPoint": false,
           "isBuffer": false,
-          "wipLimit": 8,
+          "wipLimit": 5,
           "hasReadySignal": true
         },
         {
@@ -299,6 +306,7 @@
           "isBeforeCommitmentPoint": false,
           "isPosDeliveryPoint": false,
           "isBuffer": false,
+          "wipLimit": 5,
           "hasReadySignal": true
         },
         {
@@ -311,6 +319,7 @@
           "isBeforeCommitmentPoint": false,
           "isPosDeliveryPoint": false,
           "isBuffer": false,
+          "wipLimit": 5,
           "hasReadySignal": true
         },
         {
