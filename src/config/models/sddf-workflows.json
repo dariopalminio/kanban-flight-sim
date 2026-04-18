@@ -12,8 +12,8 @@
       "workitemName": "Initiative",
       "statuses": [
         {
-          "id": "initiative-project-funnel",
-          "name": "Embudo",
+          "id": "initiative-project-start-option",
+          "name": "Inicio-de-Opción",
           "order": 1,
           "streamType": "UPSTREAM",
           "statusCategory": "TODO",
@@ -25,8 +25,8 @@
           "definitionOfDone": "Definition of Done:\n - Idea registrada en el sistema.\n - Con descripción inicial y responsable asignado.\n - No se ha realizado análisis detallado."
         },
         {
-          "id": "initiative-project-define-discovery",
-          "name": "Definir&Descubrir",
+          "id": "initiative-project-discovery",
+          "name": "Descubrir",
           "order": 2,
           "streamType": "UPSTREAM",
           "statusCategory": "IN_PROGRESS",
