@@ -7,9 +7,22 @@ Every `Workitem` SHALL carry a `color: string` field containing a CSS color valu
 - **WHEN** an L3 workitem is created (via `buildInitialState` or demand injection)
 - **THEN** the workitem has a non-empty `color` string
 
-#### Scenario: Child item inherits parent color
-- **WHEN** a child workitem (L0, L1, or L2) is spawned from a parent
-- **THEN** the child's `color` equals the parent's `color`
+#### Scenario: L1 and L0 items inherit their parent's color
+- **WHEN** an L1 or L0 workitem is spawned from a parent
+- **THEN** the child's `color` equals the parent's `color`, so every L1 and L0 item shows the color of its L2 ancestor
+
+---
+
+### Requirement: L2 own color assignment
+L2 workitems SHALL NOT inherit the color of their L3 parent. Each L2 workitem SHALL receive its own color from the same palette, assigned cyclically based on the L2 creation counter over the palette entries that differ from the parent's color.
+
+#### Scenario: L2 item never matches its parent
+- **WHEN** an L2 workitem is spawned from an L3 parent
+- **THEN** its `color` is a palette color different from the parent's `color`
+
+#### Scenario: Sibling L2 items get different colors
+- **WHEN** an L3 parent spawns up to `PALETTE.length - 1` L2 children
+- **THEN** each child has a different `color`
 
 ---
 

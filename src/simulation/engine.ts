@@ -11,6 +11,12 @@ const WORKITEM_PALETTE: string[] = [
 
 const maybe = (p: number) => Math.random() < p;
 
+// Own color for an L2 item: cycles through the palette, skipping its parent's color.
+const ownColor = (counter: number, parentColor: string): string => {
+  const available = WORKITEM_PALETTE.filter((c) => c !== parentColor);
+  return available[(counter - 1) % available.length];
+};
+
 const getNextStatusId = (wf: Workflow, statusId: string): string => {
   const current = wf.statuses.find((s) => s.id === statusId);
   if (!current) return statusId;
@@ -174,7 +180,29 @@ export const tick = (state: SimState, config: Config): SimState => {
   let counters = { ...state.idCounters };
   const currentTick = state.tick + 1;
 
-  // --- PASO 1: Advance L0 autonomously (FIFO per column) ---
+  const levels = {
+    L0: { wf: wfL0, keys: keysL0 },
+    L1: { wf: wfL1, keys: keysL1 },
+    L2: { wf: wfL2, keys: keysL2 },
+    L3: { wf: wfL3, keys: keysL3 },
+  };
+
+  // Pull rule: an item may start construction only if every ancestor is already there
+  // or has room to enter, so a parent's WIP limit holds its children back.
+  const ancestorsCanStart = (item: Workitem): boolean => {
+    let parent = items.find((x) => x.id === item.parentId);
+    while (parent) {
+      const { wf, keys } = levels[parent.level];
+      if (getOrder(wf, parent.statusId) >= keys.secondDownstreamOrder) return true;
+      const limit = wf.statuses.find((s) => s.id === keys.secondDownstreamId)?.wipLimit;
+      if (limit != null && items.filter((x) => x.statusId === keys.secondDownstreamId).length >= limit) return false;
+      const { parentId } = parent;
+      parent = items.find((x) => x.id === parentId);
+    }
+    return true;
+  };
+
+  // --- PASO 1: Advance L0 (FIFO per column), applying the pull rule when work starts ---
   const wipL0 = makeWipTracker(wfL0, items);
   if (!withoutL0) {
     // Walk right-to-left: process columns in descending order so freed WIP slots are visible immediately
@@ -184,7 +212,13 @@ export const tick = (state: SimState, config: Config): SimState => {
       if (getOrder(wfL0, sid) >= keysL0.deliveryOrder) continue;
       const fid = frontOfQueue(items.filter((w) => w.level === "L0"), sid);
       if (!fid) continue;
-      items = items.map((w) => w.id !== fid ? w : advanceOrSignal(w, wfL0, wipL0, advanceProbability, currentTick));
+      items = items.map((w) => w.id !== fid ? w : advanceOrSignal(
+        w,
+        wfL0,
+        (from, to) => (to !== keysL0.secondDownstreamId || ancestorsCanStart(w)) && wipL0(from, to),
+        advanceProbability,
+        currentTick
+      ));
     }
   }
 
@@ -268,6 +302,7 @@ export const tick = (state: SimState, config: Config): SimState => {
         }
       }
       const next = getNextStatusId(wfL1, w.statusId);
+      if (next === keysL1.secondDownstreamId && !ancestorsCanStart(w)) return w;
       if (!wipL1(w.statusId, next)) return w;
       if (!withoutL0 && w.statusId === keysL1.commitmentId) {
         const hasChildren = items.some((x) => x.parentId === w.id && x.level === "L0");
@@ -470,7 +505,7 @@ export const tick = (state: SimState, config: Config): SimState => {
             }
             const [id, newCounters] = nextId(counters, "L2", wfL2.workitemName, w.id);
             counters = newCounters;
-            newL2Children.push({ id, level: "L2", statusId: l2FirstStatus.id, parentId: w.id, enteredAt: currentTick, color: w.color });
+            newL2Children.push({ id, level: "L2", statusId: l2FirstStatus.id, parentId: w.id, enteredAt: currentTick, color: ownColor(newCounters.L2, w.color) });
           }
         }
       }

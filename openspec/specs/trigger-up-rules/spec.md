@@ -25,6 +25,31 @@ When a parent item (L1/L2/L3) is at its first-downstream status, it SHALL automa
 
 ---
 
+### Requirement: Pull rule — a child starts construction only if its ancestors can
+An item SHALL NOT enter its second-downstream status unless its ancestors can start too: each ancestor SHALL be already at or past its own second-downstream status, or have WIP capacity in that status. The check walks up the ancestor chain and stops at the first ancestor already in construction, because its own ancestors are then in construction too. It SHALL be applied where work actually starts: L0 items in Step 1, and L1 items in Step 3 when `withoutL0` is `true`. FIFO per column still applies: a blocked front-of-queue item holds its column.
+
+#### Scenario: Story waits while its Epic has no capacity
+- **WHEN** an L2 item is at its first-downstream status AND its second-downstream status has reached its WIP limit
+- **THEN** none of its L1 children enters the L1 second-downstream status, and with L0 enabled their L0 children wait at the L0 first-downstream status
+
+#### Scenario: Work starts when capacity frees up
+- **WHEN** a slot frees up in the second-downstream status of the waiting L2 item
+- **THEN** its front-of-queue descendant may start, and the L2 item advances to its second-downstream status in the same tick through trigger-up progression
+
+#### Scenario: Children of a parent already in construction are not held back
+- **WHEN** an item's parent is already at or past its second-downstream status
+- **THEN** the pull rule does not block the item, even if that status is at its WIP limit
+
+#### Scenario: The ancestor chain is checked
+- **WHEN** an L0 item's L1 parent has capacity but its L2 or L3 ancestor is not in construction and has no capacity
+- **THEN** the L0 item stays at its first-downstream status
+
+#### Scenario: Preparation is not held back
+- **WHEN** an item advances to any status before its second-downstream status
+- **THEN** the pull rule is not evaluated; only WIP and FIFO rules apply
+
+---
+
 ### Requirement: Trigger-up auto-ready — parent is marked ready when all children pass delivery
 When a parent item (L1/L2/L3) is at its second-downstream status (first in-progress) and that status has `hasReadySignal: true`, the engine SHALL automatically set `isReady: true` on the parent as soon as ALL of its direct children are at `isPosDeliveryPoint`. This overrides the probabilistic Phase 1 of the ready-signal mechanism for this specific case. The parent SHALL NOT be able to advance past second-downstream until this condition is met.
 
@@ -51,7 +76,7 @@ When a parent item (L1/L2/L3) is at its second-downstream status (first in-progr
 ---
 
 ### Requirement: L0 is not subject to trigger-up rules (no parent auto-progression or auto-ready)
-L0 items SHALL never trigger upward progression or auto-ready on a parent, because L0 is the lowest level. L0 items advance autonomously (Step 1).
+L0 items SHALL never trigger upward progression or auto-ready on a parent, because L0 is the lowest level. L0 items advance on their own in Step 1, subject to the pull rule when they enter their second-downstream status.
 
 #### Scenario: L0 advances without triggering any parent rule
 - **WHEN** an L0 item advances through any status

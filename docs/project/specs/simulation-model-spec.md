@@ -78,7 +78,7 @@ Las siguientes son reglas que se gatillan cuando existen cambios de estado en lo
 * Propósito: Iniciar la descomposición detallada y formal en el momento adecuado. El padre está comprometido, por lo que es momento de planificar los detalles del trabajo.
 * Ejemplo: Una Initiative de nivel L3 pasa a Selected → se crean sus Epics en el Backlog de L2.
 
-2. **Regla de Progresión (Trigger-Up)**: Cuando el primer hijo de un padre pasa a In-Progress, el padre debe pasar a In-Progress.
+2. **Regla de Progresión (Trigger-Up)**: Cuando el primer hijo de un padre pasa a In-Progress, el padre debe pasar a In-Progress. El hijo solo puede hacerlo si el padre tiene capacidad (ver la regla 6 de Pull y WIP Limits).
 * Propósito: Reflejar que el trabajo real ha comenzado en el nivel inferior, por lo que el nivel superior debe avanzar a su estado activo.
 * Ejemplo: La primera Epic (en nivel L2) de una Initiative (de nivel L3) pasa a In-Progress → la Initiative pasa a In-Progress.
 
@@ -102,6 +102,8 @@ Las siguientes son reglas que se gatillan cuando existen cambios de estado en lo
 4. **Pull bloqueado si columna destino llena**: Ningún work-item puede moverse a un estado que tiene "WIP Limit" y cuyo "WIP Limit" ya fue alcanzado (o superado). Si la columna de destino está llena, el pull no puede realizarse hasta que haya espacio disponible.
 
 5. **Pull bloqueado si work-item no está ready**: Ningún work-item puede moverse a un estado si no está marcado como "ready" o están en una columna tipo buffer (columna ready sin procesamiento). Esto asegura que solo los work-items que han completado su procesamiento (actividad de proceso y cumple Definition of Done del estado) puedan avanzar.
+
+6. **Pull bloqueado si el padre no tiene capacidad**: Ningún work-item puede pasar a In-Progress si su padre no está ya en In-Progress (o más adelante) ni tiene capacidad en esa columna. La comprobación sube por la cadena de ancestros. Mientras tanto, el work-item puede seguir preparándose hasta el estado previo. Así, el WIP Limit de un nivel superior frena de verdad el trabajo del nivel inferior: por ejemplo, con `DEVELOP` lleno, las Stories de otra Epic no entran a `IMPLEMENT`.
 
 ### Reglas de Demanda
 

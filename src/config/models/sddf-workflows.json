@@ -115,7 +115,7 @@
           "id": "epic-release-plan",
           "name": "PLAN",
           "order": 2,
-          "description": "Release comprometido. Se desglosa en Stories y se prepara su arranque: orden, dependencias y riesgos. Pasa a DEVELOP cuando la primera Story entra a IMPLEMENT.",
+          "description": "Release comprometido. Se desglosa en Stories y se prepara su arranque: orden, dependencias y riesgos. Sus Stories esperan a que haya cupo en DEVELOP; pasa a DEVELOP cuando la primera entra a IMPLEMENT.",
           "streamType": "DOWNSTREAM",
           "statusCategory": "IN_PROGRESS",
           "isBeforeCommitmentPoint": false,
@@ -201,7 +201,7 @@
         {
           "id": "story-plan",
           "name": "PLAN",
-          "description": "Story comprometida. Se prepara su implementación: estimación, diseño y tareas (con L0, a través de sus Specs). Pasa a IMPLEMENT cuando empieza su implementación.",
+          "description": "Story comprometida. Se prepara su implementación: estimación, diseño y tareas (con L0, a través de sus Specs). Pasa a IMPLEMENT cuando hay cupo en IMPLEMENT y su Epic está en DEVELOP o puede entrar.",
           "order": 2,
           "streamType": "DOWNSTREAM",
           "statusCategory": "IN_PROGRESS",

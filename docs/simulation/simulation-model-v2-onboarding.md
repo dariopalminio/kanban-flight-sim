@@ -121,6 +121,10 @@ Las reglas por par de niveles son simetricas (L0->L1, L1->L2, L2->L3):
 3. Creacion de hijos en compromiso:
 - Cuando el padre avanza desde estado de compromiso, crea N hijos una sola vez (`childrenPerParent`) en el primer estado del workflow hijo.
 
+4. Pull limitado por el padre:
+- Un hijo no entra a su segundo estado downstream si algun ancestro no esta ya ahi (o mas adelante) ni tiene cupo en esa columna.
+- Se comprueba donde el trabajo arranca: L0 en el Paso 1, y L1 en el Paso 3 cuando no hay L0.
+
 Esto da al modelo un efecto claro de arrastre desde ejecucion, preservando dependencia jerarquica.
 
 ## 8. Senal de ready en dos fases

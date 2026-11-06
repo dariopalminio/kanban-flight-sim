@@ -37,6 +37,10 @@ When `config.withoutL0` is `true`, L1 workitems SHALL advance probabilistically 
 - **WHEN** `config.withoutL0` is `true` and an L1 item is at its `secondDownstreamOrder` status
 - **THEN** the item SHALL be eligible to advance probabilistically to the next status (no L0 blocking)
 
+#### Scenario: L1 start is held back by the pull rule
+- **WHEN** `config.withoutL0` is `true`, an L1 item would enter its `secondDownstreamOrder` status, and an ancestor that is not yet in construction has no capacity to enter
+- **THEN** the item SHALL stay at its `firstDownstreamOrder` status, as defined by the pull rule in `trigger-up-rules`
+
 ### Requirement: withoutL0 field is optional in Config
 The `Config` type SHALL include an optional field `withoutL0?: boolean`. When absent or `false`, engine behavior is unchanged.
 
