@@ -101,7 +101,7 @@
       "statuses": [
         {
           "id": "epic-release-definition",
-          "name": "Definición",
+          "name": "DEFINE",
           "order": 1,
           "description": "Refinamiento del alcance: release propuesto, validar dependencias, priorizar Features, asegurar claridad de requisitos de negocio.",
           "streamType": "UPSTREAM",
@@ -112,21 +112,22 @@
           "hasReadySignal": true
         },
         {
-          "id": "epic-release-planned-ready",
-          "name": "Planificado",
+          "id": "epic-release-plan",
+          "name": "PLAN",
           "order": 2,
-          "description": "Entregable o Release definido, aprobado, priorizado y planeado con capacidad asignada y espera inicio de desarrollo.",
+          "description": "Release comprometido. Se desglosa en Stories y se prepara su arranque: orden, dependencias y riesgos. Pasa a DEVELOP cuando la primera Story entra a IMPLEMENT.",
           "streamType": "DOWNSTREAM",
-          "statusCategory": "TODO",
+          "statusCategory": "IN_PROGRESS",
           "isBeforeCommitmentPoint": false,
           "isPosDeliveryPoint": false,
-          "isBuffer": true,
-          "wipLimit": 3,
-          "hasReadySignal": false
+          "isBuffer": false,
+          "wipLimit": 1,
+          "hasReadySignal": true,
+          "definitionOfDone": "DoD de PLAN:\n- Release desglosado en Stories y ordenado por prioridad.\n- Dependencias y riesgos identificados.\n- Al menos una Story lista para implementar."
         },
         {
           "id": "epic-release-develop",
-          "name": "Desarrollando",
+          "name": "DEVELOP",
           "description": "Las Features del Release están siendo desarrolladas. El Release avanza a medida que las Features se completan.",
           "order": 3,
           "streamType": "DOWNSTREAM",
@@ -138,8 +139,8 @@
           "hasReadySignal": true
         },
         {
-          "id": "epic-release-integration",
-          "name": "Integración",
+          "id": "epic-release-validate",
+          "name": "VALIDATE",
           "description": "Pruebas de integración end-to-end, regresión, y validación técnica en entorno de integración/staging.",
           "order": 4,
           "streamType": "DOWNSTREAM",
@@ -151,9 +152,9 @@
           "hasReadySignal": true
         },
         {
-          "id": "epic-release-in-liberation",
-          "name": "Liberación",
-          "description": "Se confirma que el Release cumple con los criterios de aceptación y genera el valor esperado y se libera a producción.",
+          "id": "epic-release-ship",
+          "name": "SHIP",
+          "description": "Se confirma que el Release cumple con los criterios de aceptación y genera el valor esperado, y se entrega la versión: se libera a producción o se marca la versión del Release.",
           "order": 5,
           "streamType": "DOWNSTREAM",
           "statusCategory": "IN_PROGRESS",
@@ -162,12 +163,12 @@
           "isBuffer": false,
           "wipLimit": 1,
           "hasReadySignal": true,
-          "definitionOfDone": "DoD de release:\n- Todas las historias del release están Done\n- Integración end‑to‑end\n- Pruebas de aceptación del release pasan\n- Pruebas de rendimiento y escalabilidad\n- Validación de Seguridad pasa\n- Plan de despliegue a producción\n- Plan de rollback\n- Release Notes y Changelog\n- El Product Owner validó el release"
+          "definitionOfDone": "DoD de release:\n- Todas las historias del release están Done\n- Integración end‑to‑end\n- Pruebas de aceptación del release pasan\n- Pruebas de rendimiento y escalabilidad\n- Validación de Seguridad pasa\n- Plan de despliegue a producción\n- Plan de rollback\n- Release Notes y Changelog\n- El Product Owner validó el release\n- Versión entregada: liberada a producción o marcada."
         },
         {
-          "id": "epic-release-released",
-          "name": "Liberado",
-          "description": "Release desplegado en producción y cerrado. Se verifica operatividad. Se archiva documentación.",
+          "id": "epic-release-completed",
+          "name": "COMPLETED",
+          "description": "Cierre administrativo. Versión entregada y Release cerrado. Se verifica operatividad. Se archiva documentación.",
           "order": 6,
           "streamType": "DOWNSTREAM",
           "statusCategory": "DONE",
@@ -185,8 +186,8 @@
       "workitemName": "Story",
       "statuses": [
         {
-          "id": "story-refining",
-          "name": "Refinamiento",
+          "id": "story-specify",
+          "name": "SPECIFY",
           "description": "Exploración de ideas, análisis de viabilidad, refinamiento de requisitos. Se refinan requisitos y se definen criterios de aceptación con negocio/PO.",
           "order": 1,
           "streamType": "UPSTREAM",
@@ -198,21 +199,22 @@
           "hasReadySignal": true
         },
         {
-          "id": "story-ready-for-dev",
-          "name": "Listo-para-Desarrollo",
-          "description": "Buffer. Story refinada, estimada, esperando capacidad de desarrollo.",
+          "id": "story-plan",
+          "name": "PLAN",
+          "description": "Story comprometida. Se prepara su implementación: estimación, diseño y tareas (con L0, a través de sus Specs). Pasa a IMPLEMENT cuando empieza su implementación.",
           "order": 2,
           "streamType": "DOWNSTREAM",
-          "statusCategory": "TODO",
+          "statusCategory": "IN_PROGRESS",
           "isBeforeCommitmentPoint": false,
           "isPosDeliveryPoint": false,
-          "isBuffer": true,
+          "isBuffer": false,
           "wipLimit": 5,
-          "hasReadySignal": false
+          "hasReadySignal": true,
+          "definitionOfDone": "DoD de PLAN:\n- Story estimada.\n- Diseño y tareas listos para empezar (con L0, al menos una Spec lista para implementar)."
         },
         {
-          "id": "story-developing",
-          "name": "Desarrollo",
+          "id": "story-implement",
+          "name": "IMPLEMENT",
           "description": "Implementación técnica. Incluye codificación, pruebas unitarias, y revisión de código (si aplica como actividad dentro del estado).",
           "order": 3,
           "streamType": "DOWNSTREAM",
@@ -224,9 +226,9 @@
           "hasReadySignal": true
         },
         {
-          "id": "story-qa-testing",
-          "name": "Pruebas",
-          "description": "Pruebas de QA, validación técnica, regresión.",
+          "id": "story-code-review",
+          "name": "CODE-REVIEW",
+          "description": "Revisión de código por pares.",
           "order": 4,
           "streamType": "DOWNSTREAM",
           "statusCategory": "IN_PROGRESS",
@@ -237,10 +239,23 @@
           "hasReadySignal": true
         },
         {
-          "id": "story-acceptance",
-          "name": "Aceptación",
-          "description": "Validación de negocio con PO/stakeholders. Confirmación de que cumple criterios de aceptación y genera valor.",
+          "id": "story-verify",
+          "name": "VERIFY",
+          "description": "Pruebas de QA, validación técnica, regresión.",
           "order": 5,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "IN_PROGRESS",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": false,
+          "wipLimit": 3,
+          "hasReadySignal": true
+        },
+        {
+          "id": "story-acceptance",
+          "name": "ACCEPTANCE",
+          "description": "Validación de negocio con PO/stakeholders. Confirmación de que cumple criterios de aceptación y genera valor.",
+          "order": 6,
           "streamType": "DOWNSTREAM",
           "statusCategory": "IN_PROGRESS",
           "isBeforeCommitmentPoint": false,
@@ -251,10 +266,24 @@
           "definitionOfDone": "DoD de Story:\n- Código implementado y revisado\n- Pruebas unitarias con cobertura de >85%\n- Integración continua\n- Pruebas de integración pasan.\n- Pruebas de Regresión de sistema automáticas pasan.\n- Pruebas de aceptación automatizadas (criterios de aceptación).\n- Documentación mínima\n- El Product Owner ha verificado criterios de aceptación."
         },
         {
-          "id": "story-delivered",
-          "name": "Entregado",
+          "id": "story-deliver",
+          "name": "DELIVER",
+          "description": "Integración de la Story en la rama release/. No despliega a producción: la entrega de la versión la hace SHIP del Epic-Release.",
+          "order": 7,
+          "streamType": "DOWNSTREAM",
+          "statusCategory": "IN_PROGRESS",
+          "isBeforeCommitmentPoint": false,
+          "isPosDeliveryPoint": false,
+          "isBuffer": false,
+          "wipLimit": 5,
+          "hasReadySignal": true,
+          "definitionOfDone": "DoD de Story:\n- Código implementado y revisado\n- Pruebas unitarias con cobertura de >85%\n- Integración continua\n- Pruebas de integración pasan.\n- Pruebas de Regresión de sistema automáticas pasan.\n- Pruebas de aceptación automatizadas (criterios de aceptación).\n- Documentación mínima\n- El Product Owner ha verificado criterios de aceptación.\n- Story fusionada en la rama release/."
+        },
+        {
+          "id": "story-completed",
+          "name": "COMPLETED",
           "description": "Story completada técnicamente y fusionada en rama release/. Lista para ser liberada con el Release correspondiente.",
-          "order": 6,
+          "order": 8,
           "streamType": "DOWNSTREAM",
           "statusCategory": "DONE",
           "isBeforeCommitmentPoint": false,
