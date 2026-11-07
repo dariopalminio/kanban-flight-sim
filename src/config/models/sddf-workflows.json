@@ -94,13 +94,13 @@
       ]
     },
     "L2": {
-      "id": "wf-epic-release",
-      "name": "Release-Epic",
+      "id": "epic-wf",
+      "name": "Epic-Workflow",
       "level": "L2",
-      "workitemName": "Epic-Release",
+      "workitemName": "Epic",
       "statuses": [
         {
-          "id": "epic-release-definition",
+          "id": "epic-definition",
           "name": "DEFINE",
           "order": 1,
           "description": "Refinamiento del alcance: release propuesto, validar dependencias, priorizar Features, asegurar claridad de requisitos de negocio.",
@@ -112,7 +112,7 @@
           "hasReadySignal": true
         },
         {
-          "id": "epic-release-plan",
+          "id": "epic-plan",
           "name": "PLAN",
           "order": 2,
           "description": "Release comprometido. Se desglosa en Stories y se prepara su arranque: orden, dependencias y riesgos. Sus Stories esperan a que haya cupo en DEVELOP; pasa a DEVELOP cuando la primera entra a IMPLEMENT.",
@@ -126,7 +126,7 @@
           "definitionOfDone": "DoD de PLAN:\n- Release desglosado en Stories y ordenado por prioridad.\n- Dependencias y riesgos identificados.\n- Al menos una Story lista para implementar."
         },
         {
-          "id": "epic-release-develop",
+          "id": "epic-develop",
           "name": "DEVELOP",
           "description": "Las Features del Release están siendo desarrolladas. El Release avanza a medida que las Features se completan.",
           "order": 3,
@@ -139,7 +139,7 @@
           "hasReadySignal": true
         },
         {
-          "id": "epic-release-validate",
+          "id": "epic-validate",
           "name": "VALIDATE",
           "description": "Pruebas de integración end-to-end, regresión, y validación técnica en entorno de integración/staging.",
           "order": 4,
@@ -152,7 +152,7 @@
           "hasReadySignal": true
         },
         {
-          "id": "epic-release-ship",
+          "id": "epic-ship",
           "name": "SHIP",
           "description": "Se confirma que el Release cumple con los criterios de aceptación y genera el valor esperado, y se entrega la versión: se libera a producción o se marca la versión del Release.",
           "order": 5,
@@ -166,7 +166,7 @@
           "definitionOfDone": "DoD de release:\n- Todas las historias del release están Done\n- Integración end‑to‑end\n- Pruebas de aceptación del release pasan\n- Pruebas de rendimiento y escalabilidad\n- Validación de Seguridad pasa\n- Plan de despliegue a producción\n- Plan de rollback\n- Release Notes y Changelog\n- El Product Owner validó el release\n- Versión entregada: liberada a producción o marcada."
         },
         {
-          "id": "epic-release-completed",
+          "id": "epic-completed",
           "name": "COMPLETED",
           "description": "Cierre administrativo. Versión entregada y Release cerrado. Se verifica operatividad. Se archiva documentación.",
           "order": 6,
@@ -180,8 +180,8 @@
       ]
     },
     "L1": {
-      "id": "wf-story-feat",
-      "name": "Story",
+      "id": "story-wf",
+      "name": "Story Workflow",
       "level": "L1",
       "workitemName": "Story",
       "statuses": [

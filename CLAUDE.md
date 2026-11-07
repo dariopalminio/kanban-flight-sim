@@ -1,0 +1,2 @@
+
+Ver @openspec\config.yaml
