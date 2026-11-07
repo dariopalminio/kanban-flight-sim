@@ -115,8 +115,9 @@ Las reglas por par de niveles son simetricas (L0->L1, L1->L2, L2->L3):
 1. Activacion forzada del padre:
 - Si algun hijo entra a downstream, el padre es empujado a su primer estado downstream (si WIP lo permite).
 
-2. Bloqueo del padre en primer downstream:
-- El padre no puede avanzar desde primer downstream hasta que todos sus hijos directos esten en entrega.
+2. Avance del padre segun sus hijos:
+- Desde primer downstream: pasa al segundo downstream cuando al menos un hijo directo llega al segundo downstream de su workflow (si WIP lo permite).
+- Desde segundo downstream: no puede avanzar hasta que todos sus hijos directos esten en entrega; entonces se marca ready y avanza con la probabilidad normal (si WIP lo permite).
 
 3. Creacion de hijos en compromiso:
 - Cuando el padre avanza desde estado de compromiso, crea N hijos una sola vez (`childrenPerParent`) en el primer estado del workflow hijo.
