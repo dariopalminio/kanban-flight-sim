@@ -6,8 +6,14 @@ All notable changes to this project will be documented in this file.
 ---
 ## [Unreleased] — 2026-11-07
 
+## [v1.1.0] — 2026-05-07
+
 ### Added
 - **Simulaciones con niveles opcionales** — Se admite cualquier subconjunto no vacío y consecutivo de L3, L2, L1 y L0, incluido un único nivel. El nivel activo más alto recibe los ítems iniciales y la demanda continua; el más bajo avanza de forma autónoma, sin crear hijos de niveles ausentes. Los modelos de cuatro niveles conservan su comportamiento y no requieren migración.
+
+## [v1.0.3] — 2026-05-07
+
+### Added
 - **Verificaciones de jerarquías y compatibilidad** — Checks sin nuevas dependencias para las diez combinaciones de niveles admitidas, validación de configuración, IDs, colores, demanda, FIFO, WIP y señales de ready. Incluyen baselines con sorteos controlados para comprobar que se preserva el comportamiento de los modelos completos con y sin L0.
 - **Simulación "SAFe FL workflows"** — Nuevo modelo de simulación con cuatro niveles jerárquicos (L3: Epic, L2: Capability, L1: Story, L0: Task) que representa el flujo de Portfolio Kanban de SAFe. Incluye estados de Portfolio Backlog, solución, team y tareas técnicas con WIP limits configurados.
 - **Simulación "XP-FL Workflows"** — Nuevo modelo basado en Extreme Programming con tres niveles operativos: L3 Initiative (Options → Exploration → Active → Steering → Measuring → Sustained/Stopped), L2 Release-Epic (Release-Plan → Selected → In-Progress → Validating&Acceptance → Released) y L1 User-Story (Options → Iteration-Plan → Committed → Iteration-In-Progress → Acceptance → Done). Incluye un L0 Task mínimo como placeholder. Archivo `src/config/models/xp-fl-workflows.json`.
