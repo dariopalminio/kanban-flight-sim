@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./App.css";
 import { Board } from "./components/Board";
 import { KanbanSignalSelector } from "./components/KanbanSignalSelector";
@@ -11,7 +11,9 @@ import {
   loadSimulation,
   simulationNames,
 } from "./config/defaultConfig";
-import type { HighlightMode, SimState, ViewMode } from "./domain/types";
+import type { Config, HighlightMode, SimState, ViewMode } from "./domain/types";
+import { canToggleL0, getActiveHierarchy, getConfiguredWorkflows } from "./domain/hierarchy";
+import { normalizeView, visibleLevels } from "./domain/views";
 import { buildInitialState, tick } from "./simulation/engine";
 
 const AUTOPLAY_INTERVAL_MIN_MS = 100;
@@ -20,10 +22,16 @@ const AUTOPLAY_INTERVAL_STEP_MS = 100;
 const AUTOPLAY_INTERVAL_DEFAULT_MS = 500;
 
 export default function App() {
-  const [selectedSim, setSelectedSim] = useState(defaultSimulationName);
-  const config = loadSimulation(selectedSim);
+  const [selectedSim, setSelectedSim] = useState(
+    simulationNames.includes(defaultSimulationName) ? defaultSimulationName : simulationNames[0]
+  );
+  const [config, setConfig] = useState<Config>(() => {
+    if (!configLoadResult.config) throw new Error(configLoadResult.error ?? "No simulation configuration available");
+    return configLoadResult.config;
+  });
+  const [loadError, setLoadError] = useState<Error | null>(null);
 
-  const [simState, setSimState] = useState<SimState>(buildInitialState(config));
+  const [simState, setSimState] = useState<SimState>(() => buildInitialState(config));
   const [isPlaying, setIsPlaying] = useState(false);
   const [autoplayIntervalMs, setAutoplayIntervalMs] = useState(
     AUTOPLAY_INTERVAL_DEFAULT_MS
@@ -33,18 +41,20 @@ export default function App() {
   const [withoutL0, setWithoutL0] = useState(false);
   const [wipLimitOverrides, setWipLimitOverrides] = useState<Record<string, number>>({});
 
-  const patchWorkflowWipLimits = (wf: typeof config.workflows) => {
-    const patch = (statuses: typeof wf.L0.statuses) =>
-      statuses.map((s) => (s.id in wipLimitOverrides ? { ...s, wipLimit: wipLimitOverrides[s.id] } : s));
-    return {
-      L3: { ...wf.L3, statuses: patch(wf.L3.statuses) },
-      L2: { ...wf.L2, statuses: patch(wf.L2.statuses) },
-      L1: { ...wf.L1, statuses: patch(wf.L1.statuses) },
-      L0: { ...wf.L0, statuses: patch(wf.L0.statuses) },
-    };
-  };
-
-  const effectiveConfig = { ...config, withoutL0, workflows: patchWorkflowWipLimits(config.workflows) };
+  const effectiveConfig = useMemo(() => {
+    const workflows: Config["workflows"] = {};
+    for (const wf of getConfiguredWorkflows(config.workflows)) {
+      workflows[wf.level] = {
+        ...wf,
+        statuses: wf.statuses.map((s) => (
+          s.id in wipLimitOverrides ? { ...s, wipLimit: wipLimitOverrides[s.id] } : s
+        )),
+      };
+    }
+    return { ...config, withoutL0, workflows };
+  }, [config, withoutL0, wipLimitOverrides]);
+  const activeWorkflows = getActiveHierarchy(effectiveConfig).workflows;
+  const activeLevels = activeWorkflows.map((wf) => wf.level);
 
   // Autoplay
   useEffect(() => {
@@ -67,8 +77,22 @@ export default function App() {
   };
 
   const handleSimChange = (name: string) => {
+    let nextConfig: Config;
+    try {
+      nextConfig = loadSimulation(name);
+    } catch (e) {
+      setLoadError(e instanceof Error ? e : new Error(String(e)));
+      setIsPlaying(false);
+      return;
+    }
+    const nextWithoutL0 = withoutL0 && canToggleL0(nextConfig.workflows);
+    const nextEffectiveConfig = { ...nextConfig, withoutL0: nextWithoutL0 };
+    const nextState = buildInitialState(nextEffectiveConfig);
+    setConfig(nextConfig);
     setSelectedSim(name);
-    setSimState(buildInitialState(loadSimulation(name)));
+    setWithoutL0(nextWithoutL0);
+    setViewMode((mode) => normalizeView(mode, getActiveHierarchy(nextEffectiveConfig).workflows.map((wf) => wf.level)));
+    setSimState(nextState);
     setIsPlaying(false);
     setAutoplayIntervalMs(AUTOPLAY_INTERVAL_DEFAULT_MS);
     setWipLimitOverrides({});
@@ -84,8 +108,10 @@ export default function App() {
   };
 
   const handleWithoutL0Change = (v: boolean) => {
+    const nextConfig = { ...effectiveConfig, withoutL0: v };
     setWithoutL0(v);
-    setSimState(buildInitialState({ ...config, withoutL0: v }));
+    setViewMode((mode) => normalizeView(mode, getActiveHierarchy(nextConfig).workflows.map((wf) => wf.level)));
+    setSimState(buildInitialState(nextConfig));
     setIsPlaying(false);
     setAutoplayIntervalMs(AUTOPLAY_INTERVAL_DEFAULT_MS);
   };
@@ -103,17 +129,9 @@ export default function App() {
   const toggleView = (mode: HighlightMode) =>
     setHighlightMode((prev) => (prev === mode ? "none" : mode));
 
-  const { workflows } = effectiveConfig;
   const { workitems, tick: tickCount } = simState;
-  const VISIBLE_LEVELS: Record<ViewMode, number[]> = {
-    portafolio: [3, 2],
-    delivery: [2, 1, 0],
-    full: [3, 2, 1, 0],
-    L3: [3],
-    L2: [2],
-    L1: [1],
-  };
-  const visibleLevels = VISIBLE_LEVELS[viewMode].filter((l) => !(withoutL0 && l === 0));
+  const shownLevels = visibleLevels(viewMode, activeLevels);
+  if (loadError) throw loadError;
 
   return (
     <div className="app-shell">
@@ -140,6 +158,8 @@ export default function App() {
             simulationNames={simulationNames}
             viewMode={viewMode}
             withoutL0={withoutL0}
+            activeLevels={activeLevels}
+            canToggleL0={canToggleL0(config.workflows)}
             onSimChange={handleSimChange}
             onViewModeChange={setViewMode}
             onWithoutL0Change={handleWithoutL0Change}
@@ -168,42 +188,16 @@ export default function App() {
           />
         </div>
 
-        {visibleLevels.includes(3) && (
+        {activeWorkflows.filter((wf) => shownLevels.includes(wf.level)).map((wf) => (
           <Board
-            workflow={workflows.L3}
-            items={workitems.filter((w) => w.level === "L3")}
+            key={wf.level}
+            workflow={wf}
+            items={workitems.filter((w) => w.level === wf.level)}
             highlightMode={highlightMode}
             currentTick={simState.tick}
             onWipLimitChange={handleWipLimitChange}
           />
-        )}
-        {visibleLevels.includes(2) && (
-          <Board
-            workflow={workflows.L2}
-            items={workitems.filter((w) => w.level === "L2")}
-            highlightMode={highlightMode}
-            currentTick={simState.tick}
-            onWipLimitChange={handleWipLimitChange}
-          />
-        )}
-        {visibleLevels.includes(1) && (
-          <Board
-            workflow={workflows.L1}
-            items={workitems.filter((w) => w.level === "L1")}
-            highlightMode={highlightMode}
-            currentTick={simState.tick}
-            onWipLimitChange={handleWipLimitChange}
-          />
-        )}
-        {visibleLevels.includes(0) && (
-          <Board
-            workflow={workflows.L0}
-            items={workitems.filter((w) => w.level === "L0")}
-            highlightMode={highlightMode}
-            currentTick={simState.tick}
-            onWipLimitChange={handleWipLimitChange}
-          />
-        )}
+        ))}
       </div>
     </div>
   );

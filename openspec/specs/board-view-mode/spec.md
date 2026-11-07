@@ -1,49 +1,61 @@
 ## Requirements
 
 ### Requirement: View mode selector
-The UI SHALL display a `<select>` dropdown with exactly six options: **Portafolio**, **Delivery**, **Full**, **L3**, **L2**, **L1**. Only one option can be selected at a time. The default selection on load SHALL be **Delivery**.
+The UI SHALL offer only existing view modes whose target set intersects the active hierarchy. Candidate modes SHALL retain their order: Portafolio, Delivery, Full, L3, L2, L1. The initial selection SHALL be Full, preserving the current application behavior. Only one option SHALL be selected.
 
 #### Scenario: Default selection on load
-- **WHEN** the application first renders
-- **THEN** the "Delivery" option SHALL be selected
+- **WHEN** the application first renders a valid full or partial model
+- **THEN** Full SHALL be selected
 
 #### Scenario: User switches to L3 mode
-- **WHEN** the user selects the "L3" option
-- **THEN** the "L3" option becomes selected and all other options are deselected
+- **WHEN** active L3 exists and the user selects L3
+- **THEN** L3 SHALL be selected exclusively
 
 #### Scenario: User switches to L2 mode
-- **WHEN** the user selects the "L2" option
-- **THEN** the "L2" option becomes selected and all other options are deselected
+- **WHEN** active L2 exists and the user selects L2
+- **THEN** L2 SHALL be selected exclusively
 
 #### Scenario: User switches to L1 mode
-- **WHEN** the user selects the "L1" option
-- **THEN** the "L1" option becomes selected and all other options are deselected
+- **WHEN** active L1 exists and the user selects L1
+- **THEN** L1 SHALL be selected exclusively
+
+#### Scenario: Two-level model filters unavailable single-level modes
+- **WHEN** only L2 and L1 are active
+- **THEN** options SHALL be Portafolio, Delivery, Full, L2 and L1, without L3
 
 ---
 
 ### Requirement: Portafolio mode shows L3 and L2 boards only
-When the active view mode is **Portafolio**, the UI SHALL render the L3 and L2 boards and SHALL NOT render the L1 or L0 boards.
+Portafolio SHALL render only active boards from L3/L2 and SHALL NOT render L1/L0. It SHALL be unavailable when neither L3 nor L2 is active.
 
 #### Scenario: L3 and L2 visible in Portafolio mode
-- **WHEN** view mode is "Portafolio"
-- **THEN** the L3 board and L2 board are present in the DOM
+- **WHEN** L3 and L2 are active and Portafolio is selected
+- **THEN** both boards SHALL be present
 
 #### Scenario: L1 and L0 hidden in Portafolio mode
-- **WHEN** view mode is "Portafolio"
-- **THEN** the L1 board and L0 board are NOT present in the DOM
+- **WHEN** Portafolio is selected
+- **THEN** L1 and L0 boards SHALL NOT be present
+
+#### Scenario: Portafolio intersects a partial hierarchy
+- **WHEN** only L2 and L1 are active and Portafolio is selected
+- **THEN** only L2 SHALL be rendered
 
 ---
 
 ### Requirement: Delivery mode shows L2, L1, and L0 boards only
-When the active view mode is **Delivery**, the UI SHALL render the L2, L1, and L0 boards and SHALL NOT render the L3 board.
+Delivery SHALL render only active boards from L2/L1/L0 and SHALL NOT render L3. It SHALL be unavailable when none of L2/L1/L0 is active.
 
 #### Scenario: L2, L1, L0 visible in Delivery mode
-- **WHEN** view mode is "Delivery"
-- **THEN** the L2 board, L1 board, and L0 board are present in the DOM
+- **WHEN** L2, L1 and L0 are active and Delivery is selected
+- **THEN** all three boards SHALL be present
 
 #### Scenario: L3 hidden in Delivery mode
-- **WHEN** view mode is "Delivery"
-- **THEN** the L3 board is NOT present in the DOM
+- **WHEN** Delivery is selected
+- **THEN** L3 SHALL NOT be rendered
+
+#### Scenario: Two-level delivery view
+- **WHEN** only L2 and L1 are active and Delivery is selected
+- **THEN** only L2 and L1 SHALL be rendered
 
 ---
 
@@ -57,45 +69,46 @@ Switching between view modes SHALL NOT reset or alter the current simulation sta
 ---
 
 ### Requirement: Full mode shows all four boards
-When the active view mode is **Full**, the UI SHALL render all four boards (L3, L2, L1, L0) simultaneously.
+Full SHALL render every active configured board in descending hierarchy order, with no absent or disabled workflow rendered. With all four levels active it SHALL render L3, L2, L1 and L0.
 
 #### Scenario: All boards visible in Full mode
-- **WHEN** view mode is "Full"
-- **THEN** the L3, L2, L1, and L0 boards are all present in the DOM
+- **WHEN** all four levels are active and Full is selected
+- **THEN** all four boards SHALL be present
 
 #### Scenario: No boards hidden in Full mode
-- **WHEN** view mode is "Full"
-- **THEN** no board is absent from the render tree
+- **WHEN** Full is selected
+- **THEN** no active board SHALL be absent from the render tree
+
+#### Scenario: Full shows only the configured two levels
+- **WHEN** only L2 and L1 are active and Full is selected
+- **THEN** L2 SHALL appear above L1, without L3 or L0 boards
 
 ---
 
 ### Requirement: L3 mode shows only the L3 board
-When the active view mode is **L3**, the UI SHALL render only the L3 board and SHALL NOT render the L2, L1, or L0 boards.
+When L3 is active, L3 mode SHALL render only L3. When L3 is inactive, this mode SHALL NOT be offered.
 
 #### Scenario: Only L3 board visible in L3 mode
-- **WHEN** view mode is "L3"
-- **THEN** the L3 board SHALL be present in the DOM
-- **AND** the L2, L1, and L0 boards SHALL NOT be present in the DOM
+- **WHEN** active L3 is selected as the view
+- **THEN** only the L3 board SHALL be present
 
 ---
 
 ### Requirement: L2 mode shows only the L2 board
-When the active view mode is **L2**, the UI SHALL render only the L2 board and SHALL NOT render the L3, L1, or L0 boards.
+When L2 is active, L2 mode SHALL render only L2. When L2 is inactive, this mode SHALL NOT be offered.
 
 #### Scenario: Only L2 board visible in L2 mode
-- **WHEN** view mode is "L2"
-- **THEN** the L2 board SHALL be present in the DOM
-- **AND** the L3, L1, and L0 boards SHALL NOT be present in the DOM
+- **WHEN** active L2 is selected as the view
+- **THEN** only the L2 board SHALL be present
 
 ---
 
 ### Requirement: L1 mode shows only the L1 board
-When the active view mode is **L1**, the UI SHALL render only the L1 board and SHALL NOT render the L3, L2, or L0 boards.
+When L1 is active, L1 mode SHALL render only L1. When L1 is inactive, this mode SHALL NOT be offered.
 
 #### Scenario: Only L1 board visible in L1 mode
-- **WHEN** view mode is "L1"
-- **THEN** the L1 board SHALL be present in the DOM
-- **AND** the L3, L2, and L0 boards SHALL NOT be present in the DOM
+- **WHEN** active L1 is selected as the view
+- **THEN** only the L1 board SHALL be present
 
 ---
 
@@ -105,3 +118,20 @@ Switching to or from any single-level view mode (L3, L2, L1) SHALL NOT reset or 
 #### Scenario: Simulation state preserved when switching to single-level mode
 - **WHEN** the simulation is at tick 5 and the user switches to "L2" mode
 - **THEN** the tick count and workitem positions remain unchanged
+
+---
+
+### Requirement: Unavailable selected view falls back to Full
+If a model switch or Without L0 toggle makes the selected view's active intersection empty, the UI SHALL select Full before rendering the next boards. A view-only selection SHALL NOT change simulation state.
+
+#### Scenario: Switching away from L3 falls back safely
+- **WHEN** L3 view is selected and the user switches to an L2/L1 model
+- **THEN** the selection SHALL become Full and both new boards SHALL render
+
+#### Scenario: Valid view is retained
+- **WHEN** L2 view is selected and the user switches to another model with active L2
+- **THEN** L2 view SHALL remain selected
+
+#### Scenario: Sole L0 has usable views
+- **WHEN** only L0 is configured
+- **THEN** Delivery and Full SHALL be available and SHALL render L0, with no empty Portafolio or single-level options

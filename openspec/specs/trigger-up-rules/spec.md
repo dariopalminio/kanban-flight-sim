@@ -26,27 +26,31 @@ When a parent item (L1/L2/L3) is at its first-downstream status, it SHALL automa
 ---
 
 ### Requirement: Pull rule — a child starts construction only if its ancestors can
-An item SHALL NOT enter its second-downstream status unless its ancestors can start too: each ancestor SHALL be already at or past its own second-downstream status, or have WIP capacity in that status. The check walks up the ancestor chain and stops at the first ancestor already in construction, because its own ancestors are then in construction too. It SHALL be applied where work actually starts: L0 items in Step 1, and L1 items in Step 3 when `withoutL0` is `true`. FIFO per column still applies: a blocked front-of-queue item holds its column.
+An autonomous leaf item SHALL NOT enter its second-downstream status unless each active ancestor is already at/past its own second-downstream or has capacity there. The check SHALL stop at the first ancestor already in construction and SHALL apply in Step 1, 3, 5 or 7 according to the leaf's level. A root leaf SHALL have no ancestor restriction. FIFO SHALL still prevent a blocked front item from being overtaken.
 
 #### Scenario: Story waits while its Epic has no capacity
-- **WHEN** an L2 item is at its first-downstream status AND its second-downstream status has reached its WIP limit
-- **THEN** none of its L1 children enters the L1 second-downstream status, and with L0 enabled their L0 children wait at the L0 first-downstream status
+- **WHEN** active L2 has no second-downstream capacity and is not yet in construction
+- **THEN** its autonomous descendants SHALL remain before construction: L1 in Step 3 when L1 is the leaf, or L0 in Step 1 when L0 is active
 
 #### Scenario: Work starts when capacity frees up
-- **WHEN** a slot frees up in the second-downstream status of the waiting L2 item
-- **THEN** its front-of-queue descendant may start, and the L2 item advances to its second-downstream status in the same tick through trigger-up progression
+- **WHEN** capacity frees in the waiting ancestor's second-downstream
+- **THEN** the front leaf descendant SHALL be eligible to start and subsequent parent advancement slots SHALL evaluate the updated child positions
 
 #### Scenario: Children of a parent already in construction are not held back
-- **WHEN** an item's parent is already at or past its second-downstream status
-- **THEN** the pull rule does not block the item, even if that status is at its WIP limit
+- **WHEN** a leaf's parent is already at/past second-downstream
+- **THEN** ancestor pull SHALL NOT block the leaf because that parent column is full
 
 #### Scenario: The ancestor chain is checked
-- **WHEN** an L0 item's L1 parent has capacity but its L2 or L3 ancestor is not in construction and has no capacity
-- **THEN** the L0 item stays at its first-downstream status
+- **WHEN** an L0 item's L1 parent has capacity but an unstarted active L2 or L3 ancestor has none
+- **THEN** Step 1 SHALL leave L0 at first-downstream
 
 #### Scenario: Preparation is not held back
-- **WHEN** an item advances to any status before its second-downstream status
-- **THEN** the pull rule is not evaluated; only WIP and FIFO rules apply
+- **WHEN** an item advances before second-downstream
+- **THEN** ancestor pull SHALL NOT be evaluated
+
+#### Scenario: L2 leaf obeys its L3 parent capacity
+- **WHEN** only L3 and L2 are active and L3 has no construction capacity
+- **THEN** Step 5 SHALL block its front L2 child from entering second-downstream
 
 ---
 
@@ -76,11 +80,11 @@ When a parent item (L1/L2/L3) is at its second-downstream status (first in-progr
 ---
 
 ### Requirement: L0 is not subject to trigger-up rules (no parent auto-progression or auto-ready)
-L0 items SHALL never trigger upward progression or auto-ready on a parent, because L0 is the lowest level. L0 items advance on their own in Step 1, subject to the pull rule when they enter their second-downstream status.
+L0 items SHALL advance autonomously in Step 1 without child-based progression or auto-ready, because they have no lower child workflow. Their positions SHALL still be used by active L1 parent rules in Steps 2-3. Ancestor pull SHALL apply at L0 second-downstream.
 
 #### Scenario: L0 advances without triggering any parent rule
-- **WHEN** an L0 item advances through any status
-- **THEN** no L0-to-L1 trigger-up progression or auto-ready logic is evaluated for L0 as a child
+- **WHEN** Step 1 evaluates L0 advancement
+- **THEN** it SHALL NOT evaluate child-based progression or auto-ready on L0 itself; Steps 2-3 SHALL retain evaluation of its active L1 parent
 
 ---
 
@@ -90,3 +94,20 @@ L3 items SHALL never trigger progression or auto-ready on a parent, because L3 i
 #### Scenario: L3 items have no parent to trigger
 - **WHEN** an L3 item reaches any status
 - **THEN** no upward trigger-up evaluation occurs for L3 as a child
+
+---
+
+### Requirement: Trigger-up relationships exist only between active neighboring levels
+First-downstream progression and child-delivery auto-ready SHALL apply only to parents with an active immediately lower workflow, in Step 3 for L1/L0, Step 5 for L2/L1 and Step 7 for L3/L2. Their existing target WIP and readiness timing SHALL remain unchanged. The lowest active level SHALL advance autonomously without child-based triggers; the highest active level SHALL have no upward parent relationship.
+
+#### Scenario: Two-level trigger-up retains L2 child synchronization
+- **WHEN** only L2 and L1 are active and an L1 child reaches second-downstream in Step 3
+- **THEN** Step 5 SHALL allow its first-downstream L2 parent to progress subject to WIP, without evaluating L3
+
+#### Scenario: Lowest active level does not wait for missing children
+- **WHEN** L1 is the leaf at second-downstream
+- **THEN** Step 3 SHALL use autonomous readiness and SHALL NOT wait for L0 delivery
+
+#### Scenario: Active parent still waits for all children
+- **WHEN** L2 is at second-downstream and one active L1 child is not delivered
+- **THEN** Step 5 SHALL keep L2 blocked without auto-ready, as in full models

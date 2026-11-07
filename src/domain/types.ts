@@ -46,7 +46,7 @@ export type SimState = {
 };
 
 export type Config = {
-  workflows: { L3: Workflow; L2: Workflow; L1: Workflow; L0: Workflow };
+  workflows: Partial<Record<WorkitemLevel, Workflow>>;
   initialReleaseCount: number;
   advanceProbability: number;
   childrenPerParent: number;

@@ -1,4 +1,5 @@
-import type { ViewMode } from "../domain/types";
+import type { ViewMode, WorkitemLevel } from "../domain/types";
+import { availableViews, VIEW_MODES } from "../domain/views";
 
 const BTN_STYLE: React.CSSProperties = {
   padding: "4px 10px",
@@ -23,6 +24,8 @@ interface SimulationSelectorProps {
   simulationNames: string[];
   viewMode: ViewMode;
   withoutL0: boolean;
+  activeLevels: WorkitemLevel[];
+  canToggleL0: boolean;
   onSimChange: (name: string) => void;
   onViewModeChange: (mode: ViewMode) => void;
   onWithoutL0Change: (v: boolean) => void;
@@ -33,20 +36,14 @@ export function SimulationSelector({
   simulationNames,
   viewMode,
   withoutL0,
+  activeLevels,
+  canToggleL0,
   onSimChange,
   onViewModeChange,
   onWithoutL0Change,
 }: SimulationSelectorProps) {
 
-  /* 
-  El selector de simulaciones permite elegir entre las distintas simulaciones predefinidas, 
-  y el selector de modo de vista permite cambiar la forma en que se muestran los tableros 
-  (portafolio, delivery, full, o por nivel L3-L0).  La opción "full" muestra todos los tableros, 
-  mientras que las opciones "L3", "L2" y "L1" muestran solo el tablero correspondiente a ese nivel, 
-  la opción "portafolio" muestra solo los tableros de nivel L3 y L2, y la opción "delivery" 
-  muestra solo el tablero de nivel L2 y L1.
-  */
-  const viewModeOptions: ViewMode[] = ["portafolio", "delivery", "full", "L3", "L2", "L1"];
+  const viewModeOptions = availableViews(activeLevels);
   
   return (
     <>
@@ -66,7 +63,10 @@ export function SimulationSelector({
       <select
         className="control-select"
         value={viewMode}
-        onChange={(e) => onViewModeChange(e.target.value as ViewMode)}
+        onChange={(e) => {
+          const mode = VIEW_MODES.find((mode) => mode === e.target.value);
+          if (mode) onViewModeChange(mode);
+        }}
       >
         {viewModeOptions.map((mode) => (
           <option key={mode} value={mode}>
@@ -75,13 +75,13 @@ export function SimulationSelector({
         ))}
       </select>
       {/* Toggle Without L0 */}
-      <button
+      {canToggleL0 && <button
         className={`control-button ${withoutL0 ? "is-active" : ""}`}
         style={withoutL0 ? BTN_ACTIVE_STYLE : BTN_STYLE}
         onClick={() => onWithoutL0Change(!withoutL0)}
       >
         {withoutL0 ? "Without L0" : "With L0"}
-      </button>
+      </button>}
     </>
   );
 }

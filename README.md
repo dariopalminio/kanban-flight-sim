@@ -7,7 +7,7 @@ A visual Kanban flow simulator for understanding multi-level hierarchical workfl
 
 ## What it does
 
-The simulator models work flowing through four hierarchical levels simultaneously:
+The simulator models work flowing through one to four consecutive hierarchical levels:
 
 ```
 L3 (e.g. Project)  ─── contains ──▶  L2 (e.g. Epic)
@@ -40,12 +40,27 @@ Use the dropdown in the header to switch between available simulations.
 
 ## Configuration
 
-All simulations are defined in [`src/config/defaultConfig.json`](src/config/defaultConfig.json). Each simulation specifies:
+Each simulation is a model file in [`src/config/models/`](src/config/models/).
+[`src/config/defaultConfig.json`](src/config/defaultConfig.json) selects the startup model using `{ "defaultModel": "<name>" }`. Each model specifies:
 
-- Four workflows (L3, L2, L1, L0), each with an ordered list of statuses
+- A non-empty consecutive subset of L3, L2, L1, L0, each with an ordered list of statuses. Omit unused outer levels; do not use null/empty placeholders. L2 + L1 and any single level are valid; L3 + L1 is rejected for missing L2. JSON key order does not affect hierarchy order.
 - `advanceProbability` — probability each eligible work item advances per tick (default: `0.5`)
 - `childrenPerParent` — how many child work items are created at the commitment point (default: `3`)
-- `initialReleaseCount` — number of L3 work items to start with (default: `1`)
+- `initialReleaseCount` — number of parentless work items at the highest active level to start with (default: `1`)
+- `demandInterval` — inject one item at that same root every N ticks, subject to entry WIP; `0` disables demand (default: `0`)
+
+The lowest active level advances autonomously. Only active neighboring levels spawn and synchronize children. **With L0 / Without L0** is available only when L0 and a higher level are configured; sole-L0 models cannot disable their only board. Views show only their available target boards and unavailable view options are hidden.
+Existing four-level model files require no migration.
+
+Focused checks (using the installed TypeScript compiler, no extra test dependencies):
+
+```bash
+node tests/configured-levels.mjs
+node tests/engine-baseline.mjs
+npm run build
+```
+
+The baseline fixtures retain pre-change full-model results with scripted probability draws, including L0-enabled and L0-disabled runs.
 
 Each status supports:
 - `streamType`: `UPSTREAM` or `DOWNSTREAM`
@@ -53,22 +68,23 @@ Each status supports:
 - `isPosDeliveryPoint`: marks the final status (work item stops here)
 - `wipLimit`: optional cap on how many work items can occupy this column at once
 
-Adding a new simulation is as simple as appending a new entry to the `simulations` array in the JSON — no code changes needed.
+Add a JSON file with `{ name, initialReleaseCount, advanceProbability, childrenPerParent, demandInterval?, workflows }` to the model directory — no code changes needed. Configured workflows must have matching level keys, required fields, consecutive ascending status orders, commitment/delivery markers and at least two downstream statuses. Invalid configurations produce descriptive errors rather than placeholder workflows.
 
 ## Bundled simulations
 
 | Name | Levels |
 |------|--------|
 | **Simplified** | Project → Epic → Story → Subtask, 4 statuses each |
-| **SDF workflows** | Project (7 statuses) → Release (10) → Feat (8) → Spec (7) |
+| **SDDF workflows** | Release (L2) → Feat (L1) |
 
 ## Architecture
 
 ```
 src/
 ├── config/
-│   ├── defaultConfig.json   # Source of truth: simulations, workflows, parameters
-│   └── defaultConfig.ts     # Loads JSON and derives the `category` field
+│   ├── defaultConfig.json   # Startup model selection
+│   ├── models/             # Model workflows and parameters
+│   └── defaultConfig.ts    # Loads and validates model JSON
 ├── domain/
 │   └── types.ts             # TypeScript types: Workitem, Workflow, Status, SimState, Config
 ├── simulation/

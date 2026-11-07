@@ -75,7 +75,7 @@ Entidades centrales:
   - compuerta opcional en dos fases (`hasReadySignal`)
   - marcador de buffer opcional (`isBuffer`)
 - Workflow:
-  - uno por nivel (L3/L2/L1/L0)
+  - uno por nivel configurado: cualquier subconjunto no vacio y consecutivo de L3/L2/L1/L0
   - lista ordenada de estados
 - Workitem:
   - id, level, statusId
@@ -92,6 +92,8 @@ Importante: la categoria del status (TODO / IN_PROGRESS / DONE) se deriva al car
 
 El motor ejecuta un pipeline ordenado de 8 pasos en cada tick.
 
+Los niveles exteriores ausentes se omiten en `workflows`, sin placeholders. L2/L1 es valido; L3/L1 falla por falta de L2. El orden de claves JSON no cambia la jerarquia. El nivel activo mas bajo avanza autonomamente en su Paso 1/3/5/7; los pasos de niveles ausentes no consumen sorteos. Los pushes y reglas padre-hijo solo operan entre vecinos activos.
+
 ```mermaid
 flowchart LR
   S1[Paso 1: Avanzar L0] --> S2[Paso 2: Empujar L1 si algun hijo L0 esta en downstream]
@@ -100,7 +102,7 @@ flowchart LR
   S4 --> S5[Paso 5: Avanzar L2 + crear hijos L1]
   S5 --> S6[Paso 6: Empujar L3 si algun hijo L2 esta en downstream]
   S6 --> S7[Paso 7: Avanzar L3 + crear hijos L2]
-  S7 --> S8[Paso 8: Inyectar nueva demanda L3 por intervalo]
+  S7 --> S8[Paso 8: Inyectar demanda en el nivel activo mas alto]
 ```
 
 Por que importa el orden:
@@ -124,7 +126,7 @@ Las reglas por par de niveles son simetricas (L0->L1, L1->L2, L2->L3):
 
 4. Pull limitado por el padre:
 - Un hijo no entra a su segundo estado downstream si algun ancestro no esta ya ahi (o mas adelante) ni tiene cupo en esa columna.
-- Se comprueba donde el trabajo arranca: L0 en el Paso 1, y L1 en el Paso 3 cuando no hay L0.
+- Se comprueba en el nivel hoja: L0 en Paso 1, L1 en Paso 3, L2 en Paso 5 o L3 en Paso 7, segun la jerarquia activa.
 
 Esto da al modelo un efecto claro de arrastre desde ejecucion, preservando dependencia jerarquica.
 
@@ -166,7 +168,7 @@ Generacion de IDs:
 - Si el item tiene padre, se agrega sufijo con base del padre: p<parentBaseId>.
 
 Forma de la jerarquia:
-- L3 no tiene padre.
+- El nivel activo mas alto no tiene padre; su ID no tiene sufijo.
 - Los hijos L2 apuntan a padre L3.
 - Los hijos L1 apuntan a padre L2.
 - Los hijos L0 apuntan a padre L1.
@@ -174,12 +176,14 @@ Forma de la jerarquia:
 ## 11. Inicializacion y demanda
 
 Estado inicial:
-- Crea `initialReleaseCount` items L3 en el primer estado de L3.
+- Crea `initialReleaseCount` items en el primer estado del nivel activo mas alto (L3 en modelos completos).
 - Inicializa contadores de forma consistente con los items creados.
 
 Demanda continua:
-- Si `demandInterval > 0`, cada N ticks se inyecta un nuevo item L3 en el primer estado de L3.
+- Si `demandInterval > 0`, el Paso 8 inyecta un item en el nivel activo mas alto cada N ticks, sujeto al WIP de entrada. Con 0 no hay demanda.
 - Esto extiende el comportamiento base del MVP con un modelo de llegada orientado a flujo.
+
+Cada modelo vive en `src/config/models/`; `defaultConfig.json` conserva `{ "defaultModel": "<name>" }`. Los modelos completos no necesitan migracion. Cada workflow presente exige campos validos, nivel coincidente, estados no vacios con orden consecutivo ascendente y marcadores estructurales de compromiso, dos downstream y entrega. Errores de configuracion se muestran descriptivamente.
 
 ## 12. Detalles de integracion con UI
 
@@ -188,6 +192,8 @@ Orquestacion en App:
 - Autoplay: tick repetido cada 1000 ms
 - Reset: reconstruye estado inicial de la simulacion seleccionada
 - Selector de simulacion: carga otra configuracion y resetea estado
+- With L0 / Without L0: solo aparece con L0 y un nivel superior. Se conserva al cambiar entre modelos compatibles; se limpia antes de inicializar un modelo sin L0 o con solo L0.
+- Las vistas intersectan sus niveles objetivo con niveles activos; una vista que deja de estar disponible vuelve a Full sin alterar el estado por cambios de vista solos.
 
 Visualizacion:
 - Board renderiza un nivel de workflow

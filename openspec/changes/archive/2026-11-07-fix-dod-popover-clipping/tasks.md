@@ -14,7 +14,7 @@
 
 ## 3. Manual Verification
 
-- [ ] 3.1 Open the SDF workflows simulation (10+ columns per board) and click a DoD button on a narrow column — confirm the popover is fully readable and not clipped
-- [ ] 3.2 Confirm clicking the DoD button again hides the popover
-- [ ] 3.3 Confirm clicking anywhere outside the popover hides it
-- [ ] 3.4 Confirm the popover is anchored visually near the DoD button
+- [x] 3.1 Open the SDF workflows simulation (10+ columns per board) and click a DoD button on a narrow column — confirm the popover is fully readable and not clipped
+- [x] 3.2 Confirm clicking the DoD button again hides the popover
+- [x] 3.3 Confirm clicking anywhere outside the popover hides it
+- [x] 3.4 Confirm the popover is anchored visually near the DoD button
